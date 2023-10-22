@@ -1,9 +1,11 @@
-import { Button } from '@/components/ui/button'
+import Navbar from "@/components/Navbar/Navbar";
 
 export default function Home() {
   return (
+    <>
+    <Navbar />
     <main className="">
-      <Button variant={"default"}>TEST</Button>
     </main>
+    </>
   )
 }
