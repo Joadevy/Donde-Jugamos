@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import NextAuth, { type AuthOptions } from "next-auth";
+import {PrismaClient} from "@prisma/client";
+import NextAuth, {type AuthOptions} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import {PrismaAdapter} from "@next-auth/prisma-adapter";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async redirect({ url, baseUrl }) {
+    redirect({url, baseUrl}) {
       // Allows relative callback URLs
       const u = new URL(url);
       const redirectUrl = u.searchParams.get("callbackUrl")!;
@@ -37,4 +37,4 @@ export const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export {handler as GET, handler as POST};
