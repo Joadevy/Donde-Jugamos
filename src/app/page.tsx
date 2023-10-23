@@ -3,9 +3,8 @@ import Navbar from "@/components/Navbar/Navbar";
 export default function Home() {
   return (
     <>
-    <Navbar />
-    <main className="">
-    </main>
+      <Navbar />
+      <main className="" />
     </>
-  )
+  );
 }
