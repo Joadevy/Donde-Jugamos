@@ -22,11 +22,11 @@ function SignInOutButtons() {
             <p className="">{session.user.name}</p>
           </div>
           {/*eslint-disable-next-line @typescript-eslint/no-misused-promises*/}
-          <Button onClick={() => signOut()}>Log out</Button>
+          <Button onClick={() => signOut()}>Cerrar sesion</Button>
         </>
       ) : (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        <Button onClick={() => signIn()}>Sign In</Button>
+        <Button onClick={() => signIn()}>Iniciar sesion</Button>
       )}
     </li>
   );
