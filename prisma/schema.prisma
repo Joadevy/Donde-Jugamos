@@ -60,3 +60,73 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model SportCenter { //Establishment
+  id Int @id @default(autoincrement())
+  name String
+  location String 
+  postcode String
+  phone String
+  email String
+  description String?
+  active Boolean @default(false)
+  cancelTimeLimit Int @default(180) // 3 horas
+  paymentTimeLimit Int @default(180) // 3 horas
+}
+
+model Court { //Field - Cancha
+ id Int @id @default(autoincrement())
+ capacity Int
+ price Decimal
+ description String?
+}
+
+model Appointment { //Turno
+  id Int @id @default(autoincrement())
+  date DateTime
+  startTime Float
+  endTime Float
+  active Boolean @default(true)
+}
+
+model Reservation {
+  id Int @id @default(autoincrement())
+  date DateTime
+  state String? @default("pendiente") // APROBADA | RECHAZADA |CANCELADA |PENDIENTE
+  observation String?
+  partialPayment Decimal
+  paymentConfirmation Bytes?
+  //paymentId int 
+}
+
+model Sport {
+  id Int @id @default(autoincrement()) 
+  name String
+  duration Int @default(60) //Minutes 
+}
+
+model Day {
+  id Int @id @default(autoincrement())
+  name String
+  firstHalfStartTime Float //Hora inicio primera media jornada
+  firstHalfEndTime Float //Hora fin primera media jornada
+  secondHalfStartTime Float //Hora inicio segunda media jornada
+  secondHalfEndTime Float //Hora fin segunda media jornada
+}
+
+model Payment {
+  id Int @id @default(autoincrement())
+  date DateTime
+  mount Decimal
+  CBU String? @unique
+  reservationId Int
+}
+
+//Los enums no estan definidos para SQLite, SI para postgre
+// enum ReservationState {
+//   APROBADA
+//   RECHAZADA
+//   CANCELADA
+//   PENDIENTE
+// }
+
