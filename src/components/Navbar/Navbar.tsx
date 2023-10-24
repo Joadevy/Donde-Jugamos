@@ -1,13 +1,8 @@
 import Link from "next/link";
-import {getServerSession} from "next-auth";
-
-import {authOptions} from "@/app/api/auth/[...nextauth]/route";
 
 import SignInOutButtons from "../Buttons/SignInOutButtons";
 
-const Navbar = async () => {
-  const session = await getServerSession(authOptions);
-
+function Navbar() {
   return (
     <nav className="border p-2 shadow-sm">
       <ul className="flex items-center justify-between">
@@ -15,10 +10,10 @@ const Navbar = async () => {
           <p>DondeJugamos</p>
         </Link>
 
-        <SignInOutButtons session={session} />
+        <SignInOutButtons />
       </ul>
     </nav>
   );
-};
+}
 
 export default Navbar;

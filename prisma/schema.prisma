@@ -17,18 +17,19 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? // @db.Text no funcionaria en sqlite, en postgres si
+    access_token      String? // @db.Text no funcionaria en sqlite, en postgres si
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? // @db.Text no funcionaria en sqlite, en postgres si
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
 }
 
+// Necesario para Next Auth
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
@@ -49,4 +50,13 @@ model User {
     registerDate  DateTime  @default(now())
     CBU           String?   @unique
     Alias         String?   @unique
+}
+
+// Necesario para Next Auth
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
