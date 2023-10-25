@@ -50,6 +50,8 @@ model User {
     registerDate  DateTime  @default(now())
     CBU           String?   @unique
     Alias         String?   @unique
+    sportcenter   SportCenter?
+    reservations  Reservation[]
 }
 
 // Necesario para Next Auth
@@ -72,6 +74,10 @@ model SportCenter { //Establishment
   active Boolean @default(false)
   cancelTimeLimit Int @default(180) // 3 horas
   paymentTimeLimit Int @default(180) // 3 horas
+  courts Court[]
+  days Day[]
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Court { //Field - Cancha
@@ -79,6 +85,11 @@ model Court { //Field - Cancha
  capacity Int
  price Decimal
  description String?
+ sportCenterId Int
+ sportCenter SportCenter @relation(fields: [sportCenterId], references: [id])
+ sportId Int
+ sport Sport @relation(fields: [sportId], references: [id])
+ appointments Appointment[]
 }
 
 model Appointment { //Turno
@@ -87,15 +98,24 @@ model Appointment { //Turno
   startTime Float
   endTime Float
   active Boolean @default(true)
+  courtId Int
+  court Court @relation(fields: [courtId], references: [id])
+  dayId Int
+  day Day @relation(fields: [dayId], references: [id])
+  reservations Reservation[]
 }
 
 model Reservation {
   id Int @id @default(autoincrement())
   date DateTime
-  state String? @default("pendiente") // APROBADA | RECHAZADA |CANCELADA |PENDIENTE
+  state String? @default("pending") // pending | approved | rejected | canceled
   observation String?
   partialPayment Decimal
   paymentConfirmation Bytes?
+  appointmentId Int
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
   //paymentId int 
 }
 
@@ -103,6 +123,7 @@ model Sport {
   id Int @id @default(autoincrement()) 
   name String
   duration Int @default(60) //Minutes 
+  courts Court[]
 }
 
 model Day {
@@ -112,15 +133,20 @@ model Day {
   firstHalfEndTime Float //Hora fin primera media jornada
   secondHalfStartTime Float //Hora inicio segunda media jornada
   secondHalfEndTime Float //Hora fin segunda media jornada
+  sportCenterId Int
+  sportCenter SportCenter @relation(fields: [sportCenterId], references: [id])
+  appointments Appointment[]
 }
 
-model Payment {
-  id Int @id @default(autoincrement())
-  date DateTime
-  mount Decimal
-  CBU String? @unique
-  reservationId Int
-}
+
+// Vamos a guardar info del pago como tal?
+// model Payment { 
+//   id Int @id @default(autoincrement())
+//   date DateTime
+//   mount Decimal
+//   CBU String? @unique
+//   reservationId Int
+// }
 
 //Los enums no estan definidos para SQLite, SI para postgre
 // enum ReservationState {
