@@ -10,29 +10,55 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 
 import {Input} from "../ui/input";
 import {Button} from "../ui/button";
-import {DatePicker} from "../ui/datepicker";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import DatePickerField from "../DatePickerField/DatePickerField";
+
+interface Location {
+  name: string;
+  postalCode: string;
+}
+
+// Esto capaz no deberia estar aca, pero lo dejo por ahora
+export const cities: Location[] = [
+  {name: "Colon", postalCode: "3280"},
+  {name: "Concepcion del uruguay", postalCode: "3260"},
+];
+
+const citiesNames = cities.map((city) => city.name);
+const cityPostalCodes = cities.map((city) => city.postalCode);
 
 interface SearchFormProps {
   className: string;
 }
 
 const formSchema = z.object({
-  location: z.string(),
-  sport: z.string(),
-  date: z.date(),
-  time: z.string(),
+  location: z.object(
+    {
+      name: z.enum(citiesNames as [string]),
+      postalCode: z.enum(cityPostalCodes as [string]),
+    },
+    {
+      required_error: "Requerido",
+      invalid_type_error: "Ciudad no valida", // En realidad este manejo de error nunca se muestra
+    },
+  ),
+  sport: z.string({
+    required_error: "Requerido",
+  }),
+  date: z.date({
+    required_error: "Requerido",
+    invalid_type_error: "Fecha no valida",
+  }),
+  time: z.string({
+    required_error: "Requerido",
+  }),
 });
 
 const SearchForm: React.FC<SearchFormProps> = ({className}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      location: "",
-      sport: "",
       date: new Date(),
-      time: "",
     },
   });
 
@@ -46,16 +72,37 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
         <FormField
           control={form.control}
           name="location"
-          render={({field}) => (
+          render={() => (
             <FormItem>
-              {/* <FormLabel>Ciudad</FormLabel> */}
+              <FormLabel>
+                <datalist id="citiesList">
+                  {cities.map((city) => (
+                    <option key={city.postalCode} value={city.name} />
+                  ))}
+                </datalist>
+              </FormLabel>
               <FormControl>
-                <Input placeholder="Ciudad" {...field} />
+                <Input
+                  autoComplete="off" // Para que no se autocomplete con cualquier cosa que haya ingresado previamente
+                  list="citiesList"
+                  placeholder="Buscar Ciudad"
+                  onChange={(e) => {
+                    e.preventDefault();
+                    const city = cities.find(
+                      (c) => c.name.toLowerCase() === e.target.value.toLowerCase(),
+                    );
+
+                    if (city) {
+                      form.setValue("location", city);
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="sport"
@@ -65,7 +112,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Deportes" />
+                    <SelectValue placeholder="Elige Deporte" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -89,7 +136,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Hora Desde" />
+                    <SelectValue placeholder="Elige Hora" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -104,7 +151,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Buscar canchas</Button>
       </form>
     </Form>
   );
