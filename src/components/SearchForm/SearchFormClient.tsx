@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
 
+import type {Sport} from "@prisma/client";
+
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -21,7 +23,7 @@ interface Location {
 // Esto capaz no deberia estar aca, pero lo dejo por ahora
 export const cities: Location[] = [
   {name: "Colon", postalCode: "3280"},
-  {name: "Concepcion del uruguay", postalCode: "3260"},
+  {name: "Concepcion del Uruguay", postalCode: "3260"},
 ];
 
 const citiesNames = cities.map((city) => city.name);
@@ -29,6 +31,7 @@ const cityPostalCodes = cities.map((city) => city.postalCode);
 
 interface SearchFormProps {
   className: string;
+  sports: Sport[];
 }
 
 const formSchema = z.object({
@@ -53,7 +56,7 @@ const formSchema = z.object({
   }),
 });
 
-const SearchForm: React.FC<SearchFormProps> = ({className}) => {
+const SearchForm: React.FC<SearchFormProps> = ({className, sports}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,7 +75,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
           control={form.control}
           name="location"
           render={() => (
-            <FormItem>
+            <FormItem className="lg:w-56">
               <FormLabel>
                 <datalist id="citiesList">
                   {cities.map((city) => (
@@ -106,7 +109,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
           control={form.control}
           name="sport"
           render={({field}) => (
-            <FormItem>
+            <FormItem className="lg:w-36">
               {/* <FormLabel>Deporte</FormLabel> */}
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
@@ -115,22 +118,25 @@ const SearchForm: React.FC<SearchFormProps> = ({className}) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="padel">Padel</SelectItem>
-                  <SelectItem value="futbol">Futbol</SelectItem>
-                  <SelectItem value="basquet">Basquet</SelectItem>
+                  {sports.map((sport) => (
+                    <SelectItem key={sport.id} value={sport.name}>
+                      {sport.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <DatePickerField control={form.control} name="date" />
 
         <FormField
           control={form.control}
           name="time"
           render={({field}) => (
-            <FormItem>
+            <FormItem className="lg:w-32">
               {/* <FormLabel>Hora Desde</FormLabel> */}
               <Select defaultValue={field.value} onValueChange={field.onChange}>
                 <FormControl>
