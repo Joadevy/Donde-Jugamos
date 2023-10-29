@@ -38,8 +38,7 @@ const formSchema = z.object({
       postalCode: z.enum(cityPostalCodes as [string]),
     },
     {
-      required_error: "Requerido",
-      invalid_type_error: "Ciudad no valida", // En realidad este manejo de error nunca se muestra
+      required_error: "Ciudad no valida", // Truquito parche para que maneje bien el error
     },
   ),
   sport: z.string({
