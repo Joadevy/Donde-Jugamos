@@ -7,6 +7,7 @@ import type {Sport, SportCenter, City} from "@prisma/client";
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useState} from "react";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {getRootUrl, timeToMinutes} from "@/lib/utils/utils";
@@ -15,6 +16,7 @@ import {Input} from "../ui/input";
 import {Button} from "../ui/button";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import DatePickerField from "../DatePickerField/DatePickerField";
+import Sportcenters from "../Sportcenters/Sportcenters";
 
 // Esto capaz no deberia estar aca, pero lo dejo por ahora
 // export const cities: City[] = [
@@ -76,8 +78,12 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
       date: new Date(),
     },
   });
+  const [sportCenters, setSportCenters] = useState<SportCenter[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [QueryParams, setQueryParams] = useState<URLSearchParams | null>(null);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     const baseUrl = `${getRootUrl()}/api/appointment`;
 
     const queryParams = new URLSearchParams();
@@ -87,106 +93,125 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
     queryParams.append("date", values.date.toISOString());
     queryParams.append("time", timeToMinutes(values.time).toString());
 
+    setQueryParams(queryParams);
+
     const response = await getSportscentersWithNoAppointments(
       `${baseUrl}?${queryParams.toString()}`,
     );
 
+    setIsLoading(false);
+
     const {data: sportcenters} = response;
 
-    console.log(sportcenters, response.message);
+    if (response.status === 200) {
+      setSportCenters(sportcenters);
+    } else {
+      // Ocurrio un error, habria que manejarlo de alguna manera, tirar un toast o informar al usuario
+      console.error(response.message);
+    }
   };
 
   return (
-    <Form {...form}>
-      <form className={`${className}`} onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="city"
-          render={() => (
-            <FormItem className="lg:w-56">
-              <FormLabel>
-                <datalist id="citiesList">
-                  {cities.map((city) => (
-                    <option key={city.postCode} value={city.name} />
-                  ))}
-                </datalist>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  autoComplete="off" // Para que no se autocomplete con cualquier cosa que haya ingresado previamente
-                  list="citiesList"
-                  placeholder="Buscar Ciudad"
-                  onChange={(e) => {
-                    e.preventDefault();
-                    const city = cities.find(
-                      (c) => c.name.toLowerCase() === e.target.value.toLowerCase(),
-                    );
-
-                    if (city) {
-                      form.setValue("city", city);
-                    }
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="sport"
-          render={({field}) => (
-            <FormItem className="lg:w-36">
-              {/* <FormLabel>Deporte</FormLabel> */}
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
+    <main className="flex flex-col gap-2">
+      <Form {...form}>
+        <form className={`${className}`} onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="city"
+            render={() => (
+              <FormItem className="lg:w-56">
+                <FormLabel>
+                  <datalist id="citiesList">
+                    {cities.map((city) => (
+                      <option key={city.postCode} value={city.name} />
+                    ))}
+                  </datalist>
+                </FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elige Deporte" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {sports.map((sport) => (
-                    <SelectItem key={sport.id} value={sport.name}>
-                      {sport.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <Input
+                    autoComplete="off" // Para que no se autocomplete con cualquier cosa que haya ingresado previamente
+                    list="citiesList"
+                    placeholder="Buscar Ciudad"
+                    onChange={(e) => {
+                      e.preventDefault();
+                      const city = cities.find(
+                        (c) => c.name.toLowerCase() === e.target.value.toLowerCase(),
+                      );
 
-        <DatePickerField control={form.control} name="date" />
-
-        <FormField
-          control={form.control}
-          name="time"
-          render={({field}) => (
-            <FormItem className="lg:w-32">
-              {/* <FormLabel>Hora Desde</FormLabel> */}
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elige Hora" />
-                  </SelectTrigger>
+                      if (city) {
+                        form.setValue("city", city);
+                      }
+                    }}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="16:00">16:00 hs</SelectItem>
-                  <SelectItem value="17:00">17:00 hs</SelectItem>
-                  <SelectItem value="18:00">18:00 hs</SelectItem>
-                  <SelectItem value="19:00">19:00 hs</SelectItem>
-                  <SelectItem value="20:00">20:00 hs</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Buscar canchas</Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="sport"
+            render={({field}) => (
+              <FormItem className="lg:w-36">
+                {/* <FormLabel>Deporte</FormLabel> */}
+                <Select defaultValue={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Elige Deporte" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {sports.map((sport) => (
+                      <SelectItem key={sport.id} value={sport.name}>
+                        {sport.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <DatePickerField control={form.control} name="date" />
+
+          <FormField
+            control={form.control}
+            name="time"
+            render={({field}) => (
+              <FormItem className="lg:w-32">
+                {/* <FormLabel>Hora Desde</FormLabel> */}
+                <Select defaultValue={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Elige Hora" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="16:00">16:00 hs</SelectItem>
+                    <SelectItem value="17:00">17:00 hs</SelectItem>
+                    <SelectItem value="18:00">18:00 hs</SelectItem>
+                    <SelectItem value="19:00">19:00 hs</SelectItem>
+                    <SelectItem value="20:00">20:00 hs</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="lg:w-32" disabled={isLoading} type="submit">
+            <p className={isLoading ? "animate-spin" : ""}>{isLoading ? "↻" : "Buscar canchas"}</p>
+          </Button>
+        </form>
+      </Form>
+
+      {sportCenters ? (
+        <div className="w-1/2 self-center flex flex-col lg:flex-row gap-2">
+          <Sportcenters queryParams={QueryParams} sportCenters={sportCenters} />
+        </div>
+      ) : null}
+    </main>
   );
 };
 
