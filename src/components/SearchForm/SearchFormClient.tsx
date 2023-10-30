@@ -9,6 +9,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {timeToMinutes} from "@/lib/utils/utils";
 
 import {Input} from "../ui/input";
 import {Button} from "../ui/button";
@@ -64,8 +65,21 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports}) => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const baseUrl = "http://localhost:3000/api/appointment";
+
+    const queryParams = new URLSearchParams();
+
+    queryParams.append("location", values.location.postalCode);
+    queryParams.append("sport", values.sport);
+    queryParams.append("date", values.date.toISOString());
+    queryParams.append("time", timeToMinutes(values.time).toString());
+
+    const response = await fetch(`${baseUrl}?${queryParams.toString()}`).catch((err) => {
+      console.log(err);
+    });
+
+    console.log(await response.json());
   };
 
   return (

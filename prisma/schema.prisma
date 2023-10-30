@@ -95,8 +95,8 @@ model Court { //Field - Cancha
 model Appointment { //Turno
   id Int @id @default(autoincrement())
   date DateTime
-  startTime Float
-  endTime Float
+  startTime Int // Tiempo medido en minutos, rango: [0, 1440] (24 horas son 1440 minutos)
+  endTime Int // Tiempo medido en minutos, rango: [0, 1440]
   active Boolean @default(true)
   courtId Int
   court Court @relation(fields: [courtId], references: [id])
@@ -129,10 +129,10 @@ model Sport {
 model Day {
   id Int @id @default(autoincrement())
   name String
-  firstHalfStartTime Float //Hora inicio primera media jornada
-  firstHalfEndTime Float //Hora fin primera media jornada
-  secondHalfStartTime Float //Hora inicio segunda media jornada
-  secondHalfEndTime Float //Hora fin segunda media jornada
+  firstHalfStartTime Int //Hora inicio primera media jornada
+  firstHalfEndTime Int //Hora fin primera media jornada
+  secondHalfStartTime Int //Hora inicio segunda media jornada
+  secondHalfEndTime Int //Hora fin segunda media jornada
   sportCenterId Int
   sportCenter SportCenter @relation(fields: [sportCenterId], references: [id])
   appointments Appointment[]
