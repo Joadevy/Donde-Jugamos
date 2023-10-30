@@ -28,7 +28,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({control, name = ""}) =
               <FormControl>
                 <Button
                   className={cn(
-                    "w-[215px] pl-3 text-left font-normal",
+                    "lg:w-[215px] pl-3 text-left font-normal",
                     !field.value && "text-muted-foreground",
                   )}
                   variant="outline"
