@@ -41,7 +41,14 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({control, name = ""}) =
             <PopoverContent align="start" className="w-auto p-0">
               <Calendar
                 initialFocus
-                disabled={(date) => date <= new Date()}
+                disabled={(date) => {
+                  const today = new Date();
+
+                  date.setHours(0, 0, 0, 0);
+                  today.setHours(0, 0, 0, 0);
+
+                  return date < today;
+                }}
                 mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
