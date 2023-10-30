@@ -8,7 +8,7 @@ import {db} from "@/backend/db/db";
 export async function GET(request: NextRequest) {
   const {searchParams} = new URL(request.url);
 
-  const postCode = searchParams.get("location");
+  const postCode = searchParams.get("city");
   const sport = searchParams.get("sport");
   const date = searchParams.get("date")?.toString();
   const time = parseInt(searchParams.get("time") || "0");
@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
   try {
     sportCenters = await db.sportCenter.findMany({
       where: {
-        postcode: postCode!,
+        city: {
+          postCode: postCode!,
+        },
         active: true, // de los que estan activos
         courts: {
           some: {
@@ -58,6 +60,7 @@ export async function GET(request: NextRequest) {
       message = "No hay establecimientos con canchas disponibles en el horario seleccionado.";
     }
   } catch (error) {
+    console.log(error);
     message = `Ocurrio un error al obtener los establecimientos. Error: ${String(error)}`;
     status = 500;
   }

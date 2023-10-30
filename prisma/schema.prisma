@@ -66,8 +66,7 @@ model VerificationToken {
 model SportCenter { //Establishment
   id Int @id @default(autoincrement())
   name String
-  location String 
-  postcode String
+  address String 
   phone String
   email String
   description String?
@@ -78,6 +77,15 @@ model SportCenter { //Establishment
   days Day[]
   userId String @unique
   user User @relation(fields: [userId], references: [id])
+  cityId Int
+  city City @relation(fields: [cityId], references: [id])
+}
+
+model City {
+  id Int @id @default(autoincrement())
+  name String
+  postCode String
+  sportCenters SportCenter[]
 }
 
 model Court { //Field - Cancha
