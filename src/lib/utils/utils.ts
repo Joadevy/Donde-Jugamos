@@ -14,3 +14,8 @@ export function timeToMinutes(time: string): number {
 
   return hour * 60 + minutes;
 }
+
+
+export function getRootUrl(){
+  return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://www.dondejugamos.vercel.app";
+}
