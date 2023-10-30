@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
 
-import type {Sport} from "@prisma/client";
+import type {Sport, SportCenter} from "@prisma/client";
 
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {timeToMinutes} from "@/lib/utils/utils";
+import {getRootUrl, timeToMinutes} from "@/lib/utils/utils";
 
 import {Input} from "../ui/input";
 import {Button} from "../ui/button";
@@ -57,6 +57,20 @@ const formSchema = z.object({
   }),
 });
 
+const getSportscentersWithNoAppointments = async (url: string) => {
+  const response: {
+    data: SportCenter[];
+    status: number;
+    message: string;
+  } = await fetch(url)
+    .then((data) => data.json())
+    .catch((err) => {
+      console.log(err);
+    });
+
+  return response;
+};
+
 const SearchForm: React.FC<SearchFormProps> = ({className, sports}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,7 +80,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports}) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const baseUrl = "http://localhost:3000/api/appointment";
+    const baseUrl = `${getRootUrl()}/api/appointment`;
 
     const queryParams = new URLSearchParams();
 
@@ -75,11 +89,13 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports}) => {
     queryParams.append("date", values.date.toISOString());
     queryParams.append("time", timeToMinutes(values.time).toString());
 
-    const response = await fetch(`${baseUrl}?${queryParams.toString()}`).catch((err) => {
-      console.log(err);
-    });
+    const response = await getSportscentersWithNoAppointments(
+      `${baseUrl}?${queryParams.toString()}`,
+    );
 
-    console.log(await response.json());
+    const {data: sportcenters} = response;
+
+    console.log(sportcenters, response.message);
   };
 
   return (
