@@ -2,12 +2,14 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
 
-import type {Sport, SportCenter, City} from "@prisma/client";
+import type {Sport, City} from "@prisma/client";
+import type {SyntheticEvent} from "react";
 
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {getRootUrl, timeToMinutes} from "@/lib/utils/utils";
@@ -16,13 +18,6 @@ import {Input} from "../ui/input";
 import {Button} from "../ui/button";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import DatePickerField from "../DatePickerField/DatePickerField";
-import Sportcenters from "../Sportcenters/Sportcenters";
-
-// Esto capaz no deberia estar aca, pero lo dejo por ahora
-// export const cities: City[] = [
-//   {name: "Colon", postCode: "3280"},
-//   {name: "Concepcion del Uruguay", postCode: "3260"},
-// ];
 
 interface SearchFormProps {
   className: string;
@@ -54,37 +49,24 @@ const getFormSchema = (citiesNames: string[], citypostCodes: string[]) => {
   });
 };
 
-const getSportscentersWithNoAppointments = async (url: string) => {
-  const response: {
-    data: SportCenter[];
-    status: number;
-    message: string;
-  } = await fetch(url)
-    .then((data) => data.json())
-    .catch((err) => {
-      console.log(err);
-    });
-
-  return response;
-};
-
 const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
   const citiesNames = cities.map((city) => city.name);
   const citypostCodes = cities.map((city) => city.postCode);
   const formSchema = getFormSchema(citiesNames, citypostCodes);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
     },
   });
-  const [sportCenters, setSportCenters] = useState<SportCenter[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [QueryParams, setQueryParams] = useState<URLSearchParams | null>(null);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    const baseUrl = `${getRootUrl()}/api/appointment`;
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const onSubmit = (values: z.infer<typeof formSchema>, event: SyntheticEvent) => {
+    event.preventDefault();
+    const baseUrl = `${getRootUrl()}/appointment`;
 
     const queryParams = new URLSearchParams();
 
@@ -93,22 +75,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
     queryParams.append("date", values.date.toISOString());
     queryParams.append("time", timeToMinutes(values.time).toString());
 
-    setQueryParams(queryParams);
-
-    const response = await getSportscentersWithNoAppointments(
-      `${baseUrl}?${queryParams.toString()}`,
-    );
-
-    setIsLoading(false);
-
-    const {data: sportcenters} = response;
-
-    if (response.status === 200) {
-      setSportCenters(sportcenters);
-    } else {
-      // Ocurrio un error, habria que manejarlo de alguna manera, tirar un toast o informar al usuario
-      console.error(response.message);
-    }
+    router.push(`${baseUrl}?${queryParams.toString()}`);
   };
 
   return (
@@ -189,8 +156,10 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="16:00">16:00 hs</SelectItem>
-                    <SelectItem value="17:00">17:00 hs</SelectItem>
+                    <SelectItem value="16:00">8:00 hs</SelectItem>
+                    <SelectItem value="16:00">9:00 hs</SelectItem>
+                    <SelectItem value="16:00">10:00 hs</SelectItem>
+                    <SelectItem value="17:00">12:00 hs</SelectItem>
                     <SelectItem value="18:00">18:00 hs</SelectItem>
                     <SelectItem value="19:00">19:00 hs</SelectItem>
                     <SelectItem value="20:00">20:00 hs</SelectItem>
@@ -205,12 +174,6 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
           </Button>
         </form>
       </Form>
-
-      {sportCenters ? (
-        <div className="w-1/2 self-center flex flex-col lg:flex-row gap-2">
-          <Sportcenters queryParams={QueryParams} sportCenters={sportCenters} />
-        </div>
-      ) : null}
     </main>
   );
 };
