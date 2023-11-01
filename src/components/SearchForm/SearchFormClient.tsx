@@ -3,7 +3,7 @@
 "use client";
 
 import type {Sport, City} from "@prisma/client";
-import type {SyntheticEvent} from "react";
+import type {DefaultSearchFormValues} from "./SearchFormServer";
 
 import * as z from "zod";
 import {useForm} from "react-hook-form";
@@ -12,7 +12,7 @@ import {useState} from "react";
 import {useRouter} from "next/navigation";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {getRootUrl, timeToMinutes} from "@/lib/utils/utils";
+import {getRootUrl, timeInStringFromMinutes, timeToMinutes} from "@/lib/utils/utils";
 
 import {Input} from "../ui/input";
 import {Button} from "../ui/button";
@@ -23,6 +23,7 @@ interface SearchFormProps {
   className: string;
   sports: Sport[];
   cities: Pick<City, "name" | "postCode">[];
+  defaultValues: DefaultSearchFormValues;
 }
 
 const getFormSchema = (citiesNames: string[], citypostCodes: string[]) => {
@@ -49,7 +50,7 @@ const getFormSchema = (citiesNames: string[], citypostCodes: string[]) => {
   });
 };
 
-const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
+const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defaultValues}) => {
   const citiesNames = cities.map((city) => city.name);
   const citypostCodes = cities.map((city) => city.postCode);
   const formSchema = getFormSchema(citiesNames, citypostCodes);
@@ -57,15 +58,18 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      date: defaultValues.date ? new Date(defaultValues.date) : new Date(),
+      sport: defaultValues.sport ? defaultValues.sport : "",
+      time: defaultValues.time ? timeInStringFromMinutes(defaultValues.time) : "",
+      city: cities.find((city) => city.postCode === defaultValues.city),
     },
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const onSubmit = (values: z.infer<typeof formSchema>, event: SyntheticEvent) => {
-    event.preventDefault();
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    // setIsLoading(true);
     const baseUrl = `${getRootUrl()}/appointment`;
 
     const queryParams = new URLSearchParams();
@@ -85,7 +89,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
           <FormField
             control={form.control}
             name="city"
-            render={() => (
+            render={(field) => (
               <FormItem className="lg:w-56">
                 <FormLabel>
                   <datalist id="citiesList">
@@ -97,6 +101,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
                 <FormControl>
                   <Input
                     autoComplete="off" // Para que no se autocomplete con cualquier cosa que haya ingresado previamente
+                    defaultValue={field.formState.defaultValues?.city?.name}
                     list="citiesList"
                     placeholder="Buscar Ciudad"
                     onChange={(e) => {
@@ -156,10 +161,10 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities}) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="16:00">8:00 hs</SelectItem>
-                    <SelectItem value="16:00">9:00 hs</SelectItem>
-                    <SelectItem value="16:00">10:00 hs</SelectItem>
-                    <SelectItem value="17:00">12:00 hs</SelectItem>
+                    <SelectItem value="08:00">8:00 hs</SelectItem>
+                    <SelectItem value="09:00">9:00 hs</SelectItem>
+                    <SelectItem value="10:00">10:00 hs</SelectItem>
+                    <SelectItem value="12:00">12:00 hs</SelectItem>
                     <SelectItem value="18:00">18:00 hs</SelectItem>
                     <SelectItem value="19:00">19:00 hs</SelectItem>
                     <SelectItem value="20:00">20:00 hs</SelectItem>

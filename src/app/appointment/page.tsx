@@ -1,5 +1,6 @@
 import SportCenter from "@/components/Sportcenters/SportCenter";
 import {getSportCentersWithCourtsByFilters} from "@/backend/db/models/sportsCenters";
+import SearchFormServer from "@/components/SearchForm/SearchFormServer";
 
 interface SearchParams {
   city: string;
@@ -20,17 +21,26 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
   );
 
   if (sportCenters.length === 0) {
-    return <div>No hay establecimientos con canchas disponibles en el horario seleccionado..</div>;
+    return (
+      <div className="flex items-center flex-col mt-4 gap-2">
+        <SearchFormServer {...searchParams} />
+        <p className="italic text-slate-500">
+          No hay establecimientos con canchas disponibles en el horario seleccionado..
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="w-1/2 self-center flex flex-col lg:flex-row gap-2">
+    <main className="flex items-center flex-col mt-4 gap-2">
+      <SearchFormServer {...searchParams} />
+
       <ul>
         {sportCenters.map((sportCenter) => (
           <SportCenter key={sportCenter.id} queryParams={queryParams} sportCenter={sportCenter} />
         ))}
       </ul>
-    </div>
+    </main>
   );
 };
 
