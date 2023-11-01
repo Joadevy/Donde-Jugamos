@@ -1,67 +1,32 @@
 import type {NextRequest} from "next/server";
-// import type {SportCenter} from "@prisma/client";
-
-import type {SportCenter} from "@/lib/types/importables/types";
+import type {SportCentersWithCourtsAndAppointments} from "./../../../backend/db/models/sportsCenters";
 
 import {NextResponse} from "next/server";
 
-import {db} from "@/backend/db/db";
+import {getSportCentersWithCourtsByFilters} from "@/backend/db/models/sportsCenters";
 
-export function GET(request: NextRequest) {
-  return NextResponse.json("GET Request");
-}
+export async function GET(request: NextRequest) {
+  const {searchParams} = new URL(request.url);
 
-export async function POST(request: NextRequest) {
-  const {city: postCode, sport, date, time} = await request.json();
-  let sportCenters: SportCenter[] = [];
+  const postCode = searchParams.get("city");
+  const sport = searchParams.get("sport");
+  const date = new Date(searchParams.get("date") ?? "");
+  const time = Number(searchParams.get("time"));
+
+  if (!postCode || !sport || !date.getDay() || !time) {
+    return NextResponse.json({
+      data: [],
+      status: 400,
+      message: "Faltan parametros",
+    });
+  }
+
+  let sportCenters: SportCentersWithCourtsAndAppointments[] = [];
   let message = "";
   let status = 200;
 
   try {
-    sportCenters = await db.sportCenter.findMany({
-      where: {
-        city: {
-          postCode: postCode,
-        },
-        active: true, // de los que estan activos
-        courts: {
-          some: {
-            sport: {
-              name: sport,
-            },
-            appointments: {
-              some: {
-                date: {
-                  gte: date,
-                  // equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
-                },
-                startTime: {
-                  gte: 0,
-                  // equals: time, // lo mismo que para date pero con la hora aunque aca es un poquito mas flexible segun mi parecer
-                },
-              },
-              none: {
-                reservations: {
-                  some: {
-                    state: {
-                      in: ["approved", "pending"],
-                      // Si hay alguna reserva aprobada o pendiente en ese horario no lo mostramos
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      include: {
-        courts: {
-          include: {
-            appointments: true,
-          },
-        },
-      },
-    });
+    sportCenters = await getSportCentersWithCourtsByFilters(postCode, sport, date, time);
 
     if (sportCenters.length === 0) {
       message = "No hay establecimientos con canchas disponibles en el horario seleccionado..";
