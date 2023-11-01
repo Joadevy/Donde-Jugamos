@@ -1,18 +1,18 @@
 import type {NextRequest} from "next/server";
-import type {SportCenter} from "@prisma/client";
+// import type {SportCenter} from "@prisma/client";
+
+import type {SportCenter} from "@/lib/types/importables/types";
 
 import {NextResponse} from "next/server";
 
 import {db} from "@/backend/db/db";
 
-export async function GET(request: NextRequest) {
-  const {searchParams} = new URL(request.url);
+export function GET(request: NextRequest) {
+  return NextResponse.json("GET Request");
+}
 
-  const postCode = searchParams.get("location");
-  const sport = searchParams.get("sport");
-  const date = searchParams.get("date")?.toString();
-  const time = parseInt(searchParams.get("time") || "0");
-
+export async function POST(request: NextRequest) {
+  const {city: postCode, sport, date, time} = await request.json();
   let sportCenters: SportCenter[] = [];
   let message = "";
   let status = 200;
@@ -20,22 +20,24 @@ export async function GET(request: NextRequest) {
   try {
     sportCenters = await db.sportCenter.findMany({
       where: {
-        postcode: postCode!,
+        city: {
+          postCode: postCode,
+        },
         active: true, // de los que estan activos
         courts: {
           some: {
             sport: {
-              name: sport!,
+              name: sport,
             },
             appointments: {
               some: {
                 date: {
-                  // gte: date,
-                  equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
+                  gte: date,
+                  // equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
                 },
                 startTime: {
-                  // gte: time,
-                  equals: time, // lo mismo que para date pero con la hora aunque aca es un poquito mas flexible segun mi parecer
+                  gte: 0,
+                  // equals: time, // lo mismo que para date pero con la hora aunque aca es un poquito mas flexible segun mi parecer
                 },
               },
               none: {
@@ -52,10 +54,17 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+      include: {
+        courts: {
+          include: {
+            appointments: true,
+          },
+        },
+      },
     });
 
     if (sportCenters.length === 0) {
-      message = "No hay establecimientos con canchas disponibles en el horario seleccionado.";
+      message = "No hay establecimientos con canchas disponibles en el horario seleccionado..";
     }
   } catch (error) {
     message = `Ocurrio un error al obtener los establecimientos. Error: ${String(error)}`;
