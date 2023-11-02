@@ -13,9 +13,10 @@ import {
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 import {buttonVariants} from "../ui/button";
+import ReservationClip from "../Reservation/ReservationClip";
+import {Separator} from "../ui/separator";
 
 import Information from "./Information";
-import AppointmentClip from "./AppointmentClip";
 
 interface Iprops {
   sportCenter: SportCentersWithCourtsAndAppointments;
@@ -29,9 +30,19 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
     }).price,
   );
 
+  const SportCenterInfo = {
+    name: sportCenter.name,
+    description: sportCenter.description,
+    address: sportCenter.address,
+    phone: sportCenter.phone,
+    email: sportCenter.email,
+    paymentTimeLimit: sportCenter.paymentTimeLimit,
+    cancelTimeLimit: sportCenter.cancelTimeLimit,
+  };
+
   return (
     <li>
-      <Tabs className="w-[300px] lg:w-[400px]" defaultValue="sportcenter">
+      <Tabs className="w-[300px] lg:w-[400px] space-y-0" defaultValue="sportcenter">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
           <TabsTrigger value="reservation">Reservar</TabsTrigger>
@@ -41,7 +52,9 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
             <CardHeader>
               <CardTitle>{sportCenter.name}</CardTitle>
               <CardDescription>{sportCenter.description}</CardDescription>
+              <Separator />
             </CardHeader>
+
             <CardContent className="space-y-2">
               <Information>
                 <CircleDollarSign color="green" size={20} />
@@ -84,19 +97,21 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
             <CardHeader>
               <CardTitle>Inicia tu reserva</CardTitle>
               <CardDescription>Elige el turno y la cancha que desees... y a jugar!</CardDescription>
+              <Separator />
             </CardHeader>
 
             <CardContent className="space-y-2">
               {sportCenter.courts.map((court) =>
                 court.appointments.map((appointment) => (
-                  <AppointmentClip key={appointment.id} appointment={appointment} court={court} />
+                  <ReservationClip
+                    key={appointment.id}
+                    appointment={appointment}
+                    court={court}
+                    sportCenterInfo={SportCenterInfo}
+                  />
                 )),
               )}
             </CardContent>
-
-            {/* <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter> */}
           </Card>
         </TabsContent>
       </Tabs>
