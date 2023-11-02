@@ -32,8 +32,7 @@ export const getSportCentersWithCourtsByFilters = async (
           appointments: {
             some: {
               date: {
-                gte: date,
-                // equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
+                equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
               },
               startTime: {
                 gte: time,
