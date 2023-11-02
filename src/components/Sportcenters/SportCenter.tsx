@@ -1,6 +1,6 @@
 import type {SportCentersWithCourtsAndAppointments} from "@/backend/db/models/sportsCenters";
 
-import Link from "next/link";
+import {CircleDollarSign, Mail, MapPin, Phone} from "lucide-react";
 
 import {
   Card,
@@ -10,6 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+
+import {buttonVariants} from "../ui/button";
+
+import Information from "./Information";
+import AppointmentClip from "./AppointmentClip";
 
 interface Iprops {
   sportCenter: SportCentersWithCourtsAndAppointments;
@@ -17,24 +23,83 @@ interface Iprops {
 }
 
 function SportCenter({sportCenter, queryParams}: Iprops) {
+  const startPrice = Number(
+    sportCenter.courts.reduce((prev, current) => {
+      return prev.price < current.price ? prev : current;
+    }).price,
+  );
+
   return (
-    <li className="hover:opacity-80 transition:opacity">
-      <Link href={`/establecimiento/${sportCenter.id}?${queryParams.toString()}`}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{sportCenter.name}</CardTitle>
-            <CardDescription>{sportCenter.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Direccion: {sportCenter.address}</p>
-          </CardContent>
-          <CardFooter className="flex flex-col ">
-            <h3>Contactanos</h3>
-            <p>{sportCenter.email}</p>
-            <p>{sportCenter.phone}</p>
-          </CardFooter>
-        </Card>
-      </Link>
+    <li>
+      <Tabs className="w-[300px] lg:w-[400px]" defaultValue="sportcenter">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
+          <TabsTrigger value="reservation">Reservar</TabsTrigger>
+        </TabsList>
+        <TabsContent value="sportcenter">
+          <Card>
+            <CardHeader>
+              <CardTitle>{sportCenter.name}</CardTitle>
+              <CardDescription>{sportCenter.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Information>
+                <CircleDollarSign color="green" size={20} />
+                <p>
+                  Desde{" "}
+                  {startPrice.toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  })}
+                </p>
+              </Information>
+
+              <Information>
+                <MapPin color="green" size={20} />
+                <p>{sportCenter.address}</p>
+              </Information>
+
+              <Information>
+                <Phone color="green" size={20} />
+                <p>{sportCenter.phone}</p>
+              </Information>
+
+              <Information>
+                <Mail color="green" size={20} />
+                <p>{sportCenter.email}</p>
+              </Information>
+            </CardContent>
+            <CardFooter>
+              <TabsList>
+                <TabsTrigger className={buttonVariants({variant: "default"})} value="reservation">
+                  Iniciar Reserva
+                </TabsTrigger>
+              </TabsList>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reservation">
+          <Card>
+            <CardHeader>
+              <CardTitle>Inicia tu reserva</CardTitle>
+              <CardDescription>Elige el turno y la cancha que desees... y a jugar!</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-2">
+              {sportCenter.courts.map((court) =>
+                court.appointments.map((appointment) => (
+                  <AppointmentClip key={appointment.id} appointment={appointment} court={court} />
+                )),
+              )}
+            </CardContent>
+
+            {/* <CardFooter>
+              <Button>Save password</Button>
+            </CardFooter> */}
+          </Card>
+        </TabsContent>
+      </Tabs>
     </li>
   );
 }
