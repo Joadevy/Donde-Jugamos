@@ -79,7 +79,8 @@ model SportCenter { //Establishment
   user User @relation(fields: [userId], references: [id])
   cityId Int
   city City @relation(fields: [cityId], references: [id])
-  // partialPaymentPorcentage: Int @default(30) // Seria el porcentaje de la senia
+  acceptPartialPayment Boolean @default(true)
+  partialPaymentPercentage Int @default(30) // Seria el porcentaje de la senia
 }
 
 model City {
@@ -92,7 +93,7 @@ model City {
 model Court { //Field - Cancha
  id Int @id @default(autoincrement())
  capacity Int
- price Decimal
+ price Float
  description String?
  sportCenterId Int
  sportCenter SportCenter @relation(fields: [sportCenterId], references: [id])
@@ -116,11 +117,11 @@ model Appointment { //Turno
 
 model Reservation {
   id Int @id @default(autoincrement())
-  date DateTime  // Tendria que tener @default(now()) 
+  date DateTime  @default(now())
   state String? @default("pending") // pending | approved | rejected | canceled
   observation String?
-  partialPayment Decimal
-  paymentConfirmation Bytes?
+  partialPayment Float?
+  paymentConfirmation String?  // Tiparla como string, va a ser el link a la imagen subida en cloudinary
   appointmentId Int
   appointment Appointment @relation(fields: [appointmentId], references: [id])
   userId String
