@@ -1,34 +1,46 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import type {SportCenter as SportCenterType} from "@/lib/types/importables/types";
-
-import React from "react";
-
 import SportCenter from "@/components/Sportcenters/SportCenter";
+import {getSportCentersWithCourtsByFilters} from "@/backend/db/models/sportsCenters";
+import SearchFormServer from "@/components/SearchForm/SearchFormServer";
 
-const page = async ({searchParams}) => {
-  const queryParams = new URLSearchParams(searchParams);
+interface SearchParams {
+  city: string;
+  sport: string;
+  date: string;
+  time: string;
+}
 
-  const result = await fetch("http://localhost:3000/api/appointment", {
-    method: "POST",
-    body: JSON.stringify(searchParams),
-  });
+const page = async ({searchParams}: {searchParams: SearchParams}) => {
+  const queryParams = new URLSearchParams({...searchParams});
+  const {city: postCode, sport, date, time} = searchParams;
 
-  const sportCenters = await result.json();
+  const sportCenters = await getSportCentersWithCourtsByFilters(
+    postCode,
+    sport,
+    new Date(date),
+    Number(time),
+  );
 
-  if (!sportCenters.data.length) {
-    return <div>{sportCenters.message}</div>;
+  if (sportCenters.length === 0) {
+    return (
+      <div className="flex items-center flex-col mt-4 gap-2">
+        <SearchFormServer {...searchParams} />
+        <p className="italic text-slate-500">
+          No hay establecimientos con canchas disponibles en el horario seleccionado..
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="w-1/2 self-center flex flex-col lg:flex-row gap-2">
+    <main className="flex items-center flex-col mt-4 gap-2">
+      <SearchFormServer {...searchParams} />
+
       <ul>
-        {sportCenters.data.map((sportCenter: SportCenterType) => (
+        {sportCenters.map((sportCenter) => (
           <SportCenter key={sportCenter.id} queryParams={queryParams} sportCenter={sportCenter} />
         ))}
       </ul>
-    </div>
+    </main>
   );
 };
 

@@ -1,4 +1,5 @@
-import {SportCenter} from "@prisma/client";
+import type {SportCentersWithCourtsAndAppointments} from "@/backend/db/models/sportsCenters";
+
 import Link from "next/link";
 
 import {
@@ -11,14 +12,14 @@ import {
 } from "@/components/ui/card";
 
 interface Iprops {
-  sportCenter: SportCenter;
-  queryParams: URLSearchParams | null;
+  sportCenter: SportCentersWithCourtsAndAppointments;
+  queryParams: URLSearchParams;
 }
 
 function SportCenter({sportCenter, queryParams}: Iprops) {
   return (
     <li className="hover:opacity-80 transition:opacity">
-      <Link href={`/establecimiento/${sportCenter.id}?${queryParams?.toString()}`}>
+      <Link href={`/establecimiento/${sportCenter.id}?${queryParams.toString()}`}>
         <Card>
           <CardHeader>
             <CardTitle>{sportCenter.name}</CardTitle>
