@@ -1,5 +1,5 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 
 interface PropsType {
     formControl: any,
@@ -8,11 +8,10 @@ interface PropsType {
     placeholder?: string,
     description?: string,
     disabled?: boolean,
-    type?: string,
     className?: string,
 }
 
-const FormInputField: React.FC<PropsType> = ({ formControl , name , label = '' , placeholder = '' , description = '' , disabled = false , type = 'text', className}) => {
+const FormTextAreaField: React.FC<PropsType> = ({ formControl , name , label = '' , placeholder = '' , description = '' , disabled = false, className}) => {
     return (
         <FormField
           control={formControl}
@@ -22,14 +21,14 @@ const FormInputField: React.FC<PropsType> = ({ formControl , name , label = '' ,
             <FormItem>
               { label && <FormLabel>{label}</FormLabel>}
               <FormControl>
-                <Input placeholder={placeholder} className={className} {...{...field, type: type}} />
+                <Textarea placeholder={placeholder} className={className} {...field} />
               </FormControl>
               { description && <FormDescription>{description}</FormDescription> }
               <FormMessage />
             </FormItem>
           )}
         />
-    )
+    );
 }
 
-export default FormInputField;
+export default FormTextAreaField;
