@@ -10,10 +10,10 @@ import {useState} from "react";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {getRootUrl} from "@/lib/utils/utils";
 
-import {Input} from "../ui/input";
-import {Button} from "../ui/button";
+import {Button, buttonVariants} from "../ui/button";
 import {AlertDialogAction, AlertDialogCancel, AlertDialogFooter} from "../ui/alert-dialog";
 import {Textarea} from "../ui/textarea";
+import {Popover, PopoverContent, PopoverTrigger} from "../ui/popover";
 
 interface SearchFormProps {
   className: string;
@@ -35,12 +35,13 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
     // const baseUrl = `${getRootUrl()}/appointment`;
 
     console.log(values);
+    console.log("hi!");
     setIsLoading(false);
   };
 
   return (
     <Form {...form}>
-      <form className={`${className}`} onSubmit={form.handleSubmit(onSubmit)}>
+      <form className={`${className}`}>
         <FormField
           control={form.control}
           name="observation"
@@ -59,13 +60,35 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
           )}
         />
 
-        <Button className="mt-2" variant="outline">
+        <Button
+          className="mt-2"
+          variant="outline"
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        >
           Adjuntar comprobante
         </Button>
 
-        <AlertDialogFooter className="mt-4">
+        <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction type="submit">Confirmar</AlertDialogAction>
+          <Popover>
+            <PopoverTrigger className={buttonVariants({variant: "default"})}>
+              Confirmar
+            </PopoverTrigger>
+            <PopoverContent className="border flex flex-col items-center w-fit">
+              Esta seguro de iniciar la reserva?
+              <AlertDialogAction
+                role="button"
+                type="submit"
+                onClick={() => {
+                  onSubmit(form.getValues());
+                }}
+              >
+                Aceptar
+              </AlertDialogAction>
+            </PopoverContent>
+          </Popover>
         </AlertDialogFooter>
       </form>
     </Form>

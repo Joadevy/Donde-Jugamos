@@ -4,13 +4,10 @@ import type {SportCenterInformation} from "./ReservationClip";
 import {BadgeDollarSign, CalendarDays, Clock4, LandPlot, MapPinned} from "lucide-react";
 
 import {
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import {timeInStringFromMinutes} from "@/lib/utils/utils";
 
@@ -33,7 +30,7 @@ function ReservationForm({appointment, court, sportCenterInfo}: Iprops) {
           Reserva tu turno en {sportCenterInfo.name}
         </AlertDialogTitle>
 
-        <AlertDialogDescription className="flex flex-col justify-center gap-2">
+        <div className="flex flex-col justify-center gap-2 text-slate-500 text-sm">
           <ReserveInformation details={sportCenterInfo.address} name="Direccion">
             <MapPinned color="green" size={20} />
           </ReserveInformation>
@@ -84,7 +81,7 @@ function ReservationForm({appointment, court, sportCenterInfo}: Iprops) {
           </ReserveInformation>
 
           <Separator />
-        </AlertDialogDescription>
+        </div>
       </AlertDialogHeader>
 
       <ReserveForm className="" />
