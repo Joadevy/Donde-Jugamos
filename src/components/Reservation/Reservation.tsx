@@ -5,7 +5,6 @@ import {BadgeDollarSign, CalendarDays, Clock4, LandPlot, MapPinned} from "lucide
 
 import {
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
@@ -22,7 +21,7 @@ interface Iprops {
   sportCenterInfo: SportCenterInformation;
 }
 
-function ReservationForm({appointment, court, sportCenterInfo}: Iprops) {
+function Reservation({appointment, court, sportCenterInfo}: Iprops) {
   return (
     <AlertDialogContent>
       <AlertDialogHeader className="space-y-1">
@@ -89,4 +88,4 @@ function ReservationForm({appointment, court, sportCenterInfo}: Iprops) {
   );
 }
 
-export default ReservationForm;
+export default Reservation;

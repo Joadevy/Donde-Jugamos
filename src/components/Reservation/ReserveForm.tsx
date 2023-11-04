@@ -7,6 +7,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
 
+import {useToast} from "@/components/ui/use-toast";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {getRootUrl} from "@/lib/utils/utils";
 
@@ -19,8 +20,16 @@ interface SearchFormProps {
   className: string;
 }
 
+async function test() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve("hi!");
+    }, 2000);
+  });
+}
+
 const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const {toast} = useToast();
   const formSchema = z.object({
     observation: z.string().optional(),
   });
@@ -30,13 +39,24 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
     defaultValues: {},
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // const baseUrl = `${getRootUrl()}/appointment`;
 
+    try {
+      await test();
+      toast({
+        title: "✅ Reserva solicitada",
+        description: "Revise su correo electronico y espere confirmacion del establecimiento",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "❌ Error",
+        description: "No se pudo realizar la reserva, intente nuevamente",
+      });
+    }
+
     console.log(values);
-    console.log("hi!");
-    setIsLoading(false);
   };
 
   return (
@@ -81,8 +101,8 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
               <AlertDialogAction
                 role="button"
                 type="submit"
-                onClick={() => {
-                  onSubmit(form.getValues());
+                onClick={async () => {
+                  await onSubmit(form.getValues());
                 }}
               >
                 Aceptar

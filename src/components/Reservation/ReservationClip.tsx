@@ -13,7 +13,7 @@ import {Badge} from "../ui/badge";
 import {Separator} from "../ui/separator";
 import SignInClip from "../Buttons/SignInClip";
 
-import ReservationForm from "./ReservationForm";
+import Reservation from "./Reservation";
 
 export interface SportCenterInformation {
   name: string;
@@ -76,7 +76,7 @@ async function ReservationClip({appointment, court, sportCenterInfo}: Iprops) {
         </Badge>
       </AlertDialogTrigger>
 
-      <ReservationForm appointment={appointment} court={court} sportCenterInfo={sportCenterInfo} />
+      <Reservation appointment={appointment} court={court} sportCenterInfo={sportCenterInfo} />
     </AlertDialog>
   ) : (
     <SignInClip>
