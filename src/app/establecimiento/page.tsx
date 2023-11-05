@@ -9,6 +9,7 @@ import FormTextAreaField from '@/components/form/FormTextAreaField';
 import TimePickerUI from '../../components/TimePicker/time-picker';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useState } from 'react';
 
 const formSchema = z.object({
     name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -26,6 +27,7 @@ const formSchema = z.object({
   });
 
 const Page = () => {
+    const [fullTime, setFullTime] = useState(true);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -49,11 +51,17 @@ const Page = () => {
         console.log(values);
     }
 
+    const handleRadioGroupValueChange = (event: string) =>{
+        console.log();
+        setFullTime( JSON.parse(event) );
+    }; 
+
     return (        
-        <Form {...form}>
+        <div className={'container'}>
+            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormInputField formControl={form.control} name='name' label='Nombre'/>
-                <FormInputField formControl={form.control} name='cityName' label='Ciudad'/>
+                <FormInputField formControl={form.control} name='name' label='Nombre' className={'columns-3'} />
+                <FormInputField formControl={form.control} name='cityName' label='Ciudad' className={'columns-3'}/>
                 <FormInputField formControl={form.control} name='cityPostalCode' label='Codigo Postal'/>
                 <FormInputField formControl={form.control} name='addressName' label='Direccion'/>
                 <FormInputField formControl={form.control} name='addressNumber' label='Altura' type='number'/>
@@ -64,21 +72,36 @@ const Page = () => {
                 <FormInputField formControl={form.control} name='alias' label='Alias'/>
                 <FormInputField formControl={form.control} name='reservationCancelTolerance' label='Tiempo de Toleraciancia para reservas' type='number'/>
                 <FormInputField formControl={form.control} name='paymentTolerance' label='Tiempo de Tolerancia para pago' type='number'/>
-                <TimePickerUI />
+                 {
+                    fullTime 
+                    ? 
+                        <>
+                            <TimePickerUI />
+                            <TimePickerUI />                        
+                        </> 
+                    :
+                        <>
+                            <TimePickerUI />
+                            <TimePickerUI />
+                            <TimePickerUI />
+                            <TimePickerUI />                        
+                        </>
+                }
                 <Button type="submit">Submit</Button>
             </form>
 
-            <RadioGroup defaultValue="option-one">
+            <RadioGroup defaultValue={fullTime.toString()} onValueChange={handleRadioGroupValueChange}>
                 <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-one" id="option-one" />
-                    <Label htmlFor="option-one">Option One</Label>
+                    <RadioGroupItem value="true" id="fullTime" />
+                    <Label htmlFor="fullTime">Tiempo Completo</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-two" id="option-two" />
-                    <Label htmlFor="option-two">Option Two</Label>
+                    <RadioGroupItem value="false" id="partialTime" />
+                    <Label htmlFor="partialTime">Tiempo Parcial</Label>
                 </div>
             </RadioGroup>
         </Form>
+        </div>
     )
 }
 
