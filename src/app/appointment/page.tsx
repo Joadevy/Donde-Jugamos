@@ -24,7 +24,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
     return (
       <div className="flex items-center flex-col mt-4 gap-2">
         <SearchFormServer {...searchParams} />
-        <p className="italic text-slate-500">
+        <p className="italic text-slate-500 text-center">
           No hay establecimientos con canchas disponibles en el horario seleccionado..
         </p>
       </div>
