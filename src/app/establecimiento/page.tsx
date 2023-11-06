@@ -15,6 +15,9 @@ import FormInputField from "../../components/form/FormInputField";
 
 import "./style.css";
 import FormSelectField from "@/components/form/FormSelectField";
+import FormTimePickerField from "@/components/form/FormTimePickerField";
+import { timeInStringFromMinutes } from "@/lib/utils/utils";
+import dayjs from "dayjs";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -27,7 +30,7 @@ const formSchema = z.object({
   description: z.string(),
   cbu: z.coerce.number().optional(),
   alias: z.string().optional(),
-  reservationCancelTolerance: z.number().optional(),
+  reservationCancelTolerance: z.any().optional(),
   paymentTolerance: z.number().optional(),
   acceptPartialPayment: z.coerce.boolean(),
   partialPaymentPercentage: z.coerce.number(),
@@ -41,7 +44,7 @@ function Page() {
     defaultValues: {
       name: "",
       addressName: "",
-      addressNumber: undefined,
+      addressNumber: 0,
       cityName: "",
       cityPostalCode: "",
       phone: "",
@@ -49,9 +52,9 @@ function Page() {
       description: "",
       cbu: undefined,
       alias: "",
-      reservationCancelTolerance: 180,
+      reservationCancelTolerance: dayjs('2022-04-17T3:30'),
       paymentTolerance: 180,
-      acceptPartialPayment: false,
+      acceptPartialPayment: true,
       partialPaymentPercentage: 30,
     },
   });
@@ -69,7 +72,7 @@ function Page() {
     <div className="container mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <h2 className="[grid-area:t-about]">Acerca del Establecimiento</h2>
+          <h2 className="[grid-area:t-about] text-2xl mt-4 mb-2">Datos del Establecimiento</h2>
           <FormInputField
             className="[grid-area:name]"
             formControl={form.control}
@@ -82,7 +85,7 @@ function Page() {
             label="Description del Establecimiento"
             name="description"
           />
-          <h2 className="[grid-area:t-location]">Ubicación</h2>
+          <h3 className="[grid-area:t-location] text-xl mt-4 mb-2">Ubicación</h3>
           <FormInputField
             className="[grid-area:city]"
             formControl={form.control}
@@ -108,7 +111,7 @@ function Page() {
             name="addressNumber"
             type="number"
           />
-          <h2 className="[grid-area:t-contact-payment]">Contacto y Pagos</h2>
+          <h3 className="[grid-area:t-contact] text-xl mt-4 mb-2">Contacto</h3>
           <FormInputField
             className="[grid-area:email]"
             formControl={form.control}
@@ -122,17 +125,18 @@ function Page() {
             label="Telefono"
             name="phone"
           />
+          <h2 className="[grid-area:t-payment-reservation] text-2xl mt-4 mb-2">Pagos y Reservas</h2>
           <FormSelectField
             className="[grid-area:acceptPayment]"
             description="Pago mínimo y obligatorio para la reserva"
             formControl={form.control}
-            label="¿Señar reserva?"
+            label="Admite Seña"
             name="acceptPartialPayment"
             options={acceptPartialPaymentOptions}
           />
           <FormInputField
             className="[grid-area:percentage]"
-            description="Porcentaje aplicado al valor total de la cacha."
+            description="Porcentaje aplicado al valor total de la cacha donde el resultado es valor minimo de la seña"
             formControl={form.control}
             label="Porcentaje de la seña"
             name="partialPaymentPercentage"
@@ -152,20 +156,16 @@ function Page() {
             label="Alias"
             name="alias"
           />
-          <FormInputField
-            className="[grid-area:cancel]"
+            <FormTimePickerField className="[grid-area:cancel]"
             formControl={form.control}
-            label="Tiempo de Toleraciancia para reservas"
-            name="reservationCancelTolerance"
-            type="number"
-          />
-          <FormInputField
-            className="[grid-area:payment]"
+            ampm={false}
+            label="Tiempo previo admisible para cancelar reservas"
+            name="reservationCancelTolerance" />
+          <FormTimePickerField className="[grid-area:payment]"
             formControl={form.control}
-            label="Tiempo de Tolerancia para pago"
-            name="paymentTolerance"
-            type="number"
-          />
+            ampm={false}
+            label="Tiempo previo admisible para realizar pago"
+            name="paymentTolerance" />
           <Button className="[grid-area:submit]" type="submit">
             Submit
           </Button>

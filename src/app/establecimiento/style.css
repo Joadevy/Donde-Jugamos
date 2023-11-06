@@ -2,6 +2,7 @@ form {
     display: grid;
     column-gap: 1rem;
     row-gap: .5rem;
+    grid-template-columns: repeat(4,1fr);
     grid-template-areas:
     't-about . . .'
     'name name name name'
@@ -9,8 +10,9 @@ form {
     't-location . . .'
     'city city postal postal'
     'address address rise rise'
-    't-contact-payment . . .'
+    't-contact . . .'
     'email email phone phone'
+    't-payment-reservation   . . .'
     'acceptPayment acceptPayment percentage .'
     'cbu cbu alias alias'
     'cancel cancel payment payment'
