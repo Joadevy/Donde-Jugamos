@@ -9,7 +9,7 @@ function SignInOutButtons() {
   const {data: session} = useSession();
 
   return (
-    <li className="flex items-center gap-3">
+    <li className="flex items-center gap-4">
       {session ? (
         <>
           <div className="flex gap-1 items-center justify-center">

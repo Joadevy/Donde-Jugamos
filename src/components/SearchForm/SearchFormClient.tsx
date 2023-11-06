@@ -69,7 +69,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
   const router = useRouter();
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     const baseUrl = `${getRootUrl()}/appointment`;
 
     const queryParams = new URLSearchParams();
@@ -80,6 +80,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
     queryParams.append("time", timeToMinutes(values.time).toString());
 
     router.push(`${baseUrl}?${queryParams.toString()}`);
+    setIsLoading(false);
   };
 
   return (

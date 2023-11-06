@@ -42,13 +42,13 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
 
   return (
     <li>
-      <Tabs className="w-[300px] lg:w-[400px] space-y-0" defaultValue="sportcenter">
+      <Tabs className="space-y-0" defaultValue="sportcenter">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
           <TabsTrigger value="reservation">Reservar</TabsTrigger>
         </TabsList>
         <TabsContent value="sportcenter">
-          <Card>
+          <Card className=" w-[300px] lg:w-[400px] h-[350px] relative">
             <CardHeader>
               <CardTitle>{sportCenter.name}</CardTitle>
               <CardDescription>{sportCenter.description}</CardDescription>
@@ -83,7 +83,7 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
               </Information>
             </CardContent>
             <CardFooter>
-              <TabsList>
+              <TabsList className="absolute bottom-4 left-5">
                 <TabsTrigger className={buttonVariants({variant: "default"})} value="reservation">
                   Iniciar Reserva
                 </TabsTrigger>
@@ -93,7 +93,7 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
         </TabsContent>
 
         <TabsContent value="reservation">
-          <Card>
+          <Card className=" w-[300px] lg:w-[400px] h-[350px]">
             <CardHeader>
               <CardTitle>Inicia tu reserva</CardTitle>
               <CardDescription>Elige el turno y la cancha que desees... y a jugar!</CardDescription>
