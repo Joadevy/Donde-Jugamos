@@ -100,7 +100,7 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
               <Separator />
             </CardHeader>
 
-            <CardContent className="space-y-2">
+            <CardContent className="space-x-2">
               {sportCenter.courts.map((court) =>
                 court.appointments.map((appointment) => (
                   <ReservationClip

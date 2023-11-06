@@ -6,48 +6,65 @@ import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 import {useToast} from "@/components/ui/use-toast";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {getRootUrl} from "@/lib/utils/utils";
 
-import {Button, buttonVariants} from "../ui/button";
+import {buttonVariants} from "../ui/button";
 import {AlertDialogAction, AlertDialogCancel, AlertDialogFooter} from "../ui/alert-dialog";
 import {Textarea} from "../ui/textarea";
 import {Popover, PopoverContent, PopoverTrigger} from "../ui/popover";
+import {Input} from "../ui/input";
 
 interface SearchFormProps {
   className: string;
+  appointmentId: number;
 }
 
-async function test() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve("hi!");
-    }, 2000);
-  });
-}
-
-const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
+const ReserveForm: React.FC<SearchFormProps> = ({className, appointmentId}) => {
   const {toast} = useToast();
+  const [file, setFile] = useState<File | null>(null);
+  const router = useRouter();
+
   const formSchema = z.object({
     observation: z.string().optional(),
+    paymentFile: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // const baseUrl = `${getRootUrl()}/appointment`;
-
     try {
-      await test();
+      toast({
+        title: "⏳ Estamos procesando tu reserva",
+        description: "Espera un momento porfavor, te avisaremos cuando este lista",
+      });
+
+      const data = new FormData();
+
+      data.set("observation", values.observation ?? "");
+      data.set("paymentFile", file ?? "");
+      data.set("appointmentId", String(appointmentId));
+
+      const response: {data: string; status: number; message: string} = await fetch(
+        "/api/appointment",
+        {
+          method: "POST",
+          body: data,
+        },
+      ).then((res) => res.json());
+
+      if (response.status !== 200) throw new Error("Error al realizar la reserva");
+
       toast({
         title: "✅ Reserva solicitada",
         description: "Revise su correo electronico y espere confirmacion del establecimiento",
       });
+
+      router.refresh();
     } catch (error) {
       console.error(error);
       toast({
@@ -55,13 +72,11 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
         description: "No se pudo realizar la reserva, intente nuevamente",
       });
     }
-
-    console.log(values);
   };
 
   return (
     <Form {...form}>
-      <form className={`${className}`}>
+      <form className={`${className} flex gap-3 flex-col`}>
         <FormField
           control={form.control}
           name="observation"
@@ -80,15 +95,29 @@ const ReserveForm: React.FC<SearchFormProps> = ({className}) => {
           )}
         />
 
-        <Button
-          className="mt-2"
-          variant="outline"
-          onClick={(e) => {
-            e.preventDefault();
-          }}
-        >
-          Adjuntar comprobante
-        </Button>
+        <FormField
+          control={form.control}
+          name="paymentFile"
+          render={(field) => (
+            <FormItem>
+              <FormLabel>Comprobante de pago</FormLabel>
+              <FormControl className="hover:cursor-pointer">
+                <Input
+                  className="w-full"
+                  placeholder="Selecciona el archivo..."
+                  type="file"
+                  onChange={(e) => {
+                    field.field.onChange(e);
+                    setFile(e.target.files?.[0] ?? null);
+                  }}
+                />
+              </FormControl>
+              <FormMessage className="italic text-slate-400">
+                Adjunta una captura de pantalla o imagen del comprobante
+              </FormMessage>
+            </FormItem>
+          )}
+        />
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>

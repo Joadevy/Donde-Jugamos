@@ -83,7 +83,7 @@ function Reservation({appointment, court, sportCenterInfo}: Iprops) {
         </div>
       </AlertDialogHeader>
 
-      <ReserveForm className="" />
+      <ReserveForm appointmentId={appointment.id} className="" />
     </AlertDialogContent>
   );
 }
