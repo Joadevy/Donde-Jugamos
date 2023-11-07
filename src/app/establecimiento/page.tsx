@@ -1,23 +1,25 @@
+/* eslint-disable import/order */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
 import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import dayjs from "dayjs";
+import {useSession, signIn} from "next-auth/react";
 
 import {Form} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import FormTextAreaField from "@/components/form/FormTextAreaField";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
-import {Label} from "@/components/ui/label";
-
-import TimePickerUI from "../../components/TimePicker/time-picker";
-import FormInputField from "../../components/form/FormInputField";
 
 import "./style.css";
 import FormSelectField from "@/components/form/FormSelectField";
 import FormTimePickerField from "@/components/form/FormTimePickerField";
-import { timeInStringFromMinutes } from "@/lib/utils/utils";
-import dayjs from "dayjs";
+import {timeToMinutesDayJs} from "@/lib/utils/utils";
+
+import FormInputField from "../../components/form/FormInputField";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -30,14 +32,14 @@ const formSchema = z.object({
   description: z.string(),
   cbu: z.coerce.number().optional(),
   alias: z.string().optional(),
-  reservationCancelTolerance: z.any().optional(),
-  paymentTolerance: z.number().optional(),
+  cancelTimeLimit: z.any().optional(),
+  paymentTimeLimit: z.any().optional(),
   acceptPartialPayment: z.coerce.boolean(),
   partialPaymentPercentage: z.coerce.number(),
 });
 
 function Page() {
-  //   const [fullTime, setFullTime] = useState(true);
+  const {data: session} = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,17 +52,35 @@ function Page() {
       phone: "",
       email: "",
       description: "",
-      cbu: undefined,
+      cbu: 0,
       alias: "",
-      reservationCancelTolerance: dayjs('2022-04-17T3:30'),
-      paymentTolerance: 180,
+      cancelTimeLimit: dayjs("2022-04-17T12:00"),
+      paymentTimeLimit: dayjs("2022-04-17T12:00"),
       acceptPartialPayment: true,
       partialPaymentPercentage: 30,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    if (!session) {
+      signIn(undefined, {redirect: false});
+    } else {
+      const requestBody = {
+        ...values,
+        userEmail: session.user.email,
+        cancelTimeLimit: timeToMinutesDayJs(values.cancelTimeLimit),
+        paymentTimeLimit: timeToMinutesDayJs(values.paymentTimeLimit),
+      };
+
+      fetch("/api/sportcenter", {method: "POST", body: JSON.stringify(requestBody)})
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 
   const acceptPartialPaymentOptions = [
@@ -69,10 +89,10 @@ function Page() {
   ];
 
   return (
-    <div className="container mx-auto">
+    <div className="w-11/12 mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <h2 className="[grid-area:t-about] text-2xl mt-4 mb-2">Datos del Establecimiento</h2>
+          <h2 className="[grid-area:t-about] w-full text-2xl my-8">Datos del Establecimiento</h2>
           <FormInputField
             className="[grid-area:name]"
             formControl={form.control}
@@ -85,7 +105,7 @@ function Page() {
             label="Description del Establecimiento"
             name="description"
           />
-          <h3 className="[grid-area:t-location] text-xl mt-4 mb-2">Ubicación</h3>
+          <h3 className="[grid-area:t-location] text-xl my-8">Ubicación</h3>
           <FormInputField
             className="[grid-area:city]"
             formControl={form.control}
@@ -111,7 +131,7 @@ function Page() {
             name="addressNumber"
             type="number"
           />
-          <h3 className="[grid-area:t-contact] text-xl mt-4 mb-2">Contacto</h3>
+          <h3 className="[grid-area:t-contact] text-xl my-8">Contacto</h3>
           <FormInputField
             className="[grid-area:email]"
             formControl={form.control}
@@ -125,7 +145,7 @@ function Page() {
             label="Telefono"
             name="phone"
           />
-          <h2 className="[grid-area:t-payment-reservation] text-2xl mt-4 mb-2">Pagos y Reservas</h2>
+          <h2 className="[grid-area:t-payment-reservation] text-2xl my-8">Pagos y Reservas</h2>
           <FormSelectField
             className="[grid-area:acceptPayment]"
             description="Pago mínimo y obligatorio para la reserva"
@@ -156,17 +176,21 @@ function Page() {
             label="Alias"
             name="alias"
           />
-            <FormTimePickerField className="[grid-area:cancel]"
-            formControl={form.control}
+          <FormTimePickerField
             ampm={false}
+            className="[grid-area:cancel]"
+            formControl={form.control}
             label="Tiempo previo admisible para cancelar reservas"
-            name="reservationCancelTolerance" />
-          <FormTimePickerField className="[grid-area:payment]"
-            formControl={form.control}
+            name="cancelTimeLimit"
+          />
+          <FormTimePickerField
             ampm={false}
+            className="[grid-area:payment] w-full"
+            formControl={form.control}
             label="Tiempo previo admisible para realizar pago"
-            name="paymentTolerance" />
-          <Button className="[grid-area:submit]" type="submit">
+            name="paymentTimeLimit"
+          />
+          <Button className="[grid-area:submit] my-8" type="submit">
             Submit
           </Button>
         </form>
@@ -176,36 +200,3 @@ function Page() {
 }
 
 export default Page;
-
-{
-  /* {fullTime ? (
-  <>
-    <TimePickerUI />
-    <TimePickerUI />
-  </>
-) : (
-  <>
-    <TimePickerUI />
-    <TimePickerUI />
-    <TimePickerUI />
-    <TimePickerUI />
-  </>
-)}
-<div>
-  <Label>Horario de Apertura</Label>
-  <RadioGroup
-    className="flex"
-    defaultValue={fullTime.toString()}
-    onValueChange={handleRadioGroupValueChange}
-  >
-    <div className="flex items-center space-x-2">
-      <RadioGroupItem id="fullTime" value="true" />
-      <Label htmlFor="fullTime">Tiempo Completo</Label>
-    </div>
-    <div className="flex items-center space-x-2">
-      <RadioGroupItem id="partialTime" value="false" />
-      <Label htmlFor="partialTime">Tiempo Parcial</Label>
-    </div>
-  </RadioGroup>
-</div> */
-}

@@ -4,15 +4,15 @@ form {
     row-gap: .5rem;
     grid-template-columns: repeat(4,1fr);
     grid-template-areas:
-    't-about . . .'
+    't-about t-about t-about t-about'
     'name name name name'
     'description description description description'
-    't-location . . .'
+    't-location t-location t-location t-location'
     'city city postal postal'
     'address address rise rise'
-    't-contact . . .'
+    't-contact t-contact t-contact t-contact'
     'email email phone phone'
-    't-payment-reservation   . . .'
+    't-payment-reservation t-payment-reservation  t-payment-reservation  t-payment-reservation '
     'acceptPayment acceptPayment percentage .'
     'cbu cbu alias alias'
     'cancel cancel payment payment'

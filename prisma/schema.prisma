@@ -86,7 +86,7 @@ model SportCenter { //Establishment
 model City {
   id Int @id @default(autoincrement())
   name String
-  postCode String
+  postCode String @unique
   sportCenters SportCenter[]
 }
 

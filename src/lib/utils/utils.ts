@@ -1,4 +1,7 @@
 /* eslint-disable prettier/prettier */
+import type dayjsType from "dayjs";
+
+import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
 
@@ -22,6 +25,19 @@ export function timeInStringFromMinutes(minutes: string): string {
 
 // Devuelve sin el "hs" al final ya que se mapea segun el "value" del select inicial y este no tiene el "hs", sino se rompe
   return `${hour}:${minutesLeft}`;
+}
+
+export function timeToMinutesDayJs(date: dayjs.Dayjs): number {
+  const hour = date.hour();
+  const minutes = date.minute();
+
+  return hour * 60 + minutes;
+}
+
+export function minutesToTimeDayJs(time: number): dayjsType.Dayjs {
+  const minutes = timeInStringFromMinutes(time.toString());
+  
+  return dayjs(`2023-12-10T${minutes}`);
 }
 
 
