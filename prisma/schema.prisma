@@ -71,6 +71,7 @@ model SportCenter { //Establishment
   email String
   description String?
   active Boolean @default(false)
+  state String? @default("pending") // pending | approved | rejected | canceled
   cancelTimeLimit Int @default(180) // 3 horas
   paymentTimeLimit Int @default(180) // 3 horas
   courts Court[]
