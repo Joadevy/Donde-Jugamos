@@ -32,21 +32,10 @@ export const getSportCentersWithCourtsByFilters = async (
           appointments: {
             some: {
               date: {
-                equals: date, // tendria que matchear exacto o no? Si te pide para el 31/10 y hay para el 1/11 lo mostramos?
+                equals: date,
               },
               startTime: {
                 gte: time,
-                // equals: time, // lo mismo que para date pero con la hora aunque aca es un poquito mas flexible segun mi parecer
-              },
-            },
-            none: {
-              reservations: {
-                some: {
-                  state: {
-                    in: ["approved", "pending"],
-                    // Si hay alguna reserva aprobada o pendiente en ese horario no lo mostramos
-                  },
-                },
               },
             },
           },
@@ -56,7 +45,17 @@ export const getSportCentersWithCourtsByFilters = async (
     include: {
       courts: {
         include: {
-          appointments: true,
+          appointments: {
+            where: {
+              reservations: {
+                none: {
+                  state: {
+                    in: ["approved", "pending"],
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },

@@ -4,10 +4,10 @@ import {getCities} from "@/backend/db/models/cities";
 import SearchFormClient from "./SearchFormClient";
 
 export interface DefaultSearchFormValues {
-  city: string;
-  sport: string;
-  date: string;
-  time: string;
+  city?: string;
+  sport?: string;
+  date?: string;
+  time?: string;
 }
 
 async function SearchFormServer(defaultValues: DefaultSearchFormValues) {
@@ -15,7 +15,6 @@ async function SearchFormServer(defaultValues: DefaultSearchFormValues) {
   const cities = await getCities();
 
   const {city: postCode, sport, date, time} = defaultValues;
-  // console.log(postCode);
 
   return (
     <SearchFormClient

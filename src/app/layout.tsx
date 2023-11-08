@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 
 import {Inter} from "next/font/google";
 
+import {Toaster} from "@/components/ui/toaster";
 import "./globals.css";
 import type {Viewport} from "next/dist/lib/metadata/types/extra-types";
 
@@ -17,7 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Seminario app",
+  title: "Donde jugamos?",
   description: "Alquiler de canchas deportivas",
   viewport: viewport,
 };
@@ -29,6 +30,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <NextAuthProvider>
           <Navbar />
           <main className="">{children}</main>
+          <Toaster />
         </NextAuthProvider>
       </body>
     </html>

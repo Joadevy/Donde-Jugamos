@@ -24,7 +24,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
     return (
       <div className="flex items-center flex-col mt-4 gap-2">
         <SearchFormServer {...searchParams} />
-        <p className="italic text-slate-500">
+        <p className="italic text-slate-500 text-center">
           No hay establecimientos con canchas disponibles en el horario seleccionado..
         </p>
       </div>
@@ -35,7 +35,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
     <main className="flex items-center flex-col mt-4 gap-6">
       <SearchFormServer {...searchParams} />
 
-      <ul>
+      <ul className="flex items-center justify-center flex-col lg:flex-row lg:flex-wrap gap-6">
         {sportCenters.map((sportCenter) => (
           <SportCenter key={sportCenter.id} queryParams={queryParams} sportCenter={sportCenter} />
         ))}
