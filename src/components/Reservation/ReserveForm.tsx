@@ -128,6 +128,7 @@ const ReserveForm: React.FC<SearchFormProps> = ({appointmentId, sportCenterInfo}
                 </FormLabel>
                 <FormControl className="hover:cursor-pointer">
                   <Input
+                    accept="image/*"
                     className=""
                     placeholder="Selecciona el archivo..."
                     type="file"
