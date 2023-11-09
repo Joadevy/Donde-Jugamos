@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/function-component-definition */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
@@ -8,7 +9,7 @@ import type {DefaultSearchFormValues} from "./SearchFormServer";
 import * as z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
+import {useCallback, useMemo} from "react";
 import {useRouter} from "next/navigation";
 
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -26,34 +27,35 @@ interface SearchFormProps {
   defaultValues: DefaultSearchFormValues;
 }
 
-const getFormSchema = (citiesNames: string[], citypostCodes: string[]) => {
+const getFormSchema = (citiesNames: string[]) => {
   return z.object({
-    city: z.object(
-      {
-        name: z.enum(citiesNames as [string]),
-        postCode: z.enum(citypostCodes as [string]),
+    city: z.enum(citiesNames as [string], {
+      errorMap: () => {
+        return {message: "Ciudad invalida"};
       },
-      {
-        required_error: "Ciudad no valida", // Truquito parche para que maneje bien el error
-      },
-    ),
-    sport: z.string({
-      required_error: "Requerido",
+    }),
+
+    sport: z.string().min(1, {
+      message: "Requerido",
     }),
     date: z.date({
       required_error: "Requerido",
       invalid_type_error: "Fecha no valida",
     }),
-    time: z.string({
-      required_error: "Requerido",
-    }),
+    time: z
+      .string({
+        required_error: "Requerido",
+      })
+      .min(1, {
+        message: "Requerido",
+      }),
   });
 };
 
 const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defaultValues}) => {
-  const citiesNames = cities.map((city) => city.name);
-  const citypostCodes = cities.map((city) => city.postCode);
-  const formSchema = getFormSchema(citiesNames, citypostCodes);
+  const citiesNames = useMemo(() => cities.map((city) => city.name), []);
+  const formSchema = useMemo(() => getFormSchema(citiesNames), []);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,27 +63,22 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
       date: defaultValues.date ? new Date(defaultValues.date) : new Date(),
       sport: defaultValues.sport ? defaultValues.sport : "",
       time: defaultValues.time ? timeInStringFromMinutes(defaultValues.time) : "",
-      city: cities.find((city) => city.postCode === defaultValues.city),
+      city: cities.find((city) => city.postCode === defaultValues.city)?.name ?? "",
     },
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+  const onSubmit = useCallback((values: z.infer<typeof formSchema>) => {
     const baseUrl = `${getRootUrl()}/appointment`;
 
     const queryParams = new URLSearchParams();
 
-    queryParams.append("city", values.city.postCode);
+    queryParams.append("city", cities.find((city) => city.name === values.city)?.postCode ?? "");
     queryParams.append("sport", values.sport);
     queryParams.append("date", values.date.toISOString());
     queryParams.append("time", timeToMinutes(values.time).toString());
 
     router.push(`${baseUrl}?${queryParams.toString()}`);
-    setIsLoading(false);
-  };
+  }, []);
 
   return (
     <main className="flex flex-col gap-2">
@@ -90,7 +87,7 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
           <FormField
             control={form.control}
             name="city"
-            render={(field) => (
+            render={() => (
               <FormItem className="lg:w-56">
                 <FormLabel>
                   <datalist id="citiesList">
@@ -102,18 +99,22 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
                 <FormControl>
                   <Input
                     autoComplete="off" // Para que no se autocomplete con cualquier cosa que haya ingresado previamente
-                    defaultValue={field.formState.defaultValues?.city?.name}
+                    defaultValue={cities.find((city) => city.postCode == defaultValues.city)?.name}
                     list="citiesList"
                     placeholder="Buscar Ciudad"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       e.preventDefault();
                       const city = cities.find(
                         (c) => c.name.toLowerCase() === e.target.value.toLowerCase(),
                       );
 
                       if (city) {
-                        form.setValue("city", city);
+                        form.setValue("city", city.name);
+                      } else {
+                        form.setValue("city", "");
                       }
+
+                      await form.trigger("city");
                     }}
                   />
                 </FormControl>
@@ -127,7 +128,6 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
             name="sport"
             render={({field}) => (
               <FormItem className="lg:w-36">
-                {/* <FormLabel>Deporte</FormLabel> */}
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
@@ -154,7 +154,6 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
             name="time"
             render={({field}) => (
               <FormItem className="lg:w-32">
-                {/* <FormLabel>Hora Desde</FormLabel> */}
                 <Select defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
@@ -175,8 +174,8 @@ const SearchForm: React.FC<SearchFormProps> = ({className, sports, cities, defau
               </FormItem>
             )}
           />
-          <Button className="lg:w-32" disabled={isLoading} type="submit">
-            <p className={isLoading ? "animate-spin" : ""}>{isLoading ? "↻" : "Buscar canchas"}</p>
+          <Button className="lg:w-32" type="submit">
+            <p>Buscar canchas</p>
           </Button>
         </form>
       </Form>
