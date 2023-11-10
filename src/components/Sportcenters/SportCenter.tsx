@@ -1,4 +1,5 @@
 import type {SportCentersWithCourtsAndAppointments} from "@/backend/db/models/sportsCenters";
+import type {SportCenterInformation} from "../Reservation/ReservationClip";
 
 import {CircleDollarSign, Mail, MapPin, Phone} from "lucide-react";
 
@@ -20,17 +21,16 @@ import Information from "./Information";
 
 interface Iprops {
   sportCenter: SportCentersWithCourtsAndAppointments;
-  queryParams: URLSearchParams;
 }
 
-function SportCenter({sportCenter, queryParams}: Iprops) {
+function SportCenter({sportCenter}: Iprops) {
   const startPrice = Number(
     sportCenter.courts.reduce((prev, current) => {
       return prev.price < current.price ? prev : current;
     }).price,
   );
 
-  const SportCenterInfo = {
+  const SportCenterInfo: SportCenterInformation = {
     name: sportCenter.name,
     description: sportCenter.description,
     address: sportCenter.address,
@@ -38,6 +38,10 @@ function SportCenter({sportCenter, queryParams}: Iprops) {
     email: sportCenter.email,
     paymentTimeLimit: sportCenter.paymentTimeLimit,
     cancelTimeLimit: sportCenter.cancelTimeLimit,
+    acceptPartialPayment: sportCenter.acceptPartialPayment,
+    CBU: sportCenter.user.CBU,
+    Alias: sportCenter.user.Alias,
+    partialPaymentPercentage: sportCenter.partialPaymentPercentage,
   };
 
   return (

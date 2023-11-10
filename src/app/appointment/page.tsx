@@ -10,7 +10,6 @@ interface SearchParams {
 }
 
 const page = async ({searchParams}: {searchParams: SearchParams}) => {
-  const queryParams = new URLSearchParams({...searchParams});
   const {city: postCode, sport, date, time} = searchParams;
 
   const sportCenters = await getSportCentersWithCourtsByFilters(
@@ -37,7 +36,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
 
       <ul className="flex items-center justify-center flex-col lg:flex-row lg:flex-wrap gap-6">
         {sportCenters.map((sportCenter) => (
-          <SportCenter key={sportCenter.id} queryParams={queryParams} sportCenter={sportCenter} />
+          <SportCenter key={sportCenter.id} sportCenter={sportCenter} />
         ))}
       </ul>
     </main>

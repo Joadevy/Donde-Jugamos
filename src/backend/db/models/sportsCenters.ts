@@ -4,6 +4,7 @@ import {db} from "../db";
 
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
+    user: true;
     courts: {
       include: {
         appointments: true;
@@ -58,6 +59,7 @@ export const getSportCentersWithCourtsByFilters = async (
           },
         },
       },
+      user: true,
     },
   });
 };
