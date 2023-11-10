@@ -3,8 +3,9 @@
 /* eslint-disable react/function-component-definition */
 import {format} from "date-fns";
 import {Calendar as CalendarIcon} from "lucide-react";
+import {es} from "date-fns/locale";
 
-import {cn} from "@/lib/utils/utils";
+import {capitalize, cn} from "@/lib/utils/utils";
 
 import {Button} from "../ui/button";
 import {FormControl, FormField, FormItem, FormMessage} from "../ui/form";
@@ -33,7 +34,15 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({control, name = ""}) =
                   )}
                   variant="outline"
                 >
-                  {field.value ? format(field.value, "PPP") : <span>Seleccionar Fecha</span>}
+                  {field.value ? (
+                    capitalize(
+                      format(field.value, "eeee d/M/yy", {
+                        locale: es,
+                      }),
+                    )
+                  ) : (
+                    <span>Seleccionar Fecha</span>
+                  )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
               </FormControl>
@@ -49,8 +58,11 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({control, name = ""}) =
 
                   return date < today;
                 }}
+                fromMonth={new Date()}
+                locale={es}
                 mode="single"
                 selected={field.value}
+                toMonth={new Date(new Date().setMonth(new Date().getMonth() + 1))}
                 onSelect={field.onChange}
               />
             </PopoverContent>

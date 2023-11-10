@@ -12,6 +12,17 @@ interface SearchParams {
 const page = async ({searchParams}: {searchParams: SearchParams}) => {
   const {city: postCode, sport, date, time} = searchParams;
 
+  if (!postCode || !sport || !date || !time) {
+    return (
+      <div className="flex items-center flex-col mt-4 gap-2">
+        <SearchFormServer {...searchParams} />
+        <p className="italic text-slate-500 text-center">
+          Debes completar todos los campos para poder buscar..
+        </p>
+      </div>
+    );
+  }
+
   const sportCenters = await getSportCentersWithCourtsByFilters(
     postCode,
     sport,
@@ -24,7 +35,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
       <div className="flex items-center flex-col mt-4 gap-2">
         <SearchFormServer {...searchParams} />
         <p className="italic text-slate-500 text-center">
-          No hay establecimientos con canchas disponibles en el horario seleccionado..
+          No hay establecimientos con canchas disponibles segun los filtros seleccionados..
         </p>
       </div>
     );

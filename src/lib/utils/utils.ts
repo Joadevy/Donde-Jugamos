@@ -44,3 +44,7 @@ export function minutesToTimeDayJs(time: number): dayjsType.Dayjs {
 export function getRootUrl(){
   return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://www.dondejugamos.vercel.app";
 }
+
+export function capitalize(string:string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
