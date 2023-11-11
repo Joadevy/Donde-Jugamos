@@ -14,17 +14,18 @@ import {Form} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import FormTextAreaField from "@/components/form/FormTextAreaField";
 
-import "./style.css";
 import FormSelectField from "@/components/form/FormSelectField";
 import FormTimePickerField from "@/components/form/FormTimePickerField";
-import {timeToMinutesDayJs} from "@/lib/utils/utils";
+import {cn, timeToMinutesDayJs} from "@/lib/utils/utils";
 
 import FormInputField from "../../components/form/FormInputField";
+import {useState} from "react";
+import {useToast} from "@/components/ui/use-toast";
+import {useRouter} from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
-  addressName: z.string(),
-  addressNumber: z.coerce.number({required_error: "Campo Requerido."}),
+  address: z.string(),
   cityName: z.string(),
   cityPostalCode: z.string(),
   email: z.string(),
@@ -40,13 +41,15 @@ const formSchema = z.object({
 
 function Page() {
   const {data: session} = useSession();
+  const {toast, toasts} = useToast();
+  const [payment, setPayment] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      addressName: "",
-      addressNumber: 0,
+      address: "",
       cityName: "",
       cityPostalCode: "",
       phone: "",
@@ -56,8 +59,8 @@ function Page() {
       alias: "",
       cancelTimeLimit: dayjs("2022-04-17T12:00"),
       paymentTimeLimit: dayjs("2022-04-17T12:00"),
-      acceptPartialPayment: true,
-      partialPaymentPercentage: 30,
+      acceptPartialPayment: payment,
+      partialPaymentPercentage: 0,
     },
   });
 
@@ -65,6 +68,11 @@ function Page() {
     if (!session) {
       signIn(undefined, {redirect: false});
     } else {
+      toast({
+        title: "⏳ Estamos procesando la solicitud",
+        description: "Pronto te llegará un correo electrónico con la confirmación!",
+      });
+
       const requestBody = {
         ...values,
         userEmail: session.user.email,
@@ -75,7 +83,9 @@ function Page() {
       fetch("/api/sportcenter", {method: "POST", body: JSON.stringify(requestBody)})
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
+          if (res.status === 200) {
+            router.push("../propietario");
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -89,112 +99,78 @@ function Page() {
   ];
 
   return (
-    <div className="w-11/12 mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <h2 className="[grid-area:t-about] w-full text-2xl my-8">Datos del Establecimiento</h2>
-          <FormInputField
-            className="[grid-area:name]"
-            formControl={form.control}
-            label="Nombre"
-            name="name"
-          />
-          <FormTextAreaField
-            className="[grid-area:description]"
-            formControl={form.control}
-            label="Description del Establecimiento"
-            name="description"
-          />
-          <h3 className="[grid-area:t-location] text-xl my-8">Ubicación</h3>
-          <FormInputField
-            className="[grid-area:city]"
-            formControl={form.control}
-            label="Ciudad"
-            name="cityName"
-          />
-          <FormInputField
-            className="[grid-area:postal]"
-            formControl={form.control}
-            label="Codigo Postal"
-            name="cityPostalCode"
-          />
-          <FormInputField
-            className="[grid-area:address]"
-            formControl={form.control}
-            label="Direccion"
-            name="addressName"
-          />
-          <FormInputField
-            className="[grid-area:rise]"
-            formControl={form.control}
-            label="Altura"
-            name="addressNumber"
-            type="number"
-          />
-          <h3 className="[grid-area:t-contact] text-xl my-8">Contacto</h3>
-          <FormInputField
-            className="[grid-area:email]"
-            formControl={form.control}
-            label="Correo Electronico"
-            name="email"
-            type="email"
-          />
-          <FormInputField
-            className="[grid-area:phone]"
-            formControl={form.control}
-            label="Telefono"
-            name="phone"
-          />
-          <h2 className="[grid-area:t-payment-reservation] text-2xl my-8">Pagos y Reservas</h2>
-          <FormSelectField
-            className="[grid-area:acceptPayment]"
-            description="Pago mínimo y obligatorio para la reserva"
-            formControl={form.control}
-            label="Admite Seña"
-            name="acceptPartialPayment"
-            options={acceptPartialPaymentOptions}
-          />
-          <FormInputField
-            className="[grid-area:percentage]"
-            description="Porcentaje aplicado al valor total de la cacha donde el resultado es valor minimo de la seña"
-            formControl={form.control}
-            label="Porcentaje de la seña"
-            name="partialPaymentPercentage"
-            placeholder="30% del valor total"
-            type="number"
-          />
-          <FormInputField
-            className="[grid-area:cbu]"
-            formControl={form.control}
-            label="CBU"
-            name="cbu"
-            type="number"
-          />
-          <FormInputField
-            className="[grid-area:alias]"
-            formControl={form.control}
-            label="Alias"
-            name="alias"
-          />
-          <FormTimePickerField
-            ampm={false}
-            className="[grid-area:cancel]"
-            formControl={form.control}
-            label="Tiempo previo admisible para cancelar reservas"
-            name="cancelTimeLimit"
-          />
-          <FormTimePickerField
-            ampm={false}
-            className="[grid-area:payment] w-full"
-            formControl={form.control}
-            label="Tiempo previo admisible para realizar pago"
-            name="paymentTimeLimit"
-          />
-          <Button className="[grid-area:submit] my-8" type="submit">
-            Submit
-          </Button>
-        </form>
-      </Form>
+    <div className="">
+      <section className="h-44 bg-green-500 text-white text-4xl font-medium text-center flex items-center justify-center">
+        ¿Dónde Jugamos?
+      </section>
+      <section>
+        <Form {...form}>
+          <form
+            className="w-[600px] container mx-auto flex flex-col gap-2"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <h2 className="w-full text-2xl my-6">Datos del Establecimiento</h2>
+            <FormInputField formControl={form.control} label="Nombre" name="name" />
+            <FormTextAreaField
+              formControl={form.control}
+              label="Description del Establecimiento"
+              name="description"
+            />
+            <h3 className="text-xl my-6">Ubicación</h3>
+            <FormInputField formControl={form.control} label="Ciudad" name="cityName" />
+            <FormInputField
+              formControl={form.control}
+              label="Codigo Postal"
+              name="cityPostalCode"
+            />
+            <FormInputField formControl={form.control} label="Direccion" name="address" />
+            <h3 className="text-xl my-6">Contacto</h3>
+            <FormInputField
+              formControl={form.control}
+              label="Correo Electronico"
+              name="email"
+              type="email"
+            />
+            <FormInputField formControl={form.control} label="Telefono" name="phone" />
+            <h2 className=" text-2xl my-6">Pagos y Reservas</h2>
+            <FormSelectField
+              formControl={form.control}
+              label="¿Es necesario realizar una seña para reservar?"
+              name="acceptPartialPayment"
+              options={acceptPartialPaymentOptions}
+              onValueChange={setPayment}
+            />
+            <FormInputField
+              className={cn("", payment ? "" : "hidden")}
+              description="Aplicado sobre el valor total del turno"
+              formControl={form.control}
+              label="Valor mínimo de la seña (en porcentaje %)"
+              name="partialPaymentPercentage"
+              placeholder="30% del valor total"
+              type="number"
+            />
+            <FormTimePickerField
+              ampm={false}
+              className={cn("w-full", payment ? "" : "hidden")}
+              formControl={form.control}
+              label="¿Cuánto tiempo tengo para realizar el pago de la seña?"
+              name="paymentTimeLimit"
+            />
+            <FormInputField formControl={form.control} label="CBU" name="cbu" type="number" />
+            <FormInputField formControl={form.control} label="Alias" name="alias" />
+            <FormTimePickerField
+              ampm={false}
+              formControl={form.control}
+              label="¿Cuánto tiempo antes del turno tengo para cancelar al reserva?"
+              name="cancelTimeLimit"
+            />
+
+            <Button className="my-8" type="submit">
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </section>
     </div>
   );
 }

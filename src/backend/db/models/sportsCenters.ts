@@ -1,6 +1,10 @@
-import type {Prisma} from "@prisma/client";
+import type {Prisma, SportCenter} from "@prisma/client";
 
 import {db} from "../db";
+
+import {getUserByEmail} from "./users";
+
+export const SPORT_CENTER_PENDING = "pending";
 
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
@@ -62,4 +66,18 @@ export const getSportCentersWithCourtsByFilters = async (
       user: true,
     },
   });
+};
+
+export const getUserPerdingSportCenters = async (userEmail: string): Promise<any | null> => {
+  const user = await getUserByEmail(userEmail);
+
+  if (user) {
+    return await db.sportCenter.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+  }
+
+  return null;
 };
