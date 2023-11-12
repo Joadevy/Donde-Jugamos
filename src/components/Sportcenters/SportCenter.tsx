@@ -42,6 +42,7 @@ function SportCenter({sportCenter}: Iprops) {
     CBU: sportCenter.user.CBU,
     Alias: sportCenter.user.Alias,
     partialPaymentPercentage: sportCenter.partialPaymentPercentage,
+    cityName: sportCenter.city.name,
   };
 
   return (

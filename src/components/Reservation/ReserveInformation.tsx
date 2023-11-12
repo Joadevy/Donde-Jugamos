@@ -11,7 +11,7 @@ function ReserveInformation({children, name, details}: Iprops) {
         {children}
         <p>{name}</p>
       </div>
-      <p>{details}</p>
+      <p className="text-right">{details}</p>
     </div>
   );
 }

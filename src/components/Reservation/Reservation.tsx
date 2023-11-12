@@ -33,7 +33,10 @@ function Reservation({appointment, court, sportCenterInfo}: Iprops) {
         </AlertDialogTitle>
 
         <div className="flex flex-col justify-center gap-2 text-slate-500 text-sm">
-          <ReserveInformation details={sportCenterInfo.address} name="Direccion">
+          <ReserveInformation
+            details={`${sportCenterInfo.address}, ${sportCenterInfo.cityName}`}
+            name="Direccion"
+          >
             <MapPinned color="green" size={20} />
           </ReserveInformation>
 

@@ -6,6 +6,7 @@ import {Appointment} from "./../../../lib/types/importables/types";
 
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
+    city: true;
     user: true;
     courts: {
       include: {
@@ -46,6 +47,7 @@ export const getSportCentersWithCourtsByFilters = async (
       },
     },
     include: {
+      city: true,
       courts: {
         include: {
           appointments: {

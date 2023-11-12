@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-async-client-component */
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
-import type {Appointment, Court, SportCenter, User} from "@prisma/client";
+import type {Appointment, City, Court, SportCenter, User} from "@prisma/client";
 
 import {getServerSession} from "next-auth";
 
@@ -15,6 +15,10 @@ import SignInClip from "../Buttons/SignInClip";
 
 import Reservation from "./Reservation";
 
+interface CityWithName {
+  cityName: City["name"];
+}
+
 export type SportCenterInformation = Pick<
   SportCenter,
   | "name"
@@ -27,7 +31,8 @@ export type SportCenterInformation = Pick<
   | "acceptPartialPayment"
   | "partialPaymentPercentage"
 > &
-  Pick<User, "CBU" | "Alias">;
+  Pick<User, "CBU" | "Alias"> &
+  CityWithName;
 
 interface Iprops {
   appointment: Appointment;
