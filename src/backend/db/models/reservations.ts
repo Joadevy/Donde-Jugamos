@@ -1,5 +1,7 @@
 import type {Reservation} from "@prisma/client";
 
+import handleSendEmail from "@/backend/email/nodemailer";
+
 import {db} from "../db";
 
 import {getUserByEmail} from "./users";
@@ -27,6 +29,8 @@ export const createReservation = async ({
       userId: user.id,
     },
   });
+
+  await handleSendEmail(user.email!, "Nueva reserva", "Nueva reserva");
 
   return reservation;
 };
