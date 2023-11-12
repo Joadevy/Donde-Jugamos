@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import {useSession} from "next-auth/react";
 
 import SignInOutButtons from "../Buttons/SignInOutButtons";
 import {Button} from "../ui/button";
 
 function Navbar() {
+  const {data: session} = useSession();
+  const userRole = session?.user ? session.user.role : "customer";
+
   return (
     <nav className="h-36 lg:h-16 border p-2 shadow-sm">
       <ul className="flex items-center justify-between flex-wrap gap-3 lg:gap-0">
@@ -24,14 +28,19 @@ function Navbar() {
           </svg>
         </Link>
         <div className="mx-4 flex items-center gap-2 flex-wrap">
-          <Link href="/customer">
-            <Button variant="secondary">Cliente</Button>
-          </Link>
-          <Link href="/propietario">
-            <Button variant="secondary">Propietario</Button>
-          </Link>
-          <Link href="/admin">
-            <Button variant="secondary">Admin</Button>
+          {userRole === "propietary" && (
+            <Link href="/propietario">
+              <Button variant="secondary">Propietario</Button>
+            </Link>
+          )}
+          {userRole === "admin" && (
+            <Link href="/solicitudes">
+              <Button variant="secondary">Solicitudes</Button>
+            </Link>
+          )}
+
+          <Link href="/sumate">
+            <Button>Suma tu Cancha</Button>
           </Link>
           <SignInOutButtons />
         </div>

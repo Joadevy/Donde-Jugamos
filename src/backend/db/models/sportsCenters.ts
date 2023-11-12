@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import type {Prisma, SportCenter} from "@prisma/client";
 
 import {db} from "../db";
@@ -68,7 +70,7 @@ export const getSportCentersWithCourtsByFilters = async (
   });
 };
 
-export const getUserPerdingSportCenters = async (userEmail: string): Promise<any | null> => {
+export const getUserPendingSportCenters = async (userEmail: string): Promise<any | null> => {
   const user = await getUserByEmail(userEmail);
 
   if (user) {
@@ -80,4 +82,14 @@ export const getUserPerdingSportCenters = async (userEmail: string): Promise<any
   }
 
   return null;
+};
+
+export const getSportCentersByState = async (state: string): Promise<SportCenter[] | null> => {
+  return await db.sportCenter
+    .findMany({
+      where: {
+        state,
+      },
+    })
+    .catch(() => null);
 };
