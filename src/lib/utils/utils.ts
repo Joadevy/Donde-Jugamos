@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
 import type dayjsType from "dayjs";
+import type { ApiResponse } from "../types/importables/types";
 
 import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -47,4 +49,12 @@ export function getRootUrl(){
 
 export function capitalize(string:string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export function generateApiResponse(data: unknown, status: number, message: string): ApiResponse {
+    return {
+      data,
+      status,
+      message,
+    }
 }

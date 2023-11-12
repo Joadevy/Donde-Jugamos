@@ -22,6 +22,7 @@ import FormInputField from "../../components/form/FormInputField";
 import {useState} from "react";
 import {useToast} from "@/components/ui/use-toast";
 import {useRouter} from "next/navigation";
+import type {ApiResponse} from "@/lib/types/importables/types";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -39,9 +40,14 @@ const formSchema = z.object({
   partialPaymentPercentage: z.coerce.number(),
 });
 
+const acceptPartialPaymentOptions = [
+  {title: "Si", value: "true"},
+  {title: "No", value: "false"},
+];
+
 function Page() {
   const {data: session} = useSession();
-  const {toast, toasts} = useToast();
+  const {toast} = useToast();
   const [payment, setPayment] = useState(false);
   const router = useRouter();
 
@@ -82,21 +88,24 @@ function Page() {
 
       fetch("/api/sportcenter", {method: "POST", body: JSON.stringify(requestBody)})
         .then((res) => res.json())
-        .then((res) => {
+        .then((res: ApiResponse) => {
           if (res.status === 200) {
             router.push("../propietario");
+          } else {
+            toast({
+              title: "❌ Error",
+              description: "No se pudo procesar tu solicitud, intente nuevamente",
+            });
           }
         })
         .catch((err) => {
-          console.log(err);
+          toast({
+            title: "❌ Error",
+            description: "No se pudo procesar tu solicitud, intente nuevamente",
+          });
         });
     }
   }
-
-  const acceptPartialPaymentOptions = [
-    {title: "Si", value: "true"},
-    {title: "No", value: "false"},
-  ];
 
   return (
     <div className="">
