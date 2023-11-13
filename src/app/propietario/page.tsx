@@ -1,15 +1,14 @@
-import {getUserPerdingSportCenters} from "@/backend/db/models/sportsCenters";
+import {getUserPendingSportCenters} from "@/backend/db/models/sportsCenters";
 import SportCenterWrapper from "@/components/Sportcenters/SportCenterWrapper";
 
 // En esta ruta /propietario/* estarian todas las configs de su establecimiento y ddemas
 const page = async () => {
   // const {data: session} = useSession();
   const userEmail = "catalinit@frcu.utn.edu.ar";
-  const userSportCenters: any[] = await getUserPerdingSportCenters(userEmail);
+  const userSportCenters: any[] = (await getUserPendingSportCenters(userEmail)) || [];
 
   return (
-    <div>
-      pagina del propietario
+    <div className="container mx-auto py-4">
       <section>
         {userSportCenters.map((sportCenter) => (
           <SportCenterWrapper key={sportCenter.id} sportCenter={sportCenter} />

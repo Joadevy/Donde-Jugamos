@@ -70,7 +70,7 @@ export const getSportCentersWithCourtsByFilters = async (
   });
 };
 
-export const getUserPendingSportCenters = async (userEmail: string): Promise<any | null> => {
+export const getUserPendingSportCenters = async (userEmail: string): Promise<any[] | null> => {
   const user = await getUserByEmail(userEmail);
 
   if (user) {
