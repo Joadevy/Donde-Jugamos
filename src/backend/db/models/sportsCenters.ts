@@ -2,8 +2,11 @@ import type {Prisma} from "@prisma/client";
 
 import {db} from "../db";
 
+import {Appointment} from "./../../../lib/types/importables/types";
+
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
+    city: true;
     user: true;
     courts: {
       include: {
@@ -19,7 +22,7 @@ export const getSportCentersWithCourtsByFilters = async (
   date: Date,
   time: number,
 ): Promise<SportCentersWithCourtsAndAppointments[]> => {
-  return await db.sportCenter.findMany({
+  const sportCenters = await db.sportCenter.findMany({
     where: {
       city: {
         postCode: postCode,
@@ -44,9 +47,13 @@ export const getSportCentersWithCourtsByFilters = async (
       },
     },
     include: {
+      city: true,
       courts: {
         include: {
           appointments: {
+            orderBy: {
+              startTime: "asc",
+            },
             where: {
               reservations: {
                 none: {
@@ -62,4 +69,10 @@ export const getSportCentersWithCourtsByFilters = async (
       user: true,
     },
   });
+
+  // Como no se puede chequear inicialmente si tiene o no appointments disponibles ya que se chequea esta condicion
+  // en el include, se filtran ahora (sino devuelve por mas que no tenga ningun turno disponible ya que el filtro de la query inicial lo pasa)
+  return sportCenters.filter((sportCenter) =>
+    sportCenter.courts.some((court) => court.appointments.length > 0),
+  );
 };
