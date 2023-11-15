@@ -1,4 +1,4 @@
-import type {Reservation} from "@prisma/client";
+import type {Prisma, Reservation} from "@prisma/client";
 
 import {timeInStringFromMinutes} from "@/lib/utils/utils";
 import handleSendEmail from "@/backend/email/nodemailer";
@@ -61,4 +61,86 @@ export const createReservation = async ({
   );
 
   return reservation;
+};
+
+export const updateReservation = async ({
+  id,
+  observation,
+  paymentConfirmation,
+}: {
+  id: number;
+  observation: string;
+  paymentConfirmation: string;
+}): Promise<Reservation> => {
+  if (!observation && !paymentConfirmation) return {} as Reservation;
+
+  const reservation = await db.reservation.update({
+    where: {
+      id,
+    },
+    data: {
+      observation: observation ? observation : undefined,
+      paymentConfirmation,
+    },
+  });
+
+  return reservation;
+};
+
+export type ReservationFullInfo = Prisma.ReservationGetPayload<{
+  include: {
+    appointment: {
+      include: {
+        court: {
+          include: {
+            sportCenter: {
+              include: {
+                city: true;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>;
+
+export const getUpcomingUserReservations = async (userId: string) => {
+  const appointments = await db.reservation.findMany({
+    where: {
+      userId,
+      appointment: {
+        date: {
+          gte: new Date(),
+        },
+      },
+    },
+    include: {
+      appointment: {
+        include: {
+          court: {
+            include: {
+              sportCenter: {
+                include: {
+                  city: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return appointments;
+};
+
+export const getUpcomingUserReservationsByEmail = async (email: string) => {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    throw new Error("El usuario no existe");
+  }
+
+  return await getUpcomingUserReservations(user.id);
 };

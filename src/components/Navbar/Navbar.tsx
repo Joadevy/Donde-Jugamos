@@ -24,7 +24,7 @@ function Navbar() {
           </svg>
         </Link>
         <div className="mx-4 flex items-center gap-2 flex-wrap">
-          <Link href="/customer">
+          <Link href="/cliente">
             <Button variant="secondary">Cliente</Button>
           </Link>
           <Link href="/propietario">
