@@ -37,7 +37,7 @@ export const createReservation = async ({
 
   const [reservation, appointmentInfo] = await Promise.all([create, getAppointmentInfo]);
 
-  await handleSendEmail(
+  const sendEmailToUser = handleSendEmail(
     user.email!,
     "Nueva reserva",
     compileNewReservationTemplate(
@@ -59,6 +59,31 @@ export const createReservation = async ({
       String("$" + appointmentInfo?.court.price),
     ),
   );
+
+  const sendEmailToPropietary = handleSendEmail(
+    appointmentInfo?.court.sportCenter.email ?? "",
+    "Solicitud nueva reserva",
+    compileNewReservationTemplate(
+      appointmentInfo?.court.sportCenter.name ?? "",
+      appointmentInfo?.court.sportCenter.address ?? "",
+      appointmentInfo?.date
+        ? new Date(appointmentInfo.date).toLocaleString("es-AR", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "",
+
+      appointmentInfo?.court.sportCenter.city.name ?? "",
+      timeInStringFromMinutes(String(appointmentInfo?.startTime)),
+      timeInStringFromMinutes(String(appointmentInfo?.endTime)),
+      String(appointmentInfo?.courtId),
+      String("$" + appointmentInfo?.court.price),
+    ),
+  );
+
+  await Promise.all([sendEmailToUser, sendEmailToPropietary]);
 
   return reservation;
 };
@@ -83,6 +108,36 @@ export const updateReservation = async ({
       paymentConfirmation,
     },
   });
+
+  return reservation;
+};
+
+export const cancelReservation = async (id: number): Promise<Reservation> => {
+  const reservation = await db.reservation.update({
+    where: {
+      id,
+    },
+    data: {
+      state: "cancelled",
+    },
+  });
+
+  const appointmentInfo = await getAppointmentFullInformation(reservation.appointmentId);
+
+  if (!appointmentInfo) throw new Error("Error el encontrar el appointment asociado");
+
+  await handleSendEmail(
+    appointmentInfo.court.sportCenter.email,
+    "Reserva cancelada",
+    `La reserva del ${new Date(appointmentInfo.date).toLocaleString("es-AR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })} a las ${timeInStringFromMinutes(String(appointmentInfo.startTime))}hs en la cancha ${
+      appointmentInfo.courtId
+    } ha sido cancelada`,
+  );
 
   return reservation;
 };
@@ -114,6 +169,9 @@ export const getUpcomingUserReservations = async (userId: string) => {
           gte: new Date(),
         },
       },
+      // state: {
+      //   in: ["pending", "approved"],
+      // },
     },
     include: {
       appointment: {
@@ -143,4 +201,35 @@ export const getUpcomingUserReservationsByEmail = async (email: string) => {
   }
 
   return await getUpcomingUserReservations(user.id);
+};
+
+export const getCancelledUserReservations = async (userId: string) => {
+  const appointments = await db.reservation.findMany({
+    where: {
+      userId,
+      appointment: {
+        date: {
+          gte: new Date(),
+        },
+      },
+      state: "cancelled",
+    },
+    include: {
+      appointment: {
+        include: {
+          court: {
+            include: {
+              sportCenter: {
+                include: {
+                  city: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return appointments;
 };

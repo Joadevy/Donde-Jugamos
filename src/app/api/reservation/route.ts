@@ -6,7 +6,7 @@ import type {UploadApiResponse} from "cloudinary";
 import {v2 as cloudinary} from "cloudinary";
 import {NextResponse} from "next/server";
 
-import {updateReservation} from "@/backend/db/models/reservations";
+import {cancelReservation, updateReservation} from "@/backend/db/models/reservations";
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -37,6 +37,34 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+export async function PATCH(request: NextRequest) {
+  const {reservationId} = await request.json();
+
+  if (!reservationId) {
+    return NextResponse.json({
+      data: "",
+      status: 400,
+      message: "Faltan parametros",
+    });
+  }
+
+  try {
+    const reservation = await cancelReservation(Number(reservationId));
+
+    return NextResponse.json({
+      data: reservation,
+      status: 200,
+      message: "Exito al cancelar la reserva",
+    });
+  } catch (error) {
+    return NextResponse.json({
+      data: "",
+      status: 500,
+      message: `Ocurrio un error al cancelar la reserva.Error: ${String(error)}`,
+    });
+  }
+}
 
 export async function PUT(request: NextRequest) {
   const formData = await request.formData();

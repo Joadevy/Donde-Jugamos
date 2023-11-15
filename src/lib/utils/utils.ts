@@ -48,3 +48,12 @@ export function getRootUrl(){
 export function capitalize(string:string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+// Para testear que funciona se puede pasar por parametro: new Date(new Date().getTime() + 60 * 60 * 1000) y 60, de esa forma daria false ya que estariamos dentro del rango que ya no puede cancelar
+export function isPossibleToCancel(appointmentDate:Date,minutesToCancel:number){
+  const dateToCancel = dayjs(appointmentDate).subtract(minutesToCancel,"minutes");
+  const now = dayjs();
+
+  return dateToCancel.isAfter(now);
+}
+

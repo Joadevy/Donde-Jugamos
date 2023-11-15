@@ -1,6 +1,15 @@
 import type {ReservationFullInfo} from "@/backend/db/models/reservations";
 
-import {BadgeDollarSign, CalendarDays, Clock4, LandPlot, Mail, MapPin, Phone} from "lucide-react";
+import {
+  AlertCircle,
+  BadgeDollarSign,
+  CalendarDays,
+  Clock4,
+  LandPlot,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 
 import {
   Card,
@@ -12,11 +21,13 @@ import {
 } from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {timeInStringFromMinutes} from "@/lib/utils/utils";
+import {isPossibleToCancel, timeInStringFromMinutes} from "@/lib/utils/utils";
 import ReserveInformation from "@/components/Reservation/ReserveInformation";
 
 import Information from "../Sportcenters/Information";
 import EditReservation from "../Buttons/EditReservation";
+import HoverInfo from "../Information/HoverInfo";
+import CancelReservationBtn from "../Buttons/CancelReservation";
 
 interface Iprops {
   reservation: ReservationFullInfo;
@@ -30,7 +41,7 @@ function ReservationDetails({reservation}: Iprops) {
         <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
       </TabsList>
       <TabsContent value="reservation">
-        <Card className=" w-[300px] lg:w-[400px] h-[350px] relative">
+        <Card className="w-[300px] lg:w-[400px] h-[375px] lg:[h-350px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
 
@@ -94,18 +105,72 @@ function ReservationDetails({reservation}: Iprops) {
                 <BadgeDollarSign color="green" size={20} />
               </ReserveInformation>
             ) : null}
+
+            <ReserveInformation
+              details={
+                reservation.state == "approved"
+                  ? "Aprobada"
+                  : reservation.state == "pending"
+                  ? "Pendiente"
+                  : reservation.state == "cancelled"
+                  ? "Cancelada"
+                  : reservation.state == "rejected"
+                  ? "Rechazada"
+                  : ""
+              }
+              name="Estado"
+            >
+              <AlertCircle color="green" size={20} />
+            </ReserveInformation>
           </CardContent>
 
-          <CardFooter>
-            {reservation.appointment.court.sportCenter.acceptPartialPayment ? (
+          <Separator />
+
+          <CardFooter className="p-2 flex justify-between items-center gap-2 mt-4">
+            {["approved", "pending"].includes(reservation.state ?? "") &&
+            reservation.appointment.court.sportCenter.acceptPartialPayment ? (
               <EditReservation reservation={reservation} />
             ) : null}
+
+            {!["approved", "pending"].includes(reservation.state ?? "") ? (
+              <>
+                <p>
+                  La reserva ha sido{" "}
+                  {reservation.state == "cancelled"
+                    ? "cancelada."
+                    : "rechazada por el establecimiento."}
+                </p>
+                <HoverInfo
+                  color="red"
+                  description={`La reserva ha sido ${
+                    reservation.state == "cancelled"
+                      ? "cancelada. Comunicate con el establecimiento ante cualquier duda"
+                      : "rechazada por el establecimiento. Comunicate con el mismo para mas informacion"
+                  }`}
+                  title={`Reserva ${reservation.state == "cancelled" ? "cancelada" : "rechazada"}`}
+                />
+              </>
+            ) : isPossibleToCancel(
+                reservation.appointment.date,
+                reservation.appointment.court.sportCenter.cancelTimeLimit,
+              ) ? (
+              <CancelReservationBtn reservation={reservation} />
+            ) : (
+              <>
+                <p>La reserva no puede cancelarse</p>
+                <HoverInfo
+                  color="red"
+                  description="Has superado el tiempo limite para cancelar la reserva"
+                  title="La reserva no puede cancelarse"
+                />
+              </>
+            )}
           </CardFooter>
         </Card>
       </TabsContent>
 
       <TabsContent value="sportcenter">
-        <Card className=" w-[300px] lg:w-[400px] h-[350px] relative">
+        <Card className="w-[300px] lg:w-[400px] h-[375px] lg:[h-350px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
             <CardDescription>

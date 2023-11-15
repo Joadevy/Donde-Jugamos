@@ -37,6 +37,7 @@ const EditReservationForm: React.FC<SearchFormProps> = ({reservationInfo}) => {
     reservationInfo.paymentConfirmation,
   );
 
+  // Funcion auxiliar para abrir la imagen del comprobante pago a fullscreen
   const openFullscreen = () => {
     if (!imgRef.current) return;
 
@@ -105,9 +106,6 @@ const EditReservationForm: React.FC<SearchFormProps> = ({reservationInfo}) => {
       });
     }
   };
-
-  console.log("render");
-  console.log(imagePreview);
 
   return (
     <>
@@ -202,23 +200,30 @@ const EditReservationForm: React.FC<SearchFormProps> = ({reservationInfo}) => {
                   </FormControl>
                   <FormMessage className="italic text-slate-400">
                     Adjunta una captura de pantalla o imagen del comprobante
-                    {imagePreview ? (
-                      <div className="flex flex-col">
-                        <div className="w-14 h-14 lg:h-24 lg:w-24 border rounded-sm border-slate-200 mt-2 overflow-hidden">
-                          <img
-                            ref={imgRef}
-                            alt="Comprobante de pago asociado a la reserva"
-                            className="hover:cursor-zoom-in hover:opacity-75 transition-opacity"
-                            role="button"
-                            src={imagePreview}
-                            onClick={openFullscreen}
-                            onKeyDown={openFullscreen}
-                          />
-                        </div>
-                        <p className="text-sm lg:text-xs">Comprobante cargado</p>
-                      </div>
-                    ) : null}
                   </FormMessage>
+                  {imagePreview ? (
+                    <div className="flex flex-col">
+                      <button
+                        className="w-14 h-14 lg:h-24 lg:w-24 border rounded-sm border-slate-200 mt-2 overflow-hidden
+                           hover:opacity-75 transition-opacity"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openFullscreen();
+                        }}
+                      >
+                        <img
+                          ref={imgRef}
+                          alt="Comprobante de pago asociado a la reserva"
+                          className="w-full h-full"
+                          role="button"
+                          src={imagePreview}
+                        />
+                      </button>
+                      <p className="text-sm lg:text-xs italic text-slate-400">
+                        Comprobante cargado
+                      </p>
+                    </div>
+                  ) : null}
                 </FormItem>
               )}
             />
