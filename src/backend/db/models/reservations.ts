@@ -153,6 +153,7 @@ export type ReservationFullInfo = Prisma.ReservationGetPayload<{
                 city: true;
               };
             };
+            sport: true;
           };
         };
       };
@@ -183,11 +184,24 @@ export const getUpcomingUserReservations = async (userId: string) => {
                   city: true,
                 },
               },
+              sport: true,
             },
           },
         },
       },
     },
+    orderBy: [
+      {
+        appointment: {
+          date: "asc",
+        },
+      },
+      {
+        appointment: {
+          startTime: "asc",
+        },
+      },
+    ],
   });
 
   return appointments;

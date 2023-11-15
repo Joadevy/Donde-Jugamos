@@ -5,6 +5,7 @@ import {
   BadgeDollarSign,
   CalendarDays,
   Clock4,
+  Dumbbell,
   LandPlot,
   Mail,
   MapPin,
@@ -41,7 +42,7 @@ function ReservationDetails({reservation}: Iprops) {
         <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
       </TabsList>
       <TabsContent value="reservation">
-        <Card className="w-[300px] lg:w-[400px] h-[375px] lg:[h-350px] relative">
+        <Card className="w-[300px] lg:w-[400px] h-[420px] lg:h-[400px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
 
@@ -49,6 +50,13 @@ function ReservationDetails({reservation}: Iprops) {
           </CardHeader>
 
           <CardContent className="space-y-2">
+            <ReserveInformation
+              details={String(reservation.appointment.court.sport.name)}
+              name="Deporte"
+            >
+              <Dumbbell color="green" size={20} />
+            </ReserveInformation>
+
             <ReserveInformation details={String(reservation.appointment.court.id)} name="Cancha">
               <LandPlot color="green" size={20} />
             </ReserveInformation>
@@ -83,8 +91,8 @@ function ReservationDetails({reservation}: Iprops) {
               })}
               name={
                 reservation.appointment.court.sportCenter.acceptPartialPayment
-                  ? "Precio total: "
-                  : "Precio: "
+                  ? "Precio total"
+                  : "Precio"
               }
             >
               <BadgeDollarSign color="green" size={20} />
@@ -170,7 +178,7 @@ function ReservationDetails({reservation}: Iprops) {
       </TabsContent>
 
       <TabsContent value="sportcenter">
-        <Card className="w-[300px] lg:w-[400px] h-[375px] lg:[h-350px] relative">
+        <Card className="w-[300px] lg:w-[400px] h-[420px] lg:h-[400px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
             <CardDescription>
