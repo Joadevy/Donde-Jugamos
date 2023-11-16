@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import type dayjsType from "dayjs";
+import type { Reservation } from "@prisma/client";
 
 import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
@@ -57,3 +58,15 @@ export function isPossibleToCancel(appointmentDate:Date,minutesToCancel:number){
   return dateToCancel.isAfter(now);
 }
 
+export const turnStateToSpanish = (state: Reservation["state"]) => {
+  switch (state) {
+    case "pending":
+      return "pendiente";
+    case "approved":
+      return "aprobada";
+    case "cancelled":
+      return "cancelada";
+    default:
+      return "pendiente";
+  }
+};

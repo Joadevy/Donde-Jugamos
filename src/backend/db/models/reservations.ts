@@ -1,8 +1,9 @@
 import type {Prisma, Reservation} from "@prisma/client";
 
-import {timeInStringFromMinutes} from "@/lib/utils/utils";
+import {timeInStringFromMinutes, turnStateToSpanish} from "@/lib/utils/utils";
 import handleSendEmail from "@/backend/email/nodemailer";
 import {compileNewReservationTemplate} from "@/backend/email/templates/NewReservation";
+import {compilePropietaryChangeStatusTemplate} from "@/backend/email/templates/PropietaryChangeStateReservation";
 
 import {db} from "../db";
 
@@ -112,7 +113,23 @@ export const updateReservation = async ({
   return reservation;
 };
 
+export const getReservationState = async (id: number): Promise<Reservation["state"]> => {
+  const reservation = await db.reservation.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      state: true,
+    },
+  });
+
+  return reservation?.state ?? "pending";
+};
+
 export const cancelReservation = async (id: number, observation?: string): Promise<Reservation> => {
+  const prevReservationStatus = await getReservationState(id);
+  const prevReservationStatusInSpanish = turnStateToSpanish(prevReservationStatus);
+
   const reservation = await db.reservation.update({
     where: {
       id,
@@ -121,24 +138,53 @@ export const cancelReservation = async (id: number, observation?: string): Promi
       state: "cancelled",
       observation: observation ? observation : undefined,
     },
+    include: {
+      user: true,
+    },
   });
 
   const appointmentInfo = await getAppointmentFullInformation(reservation.appointmentId);
 
   if (!appointmentInfo) throw new Error("Error el encontrar el appointment asociado");
 
-  // await handleSendEmail(
-  //   appointmentInfo.court.sportCenter.email,
-  //   "Reserva cancelada",
-  //   `La reserva del ${new Date(appointmentInfo.date).toLocaleString("es-AR", {
-  //     weekday: "long",
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //   })} a las ${timeInStringFromMinutes(String(appointmentInfo.startTime))}hs en la cancha ${
-  //     appointmentInfo.courtId
-  //   } ha sido cancelada`,
-  // );
+  await handleSendEmail(
+    appointmentInfo.court.sportCenter.email,
+    "Reserva cancelada",
+    compilePropietaryChangeStatusTemplate(
+      "cancelada",
+      `Una reserva previamente en estado ${prevReservationStatusInSpanish} ha sido cancelada.`,
+      reservation.id,
+      appointmentInfo.court.sportCenter.name,
+      appointmentInfo.court.sportCenter.address,
+      appointmentInfo.court.sportCenter.city.name,
+      new Date(appointmentInfo.date).toLocaleString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      timeInStringFromMinutes(String(appointmentInfo.startTime)),
+      timeInStringFromMinutes(String(appointmentInfo.endTime)),
+      String(appointmentInfo.courtId),
+      appointmentInfo.court.price.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      appointmentInfo.court.sportCenter.acceptPartialPayment
+        ? (
+            (appointmentInfo.court.price *
+              appointmentInfo.court.sportCenter.partialPaymentPercentage) /
+            100
+          ).toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
+          })
+        : "-",
+      observation ?? "-",
+      reservation.user.name ?? "",
+      reservation.user.email ?? "",
+    ),
+  );
 
   return reservation;
 };
