@@ -1,11 +1,12 @@
 import * as handlebars from "handlebars";
+// Este template esta dirigido a notificar USUARIOS sobre el cambio de estado de una reserva
 
-const NewReservationTemplate = `<!DOCTYPE html>
+const template = `<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
 <head>
-	<title></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"><!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><!--[if !mso]><!-->
 	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;700&amp;display=swap" rel="stylesheet" type="text/css"><!--<![endif]-->
@@ -145,31 +146,31 @@ const NewReservationTemplate = `<!DOCTYPE html>
 													<table class="image_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="width:100%;">
-																<div class="alignment" align="center" style="line-height:10px"><img src="https://400208c20c.imgdist.com/public/users/Integrators/BeeProAgency/1091071_1076449/TablerBrandDjango.png" style="display: block; height: auto; border: 0; max-width: 128px; width: 100%;" width="128"></div>
+																<div class="alignment" align="center" style="line-height:10px"><img src="https://400208c20c.imgdist.com/public/users/Integrators/BeeProAgency/1091071_1076449/TablerBrandDjango.png" style="display: block; height: auto; border: 0; max-width: 64px; width: 100%;" width="64"></div>
 															</td>
 														</tr>
 													</table>
 													<table class="heading_block block-2" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-left:20px;padding-right:20px;padding-top:5px;text-align:center;width:100%;">
-																<h1 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 46px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><strong>Nueva solicitud de reserva registrada</strong></h1>
+																<h1 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 46px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><strong>Solicitud de reserva {{status}}</strong></h1>
 															</td>
 														</tr>
 													</table>
 													<table class="heading_block block-3" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-bottom:10px;padding-left:10px;padding-right:10px;text-align:center;width:100%;">
-																<h2 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">Te avisaremos cuando el establecimiento la confirme, por lo pronto.. empeza a preparar las zapas, a estirar.. Ya estas cerca de jugar!</span></h2>
+																<h2 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">{{description}}</span></h2>
 															</td>
 														</tr>
 													</table>
 													<table class="heading_block block-4" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-left:20px;padding-right:20px;padding-top:30px;text-align:center;width:100%;">
-																<h2 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">Tu reserva solicitada:</span></h2>
+																<h2 style="margin: 0; color: #434852; direction: ltr; font-family: Hind, Nunito, Arial, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">Tu reserva {{status}}:</span></h2>
 															</td>
 														</tr>
-													</table><!--[if mso]><style>#list-r1c0m4 ul{margin: 0 !important; padding: 0 !important;} #list-r1c0m4 ul li{mso-special-format: bullet;}#list-r1c0m4 .levelOne li {margin-top: 0 !important;} #list-r1c0m4 .levelOne {margin-left: -20px !important;}#list-r1c0m4 .levelTwo li {margin-top: 0 !important;} #list-r1c0m4 .levelTwo {margin-left: 10px !important;}#list-r1c0m4 .levelThree li {margin-top: 0 !important;} #list-r1c0m4 .levelThree {margin-left: 40px !important;}#list-r1c0m4 .levelFour li {margin-top: 0 !important;} #list-r1c0m4 .levelFour {margin-left: 70px !important;}#list-r1c0m4 .levelFive li {margin-top: 0 !important;} #list-r1c0m4 .levelFive {margin-left: 100px !important;}#list-r1c0m4 .levelSix li {margin-top: 0 !important;} #list-r1c0m4 .levelSix {margin-left: 130px !important;}</style><![endif]-->
+													</table><!--[if mso]><style>#list-r1c0m4 ul{margin: 0 !important; padding: 0 !important;} #list-r1c0m4 ul li{mso-special-format: bullet;}#list-r1c0m4 .levelOne li {margin-top: 0 !important;} #list-r1c0m4 .levelOne {margin-left: -20px !important;}#list-r1c0m4 .levelTwo li {margin-top: 0 !important;} #list-r1c0m4 .levelTwo {margin-left: 10px !important;}#list-r1c0m4 .levelThree li {margin-top: 0 !important;} #list-r1c0m4 .levelThree {margin-left: 40px !important;}#list-r1c0m4 .levelFour li {margin-top: 0 !important;} #list-r1c0m4 .levelFour {margin-left: 70px !important;}</style><![endif]-->
 													<table class="list_block block-5" id="list-r1c0m4" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad" style="padding-bottom:10px;padding-left:20px;padding-right:10px;">
@@ -178,10 +179,10 @@ const NewReservationTemplate = `<!DOCTYPE html>
 																		<li style="margin-bottom: 0; text-align: left;">Establecimiento: {{sportCenterName}}</li>
 																		<li style="margin-bottom: 0; text-align: left;">Direccion: {{sportCenterAddress}} - {{nameCity}}</li>
 																		<li style="margin-bottom: 0; text-align: left;">Fecha: {{date}}</li>
-																		<li style="margin-bottom: 0; text-align: left;">Hora: {{startTime}}hs - {{endTime}}hs</li>
+																		<li style="margin-bottom: 0; text-align: left;">Hora: {{startTime}} - {{endTime}}</li>
 																		<li style="margin-bottom: 0; text-align: left;">Cancha: {{courtId}}</li>
 																		<li style="margin-bottom: 0; text-align: left;">Valor: {{price}}</li>
-																		<li style="margin-bottom: 0; text-align: left;">Estado: <strong>PENDIENTE DE CONFIRMACION</strong></li>
+																		<li style="margin-bottom: 0; text-align: left;">Estado: <strong>{{status}}</strong></li>
 																	</ul>
 																</div>
 															</td>
@@ -254,7 +255,7 @@ const NewReservationTemplate = `<!DOCTYPE html>
 													<table class="button_block block-4" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-bottom:20px;padding-left:35px;padding-right:10px;padding-top:20px;text-align:left;">
-																<div class="alignment" align="left"><!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://dondejugamos.vercel.app/" style="height:42px;width:174px;v-text-anchor:middle;" arcsize="53%" stroke="false" fillcolor="#ffffff"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#00a779; font-family:Arial, sans-serif; font-size:16px"><![endif]--><a href="https://dondejugamos.vercel.app/" target="_blank" style="text-decoration:none;display:inline-block;color:#00a779;background-color:#ffffff;border-radius:22px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Hind, Nunito, Arial, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:35px;padding-right:35px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Quiero reservar</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+																<div class="alignment" align="left"><!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://dondejugamos.vercel.app/" style="height:42px;width:178px;v-text-anchor:middle;" arcsize="53%" stroke="false" fillcolor="#ffffff"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#00a779; font-family:Arial, sans-serif; font-size:16px"><![endif]--><a href="https://dondejugamos.vercel.app/" target="_blank" style="text-decoration:none;display:inline-block;color:#00a779;background-color:#ffffff;border-radius:22px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Hind, Nunito, Arial, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:35px;padding-right:35px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Quiero reservar</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
 															</td>
 														</tr>
 													</table>
@@ -298,7 +299,7 @@ const NewReservationTemplate = `<!DOCTYPE html>
 														<table class="button_block block-4" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 															<tr>
 																<td class="pad" style="padding-bottom:20px;padding-left:35px;padding-right:10px;padding-top:20px;text-align:left;">
-																	<div class="alignment" align="left"><!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://dondejugamos.vercel.app/" style="height:42px;width:178px;v-text-anchor:middle;" arcsize="53%" stroke="false" fillcolor="#ffffff"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#00a779; font-family:Arial, sans-serif; font-size:16px"><![endif]--><a href="https://dondejugamos.vercel.app/" target="_blank" style="text-decoration:none;display:inline-block;color:#00a779;background-color:#ffffff;border-radius:22px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Hind, Nunito, Arial, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:35px;padding-right:35px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Quiero reservar!</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
+																	<div class="alignment" align="left"><!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://dondejugamos.vercel.app/" style="height:42px;width:183px;v-text-anchor:middle;" arcsize="53%" stroke="false" fillcolor="#ffffff"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#00a779; font-family:Arial, sans-serif; font-size:16px"><![endif]--><a href="https://dondejugamos.vercel.app/" target="_blank" style="text-decoration:none;display:inline-block;color:#00a779;background-color:#ffffff;border-radius:22px;width:auto;border-top:0px solid transparent;font-weight:undefined;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:Hind, Nunito, Arial, sans-serif;font-size:16px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:35px;padding-right:35px;font-size:16px;display:inline-block;letter-spacing:normal;"><span style="word-break: break-word; line-height: 32px;">Quiero reservar!</span></span></a><!--[if mso]></center></v:textbox></v:roundrect><![endif]--></div>
 																</td>
 															</tr>
 														</table>
@@ -405,8 +406,10 @@ const NewReservationTemplate = `<!DOCTYPE html>
 
 </html>`;
 
-// Este template esta dirigido a notificar USUARIOS sobre la confirmacion de una reserva creada en estado pendiente
-export const compileNewReservationTemplate = (
+// Este template esta dirigido a notificar USUARIOS sobre el cambio de estado de una reserva
+export const compileUpdateStatusReservationTemplate = (
+  status: string,
+  description: string,
   sportCenterName: string,
   sportCenterAddress: string,
   date: string,
@@ -416,8 +419,10 @@ export const compileNewReservationTemplate = (
   courtId: string,
   price: string,
 ) => {
-  const template = handlebars.compile(NewReservationTemplate);
-  const htmlBody = template({
+  const compiledTemplate = handlebars.compile(template);
+  const htmlBody = compiledTemplate({
+    status,
+    description,
     sportCenterName,
     sportCenterAddress,
     date,
