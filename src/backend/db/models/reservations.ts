@@ -112,13 +112,14 @@ export const updateReservation = async ({
   return reservation;
 };
 
-export const cancelReservation = async (id: number): Promise<Reservation> => {
+export const cancelReservation = async (id: number, observation?: string): Promise<Reservation> => {
   const reservation = await db.reservation.update({
     where: {
       id,
     },
     data: {
       state: "cancelled",
+      observation: observation ? observation : undefined,
     },
   });
 
@@ -126,18 +127,18 @@ export const cancelReservation = async (id: number): Promise<Reservation> => {
 
   if (!appointmentInfo) throw new Error("Error el encontrar el appointment asociado");
 
-  await handleSendEmail(
-    appointmentInfo.court.sportCenter.email,
-    "Reserva cancelada",
-    `La reserva del ${new Date(appointmentInfo.date).toLocaleString("es-AR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })} a las ${timeInStringFromMinutes(String(appointmentInfo.startTime))}hs en la cancha ${
-      appointmentInfo.courtId
-    } ha sido cancelada`,
-  );
+  // await handleSendEmail(
+  //   appointmentInfo.court.sportCenter.email,
+  //   "Reserva cancelada",
+  //   `La reserva del ${new Date(appointmentInfo.date).toLocaleString("es-AR", {
+  //     weekday: "long",
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   })} a las ${timeInStringFromMinutes(String(appointmentInfo.startTime))}hs en la cancha ${
+  //     appointmentInfo.courtId
+  //   } ha sido cancelada`,
+  // );
 
   return reservation;
 };

@@ -94,7 +94,7 @@ const EditReservationForm: React.FC<SearchFormProps> = ({reservationInfo}) => {
 
       toast({
         title: "✅ Reserva actualizada",
-        description: "El establecimiento sera notificado de su actualizacion",
+        description: "Espere respuesta del establecimiento",
       });
 
       router.refresh();

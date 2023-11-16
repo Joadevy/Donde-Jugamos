@@ -39,7 +39,10 @@ cloudinary.config({
 });
 
 export async function PATCH(request: NextRequest) {
-  const {reservationId} = await request.json();
+  const formData = await request.formData();
+
+  const observation = formData.get("observation") as string;
+  const reservationId = Number(formData.get("reservationId") as string);
 
   if (!reservationId) {
     return NextResponse.json({
@@ -50,7 +53,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   try {
-    const reservation = await cancelReservation(Number(reservationId));
+    const reservation = await cancelReservation(Number(reservationId), observation);
 
     return NextResponse.json({
       data: reservation,

@@ -28,7 +28,7 @@ import ReserveInformation from "@/components/Reservation/ReserveInformation";
 import Information from "../Sportcenters/Information";
 import EditReservation from "../Buttons/EditReservation";
 import HoverInfo from "../Information/HoverInfo";
-import CancelReservationBtn from "../Buttons/CancelReservation";
+import CancelReservation from "../Buttons/CancelReservation";
 
 interface Iprops {
   reservation: ReservationFullInfo;
@@ -162,7 +162,7 @@ function ReservationDetails({reservation}: Iprops) {
                 reservation.appointment.date,
                 reservation.appointment.court.sportCenter.cancelTimeLimit,
               ) ? (
-              <CancelReservationBtn reservation={reservation} />
+              <CancelReservation reservation={reservation} />
             ) : (
               <>
                 <p>La reserva no puede cancelarse</p>
