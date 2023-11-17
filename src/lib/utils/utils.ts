@@ -58,15 +58,17 @@ export function isPossibleToCancel(appointmentDate:Date,minutesToCancel:number){
   return dateToCancel.isAfter(now);
 }
 
-export const turnStateToSpanish = (state: Reservation["state"]) => {
+export const turnStateToSpanish = (state: Reservation["state"], plural?:"plural") => {
   switch (state) {
     case "pending":
-      return "pendiente";
+      return `pendiente${plural ? "s" : ""}`;
     case "approved":
-      return "aprobada";
-    case "cancelled":
-      return "cancelada";
+      return `aprobada${plural ? "s" : ""}`;
+    case "canceled":
+      return `cancelada${plural ? "s" : ""}`;
+    case "rejected":
+    return `rechazada${plural ? "s" : ""}`;
     default:
-      return "pendiente";
+      return `pendiente${plural ? "s" : ""}`;
   }
 };

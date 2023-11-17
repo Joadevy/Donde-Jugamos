@@ -22,7 +22,12 @@ import {
 } from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {isPossibleToCancel, timeInStringFromMinutes} from "@/lib/utils/utils";
+import {
+  capitalize,
+  isPossibleToCancel,
+  timeInStringFromMinutes,
+  turnStateToSpanish,
+} from "@/lib/utils/utils";
 import ReserveInformation from "@/components/Reservation/ReserveInformation";
 
 import Information from "../Sportcenters/Information";
@@ -115,17 +120,7 @@ function ReservationDetails({reservation}: Iprops) {
             ) : null}
 
             <ReserveInformation
-              details={
-                reservation.state == "approved"
-                  ? "Aprobada"
-                  : reservation.state == "pending"
-                  ? "Pendiente"
-                  : reservation.state == "cancelled"
-                  ? "Cancelada"
-                  : reservation.state == "rejected"
-                  ? "Rechazada"
-                  : ""
-              }
+              details={capitalize(turnStateToSpanish(reservation.state ?? ""))}
               name="Estado"
             >
               <AlertCircle color="green" size={20} />
@@ -144,18 +139,18 @@ function ReservationDetails({reservation}: Iprops) {
               <>
                 <p>
                   La reserva ha sido{" "}
-                  {reservation.state == "cancelled"
+                  {reservation.state == "canceled"
                     ? "cancelada."
                     : "rechazada por el establecimiento."}
                 </p>
                 <HoverInfo
                   color="red"
                   description={`La reserva ha sido ${
-                    reservation.state == "cancelled"
+                    reservation.state == "canceled"
                       ? "cancelada. Comunicate con el establecimiento ante cualquier duda"
                       : "rechazada por el establecimiento. Comunicate con el mismo para mas informacion"
                   }`}
-                  title={`Reserva ${reservation.state == "cancelled" ? "cancelada" : "rechazada"}`}
+                  title={`Reserva ${reservation.state == "canceled" ? "cancelada" : "rechazada"}`}
                 />
               </>
             ) : isPossibleToCancel(

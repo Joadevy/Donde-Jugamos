@@ -135,7 +135,7 @@ export const cancelReservation = async (id: number, observation?: string): Promi
       id,
     },
     data: {
-      state: "cancelled",
+      state: "canceled",
       observation: observation ? observation : undefined,
     },
     include: {
@@ -264,16 +264,27 @@ export const getUpcomingUserReservationsByEmail = async (email: string) => {
   return await getUpcomingUserReservations(user.id);
 };
 
-export const getCancelledUserReservations = async (userId: string) => {
-  const appointments = await db.reservation.findMany({
+export const getUserReservationsByEmailAndState = async (
+  email: string,
+  state: Reservation["state"],
+) => {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    throw new Error("El usuario no existe");
+  }
+
+  const reservations = await db.reservation.findMany({
     where: {
-      userId,
+      userId: user.id,
+      state: {
+        in: state ? [state] : ["pending", "approved"],
+      },
       appointment: {
         date: {
           gte: new Date(),
         },
       },
-      state: "cancelled",
     },
     include: {
       appointment: {
@@ -285,12 +296,25 @@ export const getCancelledUserReservations = async (userId: string) => {
                   city: true,
                 },
               },
+              sport: true,
             },
           },
         },
       },
     },
+    orderBy: [
+      {
+        appointment: {
+          date: "asc",
+        },
+      },
+      {
+        appointment: {
+          startTime: "asc",
+        },
+      },
+    ],
   });
 
-  return appointments;
+  return reservations;
 };
