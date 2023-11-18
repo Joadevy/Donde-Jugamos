@@ -1,21 +1,49 @@
-import {getUserPendingSportCenters} from "@/backend/db/models/sportsCenters";
-import SportCenterWrapper from "@/components/Sportcenters/SportCenterWrapper";
+import type {SportCenter} from "@prisma/client";
+
+import {getServerSession} from "next-auth";
+
+import {SPORT_CENTER_PENDING, getUserPendingSportCenters} from "@/backend/db/models/sportsCenters";
+import {SportCenterCard, SportCenterPending} from "@/components/Sportcenters/SportCenterWrapper";
+
+import {authOptions} from "../api/auth/[...nextauth]/route";
 
 // En esta ruta /propietario/* estarian todas las configs de su establecimiento y ddemas
-const page = async () => {
-  // const {data: session} = useSession();
-  const userEmail = "catalinit@frcu.utn.edu.ar";
-  const userSportCenters: any[] = (await getUserPendingSportCenters(userEmail)) || [];
+async function PropietaryPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return <div>Debes iniciar sesion para poder ingresar a esta sección</div>;
+  }
+
+  const userEmail = session.user.email!;
+  const userSportCenters: SportCenter[] | null = await getUserPendingSportCenters(userEmail);
+
+  if (!userSportCenters) {
+    return <div>No hay estableciemientos disponibles</div>;
+  }
 
   return (
     <div className="container mx-auto py-4">
-      <section>
-        {userSportCenters.map((sportCenter) => (
-          <SportCenterWrapper key={sportCenter.id} sportCenter={sportCenter} />
-        ))}
+      <section className="flex gap-4">
+        {userSportCenters.map((sportCenter) =>
+          sportCenter.state === SPORT_CENTER_PENDING ? (
+            <SportCenterPending
+              key={sportCenter.id}
+              className="w-[300px] h-[380px]"
+              description={sportCenter.description!}
+              title={sportCenter.name}
+            />
+          ) : (
+            <SportCenterCard
+              key={sportCenter.id}
+              className="w-[300px] h-[380px]"
+              sportCenter={sportCenter}
+            />
+          ),
+        )}
       </section>
     </div>
   );
-};
+}
 
-export default page;
+export default PropietaryPage;

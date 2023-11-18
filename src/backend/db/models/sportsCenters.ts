@@ -8,6 +8,12 @@ import {getUserByEmail} from "./users";
 
 export const SPORT_CENTER_PENDING = "pending";
 
+export const SPORT_CENTER_APPROVED = "approved";
+
+export const SPORT_CENTER_REJECTED = "rejected";
+
+export const SPORT_CENTER_CANCELED = "canceled";
+
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
     user: true;
@@ -70,7 +76,9 @@ export const getSportCentersWithCourtsByFilters = async (
   });
 };
 
-export const getUserPendingSportCenters = async (userEmail: string): Promise<any[] | null> => {
+export const getUserPendingSportCenters = async (
+  userEmail: string,
+): Promise<SportCenter[] | null> => {
   const user = await getUserByEmail(userEmail);
 
   if (user) {
