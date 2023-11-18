@@ -12,7 +12,7 @@ export const errorToast = (description: string) =>
     description,
   });
 
-export const toastTimer = (description: string) =>
+export const processToast = (description: string) =>
   toast({
     title: "⏳ Estamos procesando la operación...",
     description,
