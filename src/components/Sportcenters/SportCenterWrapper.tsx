@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {cn} from "@/lib/utils/utils";
+import {SPORT_CENTER_REJECTED} from "@/backend/db/models/sportsCenters";
 
 import {Button} from "../ui/button";
 
@@ -67,9 +68,15 @@ export const SportCenterPending: FC<SportCentePendingProps> = ({
   return (
     <SportCenterWrapper className={className} description={description} title={title}>
       <CardContent className="space-y-2">
-        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center font-semibold text-xl text-neutral-500 rounded-md bg-neutral-300/20 drop-shadow-xl backdrop-blur-[1px] hover:shadow-xl cursor-default select-none">
-          Pendiente de confirmación..
-        </div>
+        {state === SPORT_CENTER_REJECTED ? (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center font-semibold text-xl text-neutral-500 rounded-md bg-red-300/20 drop-shadow-xl backdrop-blur-[1px] hover:shadow-xl cursor-default select-none">
+            Rechazado
+          </div>
+        ) : (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center font-semibold text-xl text-neutral-500 rounded-md bg-neutral-300/20 drop-shadow-xl backdrop-blur-[1px] hover:shadow-xl cursor-default select-none">
+            Pendiente de confirmación..
+          </div>
+        )}
       </CardContent>
     </SportCenterWrapper>
   );

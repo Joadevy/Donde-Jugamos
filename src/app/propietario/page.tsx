@@ -2,7 +2,11 @@ import type {SportCenter} from "@prisma/client";
 
 import {getServerSession} from "next-auth";
 
-import {SPORT_CENTER_PENDING, getUserPendingSportCenters} from "@/backend/db/models/sportsCenters";
+import {
+  SPORT_CENTER_APPROVED,
+  SPORT_CENTER_PENDING,
+  getUserPendingSportCenters,
+} from "@/backend/db/models/sportsCenters";
 import {SportCenterCard, SportCenterPending} from "@/components/Sportcenters/SportCenterWrapper";
 
 import {authOptions} from "../api/auth/[...nextauth]/route";
@@ -26,18 +30,19 @@ async function PropietaryPage() {
     <div className="container mx-auto py-4">
       <section className="flex gap-4">
         {userSportCenters.map((sportCenter) =>
-          sportCenter.state === SPORT_CENTER_PENDING ? (
-            <SportCenterPending
-              key={sportCenter.id}
-              className="w-[300px] h-[380px]"
-              description={sportCenter.description!}
-              title={sportCenter.name}
-            />
-          ) : (
+          sportCenter.state === SPORT_CENTER_APPROVED ? (
             <SportCenterCard
               key={sportCenter.id}
               className="w-[300px] h-[380px]"
               sportCenter={sportCenter}
+            />
+          ) : (
+            <SportCenterPending
+              key={sportCenter.id}
+              className="w-[300px] h-[380px]"
+              description={sportCenter.description!}
+              state={sportCenter.state!}
+              title={sportCenter.name}
             />
           ),
         )}
