@@ -22,14 +22,18 @@ export async function POST(request: NextRequest) {
     city = await findOrCreateCity(body.cityName, body.cityPostalCode);
 
     if (!city) {
-      return generateApiResponse(null, 500, "No pudimos asociar la ciudad ingresada..");
+      return NextResponse.json(
+        generateApiResponse(null, 500, "No pudimos asociar la ciudad ingresada.."),
+      );
     }
 
     if (!user) {
-      return generateApiResponse(
-        null,
-        500,
-        "No pudimos encontrar el usuario. Por favor, vuelva a loguearse e intente nuevamente",
+      return NextResponse.next(
+        generateApiResponse(
+          null,
+          500,
+          "No pudimos encontrar el usuario. Por favor, vuelva a loguearse e intente nuevamente",
+        ),
       );
     }
 
@@ -49,7 +53,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    return generateApiResponse(null, 500, "Ocurrio un error al querer insertar el Establecimiento");
+    return NextResponse.json(
+      generateApiResponse(null, 500, "Ocurrio un error al querer insertar el Establecimiento"),
+    );
   }
 
   return NextResponse.json(generateApiResponse(sportcenter, 200, ""));

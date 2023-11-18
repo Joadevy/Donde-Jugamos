@@ -20,9 +20,9 @@ import {cn, timeToMinutesDayJs} from "@/lib/utils/utils";
 
 import FormInputField from "../../components/form/FormInputField";
 import {useState} from "react";
-import {useToast} from "@/components/ui/use-toast";
 import {useRouter} from "next/navigation";
 import type {ApiResponse} from "@/lib/types/importables/types";
+import {errorToast, successToast} from "@/lib/utils/toasts";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -47,7 +47,6 @@ const acceptPartialPaymentOptions = [
 
 function Page() {
   const {data: session} = useSession();
-  const {toast} = useToast();
   const [payment, setPayment] = useState(false);
   const router = useRouter();
 
@@ -74,11 +73,6 @@ function Page() {
     if (!session) {
       signIn(undefined, {redirect: false});
     } else {
-      toast({
-        title: "⏳ Estamos procesando la solicitud",
-        description: "Pronto te llegará un correo electrónico con la confirmación!",
-      });
-
       const requestBody = {
         ...values,
         userEmail: session.user.email,
@@ -90,19 +84,17 @@ function Page() {
         .then((res) => res.json())
         .then((res: ApiResponse) => {
           if (res.status === 200) {
+            successToast(
+              "Estamos procesando su solicitud. Pronto le llegará un correo electrónico con la confirmación!",
+            );
             router.push("../propietario");
           } else {
-            toast({
-              title: "❌ Error",
-              description: "No se pudo procesar tu solicitud, intente nuevamente",
-            });
+            errorToast("No se pudo procesar tu solicitud, intente nuevamente");
           }
         })
         .catch((err) => {
-          toast({
-            title: "❌ Error",
-            description: "No se pudo procesar tu solicitud, intente nuevamente",
-          });
+          console.log(err);
+          errorToast("No se pudo procesar tu solicitud, intente nuevamente");
         });
     }
   }
