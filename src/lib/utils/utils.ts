@@ -1,10 +1,12 @@
 /* eslint-disable prettier/prettier */
 import type dayjsType from "dayjs";
 import type { Reservation } from "@prisma/client";
+import type { ApiResponse } from "../types/importables/types";
 
 import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
+
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -72,3 +74,11 @@ export const turnStateToSpanish = (state: Reservation["state"], plural?:"plural"
       return `pendiente${plural ? "s" : ""}`;
   }
 };
+
+export function generateApiResponse(data: unknown, status: number, message: string): ApiResponse {
+    return {
+      data,
+      status,
+      message,
+    }
+}

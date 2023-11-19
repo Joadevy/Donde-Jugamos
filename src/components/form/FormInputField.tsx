@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/function-component-definition */
 import {cn} from "@/lib/utils/utils";
 
 import {
@@ -24,9 +26,9 @@ interface PropsType {
 const FormInputField: React.FC<PropsType> = ({
   formControl,
   name,
-  label = "",
-  placeholder = "",
-  description = "",
+  label,
+  placeholder,
+  description,
   disabled = false,
   type = "text",
   className,
