@@ -1,4 +1,11 @@
 // Tipos importables
+
+export interface ApiResponse {
+  data: unknown;
+  status: number;
+  message: string;
+}
+
 export interface SportCenter {
   id: string;
   name: string;

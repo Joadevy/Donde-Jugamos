@@ -10,3 +10,22 @@ export const getCities = async (): Promise<Pick<City, "name" | "postCode">[]> =>
     },
   });
 };
+
+export const getCityByPostcode = async (postCode: string): Promise<City | null> => {
+  return await db.city.findUnique({
+    where: {
+      postCode,
+    },
+  });
+};
+
+export const createCity = async (name: string, postCode: string): Promise<City | null> => {
+  return await db.city
+    .create({
+      data: {
+        name,
+        postCode,
+      },
+    })
+    .catch(() => null);
+};

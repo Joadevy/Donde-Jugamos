@@ -25,3 +25,21 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 
   return user;
 };
+
+export const updateUserRoleById = async (
+  userId: string,
+  role: "customer" | "propietary" | "admin",
+): Promise<boolean> => {
+  return !!(await db.user
+    .update({
+      where: {
+        id: userId,
+      },
+      data: {
+        role,
+      },
+    })
+    .catch((err) => {
+      return false;
+    }));
+};

@@ -1,8 +1,18 @@
-import type {Prisma} from "@prisma/client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+import type {Prisma, SportCenter} from "@prisma/client";
 
 import {db} from "../db";
 
-import {Appointment} from "./../../../lib/types/importables/types";
+import {getUserByEmail} from "./users";
+
+export const SPORT_CENTER_PENDING = "pending";
+
+export const SPORT_CENTER_APPROVED = "approved";
+
+export const SPORT_CENTER_REJECTED = "rejected";
+
+export const SPORT_CENTER_CANCELED = "canceled";
 
 export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload<{
   include: {
@@ -75,4 +85,30 @@ export const getSportCentersWithCourtsByFilters = async (
   return sportCenters.filter((sportCenter) =>
     sportCenter.courts.some((court) => court.appointments.length > 0),
   );
+};
+
+export const getUserPendingSportCenters = async (
+  userEmail: string,
+): Promise<SportCenter[] | null> => {
+  const user = await getUserByEmail(userEmail);
+
+  if (user) {
+    return await db.sportCenter.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+  }
+
+  return null;
+};
+
+export const getSportCentersByState = async (state: string): Promise<SportCenter[] | null> => {
+  return await db.sportCenter
+    .findMany({
+      where: {
+        state,
+      },
+    })
+    .catch(() => null);
 };
