@@ -2,38 +2,45 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import type {City, User} from "@prisma/client";
+import type {City} from "@prisma/client";
 
 import {NextResponse, type NextRequest} from "next/server";
 
 import {db} from "@/backend/db/db";
+import {createCity, getCityByPostcode} from "@/backend/db/models/cities";
+import {getUserByEmail} from "@/backend/db/models/users";
+import {generateApiResponse} from "@/lib/utils/utils";
 
 export async function POST(request: NextRequest) {
-  const response = {
-    data: {},
-    status: 200,
-    message: "",
-  };
-
   const body = await request.json();
+  let user = null;
+  let city = null;
+  let sportcenter = null;
 
-  console.log(body);
   try {
-    const city = await findOrCreateCity(body.cityName, body.cityPostalCode);
-    const user = await findUser(body.email);
+    user = await getUserByEmail(body.userEmail);
+    city = await findOrCreateCity(body.cityName, body.cityPostalCode);
 
-    if (!city || !user) {
-      return {
-        data: {},
-        status: 500,
-        message: "No se encontro Ciudad o Usuario",
-      };
+    if (!city) {
+      return NextResponse.json(
+        generateApiResponse(null, 500, "No pudimos asociar la ciudad ingresada.."),
+      );
     }
 
-    const sportCenter = await db.sportCenter.create({
+    if (!user) {
+      return NextResponse.next(
+        generateApiResponse(
+          null,
+          500,
+          "No pudimos encontrar el usuario. Por favor, vuelva a loguearse e intente nuevamente",
+        ),
+      );
+    }
+
+    sportcenter = await db.sportCenter.create({
       data: {
         name: body.name,
-        address: `${body.addressName} ${body.addressNumber}`,
+        address: body.address,
         cityId: city.id,
         userId: user.id,
         email: body.email,
@@ -45,52 +52,21 @@ export async function POST(request: NextRequest) {
         paymentTimeLimit: body.paymentTimeLimit,
       },
     });
-
-    response.data = sportCenter;
   } catch (error) {
-    console.log(error);
-    response.status = 500;
-    response.message = "Ocurrio un error al querer insertar el Establecimiento";
+    return NextResponse.json(
+      generateApiResponse(null, 500, "Ocurrio un error al querer insertar el Establecimiento"),
+    );
   }
 
-  return NextResponse.json(response);
+  return NextResponse.json(generateApiResponse(sportcenter, 200, ""));
 }
 
 async function findOrCreateCity(name: string, postCode: string): Promise<City | null> {
-  const city = await db.city.findUnique({
-    where: {
-      postCode,
-    },
-  });
+  let city = await getCityByPostcode(postCode);
 
-  if (city) {
-    return city;
+  if (!city) {
+    city = await createCity(name, postCode);
   }
 
-  return await db.city
-    .create({
-      data: {
-        name: name,
-        postCode: postCode,
-      },
-    })
-    .catch((err) => {
-      console.log(err);
-
-      return null;
-    });
-}
-
-async function findUser(email: string): Promise<User | null> {
-  return await db.user
-    .findUnique({
-      where: {
-        email,
-      },
-    })
-    .catch((err) => {
-      console.log(err);
-
-      return err;
-    });
+  return city;
 }
