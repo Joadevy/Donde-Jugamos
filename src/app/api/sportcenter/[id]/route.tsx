@@ -5,13 +5,14 @@ import {NextResponse} from "next/server";
 
 import {db} from "@/backend/db/db";
 import {generateApiResponse} from "@/lib/utils/utils";
+import {updateUserRoleById} from "@/backend/db/models/users";
 
 export async function PUT(request: NextRequest, {params}: {params: {id: string}}) {
   const sportCenterId = Number(params.id);
   const data: {state: string; reason: string} = await request.json();
   let response: ApiResponse;
 
-  await db.sportCenter
+  const sportCenter = await db.sportCenter
     .update({
       where: {
         id: sportCenterId,
@@ -28,6 +29,11 @@ export async function PUT(request: NextRequest, {params}: {params: {id: string}}
       );
     });
 
+  if (sportCenter) {
+    const isUserRoleChanges = await updateUserRoleById(sportCenter.userId, "propietary");
+
+    console.log("Se cambio de role al usuario?", isUserRoleChanges);
+  }
   //Envio de Mail informando al usuario el estado del Establecimiento
 
   response = generateApiResponse(
