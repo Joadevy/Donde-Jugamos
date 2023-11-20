@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import type dayjsType from "dayjs";
+import type { Reservation } from "@prisma/client";
 import type { ApiResponse } from "../types/importables/types";
 
 import dayjs from "dayjs";
@@ -50,6 +51,29 @@ export function getRootUrl(){
 export function capitalize(string:string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+// Para testear que funciona se puede pasar por parametro: new Date(new Date().getTime() + 60 * 60 * 1000) y 60, de esa forma daria false ya que estariamos dentro del rango que ya no puede cancelar
+export function isPossibleToCancel(appointmentDate:Date,minutesToCancel:number){
+  const dateToCancel = dayjs(appointmentDate).subtract(minutesToCancel,"minutes");
+  const now = dayjs();
+
+  return dateToCancel.isAfter(now);
+}
+
+export const turnStateToSpanish = (state: Reservation["state"], plural?:"plural") => {
+  switch (state) {
+    case "pending":
+      return `pendiente${plural ? "s" : ""}`;
+    case "approved":
+      return `aprobada${plural ? "s" : ""}`;
+    case "canceled":
+      return `cancelada${plural ? "s" : ""}`;
+    case "rejected":
+    return `rechazada${plural ? "s" : ""}`;
+    default:
+      return `pendiente${plural ? "s" : ""}`;
+  }
+};
 
 export function generateApiResponse(data: unknown, status: number, message: string): ApiResponse {
     return {

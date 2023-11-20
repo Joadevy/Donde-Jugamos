@@ -53,7 +53,9 @@ function CourtHoverCard({timeInString, court}: IhoverCard) {
       <HoverCardContent>
         <div className="space-y-1">
           <div className="flex h-5 justify-between space-x-10 text-sm">
-            <p>Cancha {court.id}</p>
+            <p className="flex gap-1 border">
+              Cancha <span>{court.name}</span>
+            </p>
             <Separator orientation="vertical" />
             <p>
               {Number(court.price).toLocaleString("es-AR", {

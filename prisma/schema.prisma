@@ -50,7 +50,7 @@ model User {
     registerDate  DateTime  @default(now())
     CBU           String?   @unique
     Alias         String?   @unique
-    sportcenter   SportCenter?
+    sportcenter   SportCenter[]
     reservations  Reservation[]
 }
 
@@ -75,7 +75,6 @@ model SportCenter { //Establishment
   cancelTimeLimit Int @default(180) // 3 horas
   paymentTimeLimit Int @default(180) // 3 horas
   courts Court[]
-  days Day[]
   userId String @unique
   user User @relation(fields: [userId], references: [id])
   cityId Int
@@ -93,6 +92,7 @@ model City {
 
 model Court { //Field - Cancha
  id Int @id @default(autoincrement())
+ name String
  capacity Int
  price Float
  description String?
@@ -101,6 +101,7 @@ model Court { //Field - Cancha
  sportId Int
  sport Sport @relation(fields: [sportId], references: [id])
  appointments Appointment[]
+ days Day[]
 }
 
 model Appointment { //Turno
@@ -111,8 +112,6 @@ model Appointment { //Turno
   active Boolean @default(true)
   courtId Int
   court Court @relation(fields: [courtId], references: [id])
-  dayId Int
-  day Day @relation(fields: [dayId], references: [id])
   reservations Reservation[]
 }
 
@@ -122,7 +121,7 @@ model Reservation {
   state String? @default("pending") // pending | approved | rejected | canceled
   observation String?
   partialPayment Float?
-  paymentConfirmation String?  // Tiparla como string, va a ser el link a la imagen subida en cloudinary
+  paymentConfirmation String?
   appointmentId Int
   appointment Appointment @relation(fields: [appointmentId], references: [id])
   userId String
@@ -143,20 +142,8 @@ model Day {
   firstHalfEndTime Int //Hora fin primera media jornada
   secondHalfStartTime Int //Hora inicio segunda media jornada
   secondHalfEndTime Int //Hora fin segunda media jornada
-  sportCenterId Int
-  sportCenter SportCenter @relation(fields: [sportCenterId], references: [id])
-  appointments Appointment[]
+  courts Court[]
 }
-
-
-// Vamos a guardar info del pago como tal?
-// model Payment { 
-//   id Int @id @default(autoincrement())
-//   date DateTime
-//   mount Decimal
-//   CBU String? @unique
-//   reservationId Int
-// }
 
 //Los enums no estan definidos para SQLite, SI para postgre
 // enum ReservationState {
