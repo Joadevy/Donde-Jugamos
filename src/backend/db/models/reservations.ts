@@ -32,55 +32,74 @@ export const createReservation = async ({
       appointmentId,
       userId: user.id,
     },
+    include: {
+      user: true,
+    },
   });
 
   const getAppointmentInfo = getAppointmentFullInformation(appointmentId);
 
   const [reservation, appointmentInfo] = await Promise.all([create, getAppointmentInfo]);
 
+  if (!appointmentInfo) throw new Error("Error el encontrar el appointment asociado");
+
   const sendEmailToUser = handleSendEmail(
     user.email!,
     "Nueva reserva",
     compileNewReservationTemplate(
-      appointmentInfo?.court.sportCenter.name ?? "",
-      appointmentInfo?.court.sportCenter.address ?? "",
-      appointmentInfo?.date
-        ? new Date(appointmentInfo.date).toLocaleString("es-AR", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
-        : "",
+      appointmentInfo.court.sportCenter.name,
+      appointmentInfo.court.sportCenter.address,
 
-      appointmentInfo?.court.sportCenter.city.name ?? "",
-      timeInStringFromMinutes(String(appointmentInfo?.startTime)),
-      timeInStringFromMinutes(String(appointmentInfo?.endTime)),
-      String(appointmentInfo?.courtId),
-      String("$" + appointmentInfo?.court.price),
+      new Date(appointmentInfo.date).toLocaleString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      appointmentInfo.court.sportCenter.city.name,
+      timeInStringFromMinutes(String(appointmentInfo.startTime)),
+      timeInStringFromMinutes(String(appointmentInfo.endTime)),
+      String(appointmentInfo.courtId),
+      String("$" + appointmentInfo.court.price),
     ),
   );
 
   const sendEmailToPropietary = handleSendEmail(
-    appointmentInfo?.court.sportCenter.email ?? "",
+    appointmentInfo.court.sportCenter.email,
     "Solicitud nueva reserva",
-    compileNewReservationTemplate(
-      appointmentInfo?.court.sportCenter.name ?? "",
-      appointmentInfo?.court.sportCenter.address ?? "",
-      appointmentInfo?.date
-        ? new Date(appointmentInfo.date).toLocaleString("es-AR", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+    compilePropietaryChangeStatusTemplate(
+      "pendiente",
+      `Una reserva previamente ha sido creada.`,
+      reservation.id,
+      appointmentInfo.court.sportCenter.name,
+      appointmentInfo.court.sportCenter.address,
+      appointmentInfo.court.sportCenter.city.name,
+      new Date(appointmentInfo.date).toLocaleString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      timeInStringFromMinutes(String(appointmentInfo.startTime)),
+      timeInStringFromMinutes(String(appointmentInfo.endTime)),
+      String(appointmentInfo.court.name),
+      appointmentInfo.court.price.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      appointmentInfo.court.sportCenter.acceptPartialPayment
+        ? (
+            (appointmentInfo.court.price *
+              appointmentInfo.court.sportCenter.partialPaymentPercentage) /
+            100
+          ).toLocaleString("es-AR", {
+            style: "currency",
+            currency: "ARS",
           })
-        : "",
-
-      appointmentInfo?.court.sportCenter.city.name ?? "",
-      timeInStringFromMinutes(String(appointmentInfo?.startTime)),
-      timeInStringFromMinutes(String(appointmentInfo?.endTime)),
-      String(appointmentInfo?.courtId),
-      String("$" + appointmentInfo?.court.price),
+        : "-",
+      observation,
+      reservation.user.name ?? "",
+      reservation.user.email ?? "",
     ),
   );
 
@@ -165,7 +184,7 @@ export const cancelReservation = async (id: number, observation?: string): Promi
       }),
       timeInStringFromMinutes(String(appointmentInfo.startTime)),
       timeInStringFromMinutes(String(appointmentInfo.endTime)),
-      String(appointmentInfo.courtId),
+      String(appointmentInfo.court.name),
       appointmentInfo.court.price.toLocaleString("es-AR", {
         style: "currency",
         currency: "ARS",

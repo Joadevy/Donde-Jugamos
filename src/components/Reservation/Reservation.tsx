@@ -42,7 +42,7 @@ function Reservation({appointment, court, sportCenterInfo}: Iprops) {
 
           <Separator />
 
-          <ReserveInformation details={court.id.toString()} name="Cancha">
+          <ReserveInformation details={court.name} name="Cancha">
             <LandPlot color="green" size={20} />
           </ReserveInformation>
 

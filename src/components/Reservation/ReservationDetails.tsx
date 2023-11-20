@@ -62,7 +62,7 @@ function ReservationDetails({reservation}: Iprops) {
               <Dumbbell color="green" size={20} />
             </ReserveInformation>
 
-            <ReserveInformation details={String(reservation.appointment.court.id)} name="Cancha">
+            <ReserveInformation details={String(reservation.appointment.court.name)} name="Cancha">
               <LandPlot color="green" size={20} />
             </ReserveInformation>
 
