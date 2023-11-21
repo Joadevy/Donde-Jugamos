@@ -108,8 +108,7 @@ export const SportCenterCard: FC<SportCenterProps> = ({sportCenter, className}) 
           </Information>
         </CardContent>
         <CardFooter>
-          <Link className="w-full" href={`/dashboard/canchas/${sportCenter.id}`}>
-            {/* <Link className="w-full" href={`/dashboard/${sportCenter.id}`}> */}
+          <Link className="w-full" href={`/establecimientos/${sportCenter.id}`}>
             <Button className="w-full">Administrar</Button>
           </Link>
         </CardFooter>

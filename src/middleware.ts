@@ -7,11 +7,11 @@ export default withAuth(async (req) => {
 
   if (req.nextUrl.pathname.startsWith("/admin") && token?.role !== "admin") {
     return NextResponse.redirect(new URL("/", req.url));
-  } else if (req.nextUrl.pathname.startsWith("/propietario") && token?.role !== "propietary") {
+  } else if (req.nextUrl.pathname.startsWith("/establecimientos") && token?.role !== "propietary") {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
 });
 
-export const config = {matcher: ["/admin:path*", "/propietario:path*"]};
+export const config = {matcher: ["/admin/:path*", "/establecimientos/:path*"]};
