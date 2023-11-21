@@ -9,7 +9,6 @@ import LoginAndNavigationOptions from "./LoginAndNavigationOptions";
 
 async function Navbar() {
   const session = await getServerSession(authOptions);
-  const userRole = session?.user ? session.user.role : "customer";
 
   return (
     <nav className="h-36 lg:h-16 border p-2 shadow-sm">
@@ -29,17 +28,6 @@ async function Navbar() {
           </svg>
         </Link>
         <div className="mx-4 flex items-center gap-2 flex-wrap">
-          {userRole === "propietary" && (
-            <Link className={buttonVariants({variant: "secondary"})} href="/propietario">
-              Propietario
-            </Link>
-          )}
-          {userRole === "admin" && (
-            <Link className={buttonVariants({variant: "secondary"})} href="/solicitudes">
-              Solicitudes
-            </Link>
-          )}
-
           <Link className={buttonVariants({variant: "default"})} href="/sumate">
             Suma tu Cancha
           </Link>
