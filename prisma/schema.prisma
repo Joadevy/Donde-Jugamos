@@ -139,10 +139,13 @@ model Day {
   id Int @id @default(autoincrement())
   name String
   firstHalfStartTime Int //Hora inicio primera media jornada
-  firstHalfEndTime Int //Hora fin primera media jornada
-  secondHalfStartTime Int //Hora inicio segunda media jornada
+  firstHalfEndTime Int? //Hora fin primera media jornada
+  secondHalfStartTime Int? //Hora inicio segunda media jornada
   secondHalfEndTime Int //Hora fin segunda media jornada
-  courts Court[]
+  courtId Int
+  court Court @relation(fields: [courtId], references: [id])
+
+  @@unique([name,courtId])
 }
 
 //Los enums no estan definidos para SQLite, SI para postgre
