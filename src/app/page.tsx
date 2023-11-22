@@ -1,3 +1,4 @@
+import AccordionQA from "@/components/Accordion/AccordeonQA";
 import SearchFormServer from "@/components/SearchForm/SearchFormServer";
 
 export default function Home() {
@@ -9,7 +10,14 @@ export default function Home() {
           Tu cancha, a tres clicks de distancia.
         </p>
       </header>
-      <SearchFormServer />
+
+      <main className="mb-5 lg:mb-14">
+        <SearchFormServer />
+      </main>
+
+      <footer className="lg:absolute lg:bottom-2 w-10/12 lg:w-1/2">
+        <AccordionQA />
+      </footer>
     </div>
   );
 }
