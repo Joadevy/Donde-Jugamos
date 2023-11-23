@@ -1,14 +1,14 @@
-"use client";
-
 import Link from "next/link";
-import {useSession} from "next-auth/react";
+import {getServerSession} from "next-auth";
 
-import SignInOutButtons from "../Buttons/SignInOutButtons";
-import {Button} from "../ui/button";
+import {authOptions} from "@/app/api/auth/[...nextauth]/route";
 
-function Navbar() {
-  const {data: session} = useSession();
-  const userRole = session?.user ? session.user.role : "customer";
+import {buttonVariants} from "../ui/button";
+
+import LoginAndNavigationOptions from "./LoginAndNavigationOptions";
+
+async function Navbar() {
+  const session = await getServerSession(authOptions);
 
   return (
     <nav className="h-36 lg:h-16 border p-2 shadow-sm">
@@ -28,21 +28,10 @@ function Navbar() {
           </svg>
         </Link>
         <div className="mx-4 flex items-center gap-2 flex-wrap">
-          {userRole === "propietary" && (
-            <Link href="/propietario">
-              <Button variant="secondary">Propietario</Button>
-            </Link>
-          )}
-          {userRole === "admin" && (
-            <Link href="/solicitudes">
-              <Button variant="secondary">Solicitudes</Button>
-            </Link>
-          )}
-
-          <Link href="/sumate">
-            <Button>Suma tu Cancha</Button>
+          <Link className={buttonVariants({variant: "default"})} href="/sumate">
+            Suma tu Cancha
           </Link>
-          <SignInOutButtons />
+          <LoginAndNavigationOptions user={session?.user} />
         </div>
       </ul>
     </nav>
