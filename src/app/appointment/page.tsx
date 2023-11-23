@@ -26,7 +26,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
   const sportCenters = await getSportCentersWithCourtsByFilters(
     postCode,
     sport,
-    new Date(date),
+    date,
     Number(time),
   );
 

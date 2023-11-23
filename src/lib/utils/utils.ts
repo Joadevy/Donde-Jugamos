@@ -32,6 +32,7 @@ export function timeInStringFromMinutes(minutes: string): string {
 
 export function timeToMinutesDayJs(date: dayjs.Dayjs): number {
   const hour = date.hour();
+
   const minutes = date.minute();
 
   return hour * 60 + minutes;
@@ -82,3 +83,20 @@ export function generateApiResponse(data: unknown, status: number, message: stri
       message,
     }
 }
+
+export const CountReservationsByState = (reservations: Reservation[]) => {
+  return reservations.reduce<Record<Reservation["state"], number>>((acc, reservation) => {
+    const { state } = reservation
+
+    if (acc[state]) {
+      acc[state]++;
+    } else {
+      acc[state] = 1;
+    }
+
+    return acc;
+  }
+  , {"accepted":0,"rejected":0,"pending":0,"canceled":0});
+}
+
+

@@ -118,7 +118,7 @@ model Appointment { //Turno
 model Reservation {
   id Int @id @default(autoincrement())
   date DateTime  @default(now())
-  state String? @default("pending") // pending | approved | rejected | canceled
+  state String @default("pending") // pending | approved | rejected | canceled
   observation String?
   partialPayment Float?
   paymentConfirmation String?
