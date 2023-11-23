@@ -35,13 +35,6 @@ async function EstablecimientosPage({params}: {params: {sportCenterId: string}})
     <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
       <div className="flex-auto flex flex-col lg:flex-row gap-4 items-center justify-center border">
         <section className="relative py-4">
-          <header className="self-start p-2">
-            <h1 className="font-bold text-primary text-xl">{sportCenter.name}</h1>
-            <p className="italic text-slate-400">{sportCenter.description}</p>
-          </header>
-
-          <Separator />
-
           <SportCenterClient sportCenter={sportCenter} />
         </section>
 

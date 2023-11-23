@@ -24,6 +24,7 @@ import {useRouter} from "next/navigation";
 import type {ApiResponse} from "@/lib/types/importables/types";
 import {errorToast, successToast} from "@/lib/utils/toasts";
 import type {SportCentersWithCourtsAndAppointments} from "@/backend/db/models/sportsCenters";
+import {Separator} from "../ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(2, {message: "Debe tener minimo 2 caracteres"}),
@@ -50,7 +51,7 @@ interface Iprops {
   sportCenter?: SportCentersWithCourtsAndAppointments; // No deberia ser todo este tipo creeria
 }
 
-function SportCenterClient({sportCenter}: Iprops) {
+function SportCenterFormClient({sportCenter}: Iprops) {
   const {data: session} = useSession();
   const [payment, setPayment] = useState(sportCenter?.acceptPartialPayment ?? true);
   const router = useRouter();
@@ -119,7 +120,19 @@ function SportCenterClient({sportCenter}: Iprops) {
   }
 
   return (
-    <article>
+    <article className={!isUpdate ? "flex flex-col items-center" : ""}>
+      <header className={"p-2 " + (!isUpdate ? "w-3/4" : "")}>
+        <h1 className="font-bold text-primary text-xl">
+          {isUpdate ? sportCenter.name : "Registra tu establecimiento"}
+        </h1>
+        <p className="italic text-slate-400">
+          {isUpdate
+            ? sportCenter.description
+            : "A la brevedad te contactaremos para que comencemos a trabajar juntos!"}
+        </p>
+        <Separator />
+      </header>
+
       <Form {...form}>
         <form
           className="w-full lg:w-[800px] container mx-auto lg:grid lg:grid-cols-2 gap-2 lg:gap-4"
@@ -228,7 +241,7 @@ function SportCenterClient({sportCenter}: Iprops) {
           </section>
 
           <Button className="mt-5 col-span-2 text-center" type="submit">
-            {sportCenter ? "Actualizar" : "Crear"}
+            {sportCenter ? "Actualizar mi establecimiento" : "Crear mi establecimiento"}
           </Button>
         </form>
       </Form>
@@ -236,4 +249,4 @@ function SportCenterClient({sportCenter}: Iprops) {
   );
 }
 
-export default SportCenterClient;
+export default SportCenterFormClient;
