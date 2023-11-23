@@ -16,7 +16,7 @@ import FormTextAreaField from "@/components/form/FormTextAreaField";
 
 import FormSelectField from "@/components/form/FormSelectField";
 import FormTimePickerField from "@/components/form/FormTimePickerField";
-import {cn, timeToMinutesDayJs} from "@/lib/utils/utils";
+import {cn, minutesToTimeDayJs, timeToMinutesDayJs} from "@/lib/utils/utils";
 
 import FormInputField from "../../components/form/FormInputField";
 import {useState} from "react";
@@ -52,11 +52,9 @@ interface Iprops {
 
 function SportCenterClient({sportCenter}: Iprops) {
   const {data: session} = useSession();
-  const [payment, setPayment] = useState(false);
+  const [payment, setPayment] = useState(sportCenter?.acceptPartialPayment ?? true);
   const router = useRouter();
   const isUpdate = !!sportCenter;
-
-  console.log({isUpdate});
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,8 +68,12 @@ function SportCenterClient({sportCenter}: Iprops) {
       description: sportCenter?.description ?? "",
       cbu: sportCenter?.user.CBU ?? "",
       alias: sportCenter?.user.Alias ?? "",
-      cancelTimeLimit: sportCenter?.cancelTimeLimit ?? dayjs("2022-04-17T12:00"),
-      paymentTimeLimit: sportCenter?.paymentTimeLimit ?? dayjs("2022-04-17T12:00"),
+      cancelTimeLimit: isUpdate
+        ? minutesToTimeDayJs(sportCenter.cancelTimeLimit)
+        : dayjs("2022-04-17T12:00"),
+      paymentTimeLimit: isUpdate
+        ? minutesToTimeDayJs(sportCenter.paymentTimeLimit)
+        : dayjs("2022-04-17T12:00"),
       acceptPartialPayment: sportCenter?.acceptPartialPayment ?? payment,
       partialPaymentPercentage: sportCenter?.partialPaymentPercentage ?? 0,
     },
@@ -84,9 +86,10 @@ function SportCenterClient({sportCenter}: Iprops) {
       const requestBody = {
         ...values,
         userEmail: session.user.email,
-        cancelTimeLimit: values.cancelTimeLimit,
-        paymentTimeLimit: values.paymentTimeLimit,
+        cancelTimeLimit: timeToMinutesDayJs(values.cancelTimeLimit),
+        paymentTimeLimit: timeToMinutesDayJs(values.paymentTimeLimit),
         sportCenterId: sportCenter?.id,
+        acceptPartialPayment: payment,
       };
 
       fetch("/api/sportcenter", {
@@ -182,7 +185,9 @@ function SportCenterClient({sportCenter}: Iprops) {
               label="¿Es necesario realizar una seña para reservar?"
               name="acceptPartialPayment"
               options={acceptPartialPaymentOptions}
-              onValueChange={setPayment}
+              onValueChange={() => {
+                setPayment(!payment);
+              }}
             />
             <FormInputField
               className={cn("mb-2 ", payment ? "" : "hidden")}
@@ -197,7 +202,7 @@ function SportCenterClient({sportCenter}: Iprops) {
               ampm={false}
               className={cn("w-full mb-2 ", payment ? "" : "hidden")}
               formControl={form.control}
-              label="¿Cuánto tiempo tengo para realizar el pago de la seña?"
+              label="¿Cuántas horas se tiene, antes del turno, para realizar el pago de la seña?"
               name="paymentTimeLimit"
             />
             <FormInputField
@@ -217,7 +222,7 @@ function SportCenterClient({sportCenter}: Iprops) {
               ampm={false}
               className="mb-2"
               formControl={form.control}
-              label="¿Cuánto tiempo antes del turno tengo para cancelar al reserva?"
+              label="¿Cuántas horas se tiene, antes del turno, para cancelar la reserva?"
               name="cancelTimeLimit"
             />
           </section>

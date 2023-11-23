@@ -92,8 +92,6 @@ export async function PUT(request: NextRequest) {
   let city = null;
   let sportcenter = null;
 
-  console.log(body);
-
   try {
     user = await getUserByEmail(body.userEmail);
     city = await findOrCreateCity(body.cityName, body.cityPostalCode);
