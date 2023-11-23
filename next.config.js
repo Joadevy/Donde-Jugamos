@@ -1,4 +1,15 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  webpack: (config, {isServer}) => {
+    if (!isServer) {
+      config.module.rules.push({
+        test: /\.handlebars$/,
+        loader: "handlebars-loader",
+      });
+    }
 
-module.exports = nextConfig
+    return config;
+  },
+};
+
+module.exports = nextConfig;
