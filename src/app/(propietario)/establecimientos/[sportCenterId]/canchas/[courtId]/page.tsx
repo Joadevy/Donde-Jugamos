@@ -3,7 +3,6 @@ import type {CourtSchedule} from "@/lib/types/importables/types";
 import Link from "next/link";
 
 import {Button} from "@/components/ui/button";
-import {agruparPorHoras} from "@/lib/utils/curts.services";
 import {findWithDays} from "@/backend/db/models/courts";
 
 import ScheduleTable from "./components/ScheduleTable";
@@ -58,13 +57,11 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
       )}
       <aside className="border flex flex-col gap-2 py-2 px-4">
         <Button>
-          <Link
-            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/horarios`}
-          >
-            Gestion de Horarios
-          </Link>
+          <Link href={`${params.courtId}/horarios`}>Gestion de Horarios</Link>
         </Button>
-        <Button>Generar Turnos</Button>
+        <Button>
+          <Link href={`${params.courtId}/turnos`}>Generar Turnos</Link>
+        </Button>
         <Button>Editar Datos</Button>
         <Button className="mt-auto" variant="destructive">
           Deshabilitar

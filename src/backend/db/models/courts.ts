@@ -8,6 +8,13 @@ export type CourtWithDays = Prisma.CourtGetPayload<{
   };
 }>;
 
+export type CourtWithDaysSport = Prisma.CourtGetPayload<{
+  include: {
+    days: true;
+    sport: true;
+  };
+}>;
+
 export const findWithDays = async (
   sportCenterId: string | number,
   courtId: string | number,
@@ -19,6 +26,22 @@ export const findWithDays = async (
     },
     include: {
       days: true,
+    },
+  });
+};
+
+export const findWithDaysSport = async (
+  sportCenterId: string | number,
+  courtId: string | number,
+): Promise<CourtWithDaysSport | null> => {
+  return await db.court.findUnique({
+    where: {
+      id: Number(courtId),
+      sportCenterId: Number(sportCenterId),
+    },
+    include: {
+      days: true,
+      sport: true,
     },
   });
 };
