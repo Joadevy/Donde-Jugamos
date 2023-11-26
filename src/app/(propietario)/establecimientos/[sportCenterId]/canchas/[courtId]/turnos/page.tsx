@@ -28,7 +28,11 @@ const GenerateAppointmentsPage = async ({
   }
 
   return (
-    <GenerateAppointmentsClient appointmentTime={curt.sport.duration} schedule={curtSchedule} />
+    <GenerateAppointmentsClient
+      appointmentTime={curt.sport.duration}
+      courtId={Number(params.courtId)}
+      schedule={curtSchedule}
+    />
   );
 };
 

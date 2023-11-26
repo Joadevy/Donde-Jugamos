@@ -11,13 +11,15 @@ import {addDays} from "date-fns";
 import {DatePickerWithRange} from "@/components/ui/daterangepicker";
 import {Button} from "@/components/ui/button";
 
+import Prueba from "./Prueba";
+
 interface GenerateAppointmentsClientProps {
   schedule: CourtSchedule[];
   appointmentTime: number;
   courtId: number;
 }
 
-interface AppointmentDTO {
+export interface AppointmentDTO {
   date: Date;
   startTime: number;
   endTime: number;
@@ -25,8 +27,9 @@ interface AppointmentDTO {
   courtId: number;
 }
 
-const DAY_LIMIT_MIN = 30 as const;
+const DAY_LIMIT_MIN = 15 as const;
 const DAY_LIMIT_MAX = 30 as const;
+
 const DAT_OF_WEEK = [
   "sunday",
   "monday",
@@ -46,9 +49,13 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
     from: new Date(),
     to: addDays(new Date(), DAY_LIMIT_MIN),
   });
+  const [daysOfAppointments, setDaysOfAppointments] = useState<number[]>([]);
+  const [appointmentsMap, setAppointmentsMap] = useState<Map<number, AppointmentDTO[]>>(
+    new Map<number, AppointmentDTO[]>(),
+  );
 
   const handleClick = () => {
-    const appointmets: AppointmentDTO[] = [];
+    const appointmetsGenerated: AppointmentDTO[] = [];
 
     if (!date?.from) return false;
     if (!date.to) return false;
@@ -65,24 +72,54 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
       const dayCloseTime = daySchedule?.closeTime!;
       let timeTracker = daySchedule?.openTime!;
 
-      while (timeTracker - dayCloseTime < appointmentTime) {
+      while (dayCloseTime - timeTracker >= appointmentTime) {
         const appointment: AppointmentDTO = {
-          date: dateFrom,
+          date: new Date(dateFrom),
           startTime: timeTracker,
           endTime: timeTracker + appointmentTime,
           active: true,
           courtId: courtId,
         };
 
-        appointmets.push(appointment);
+        appointmetsGenerated.push(appointment);
 
         timeTracker += appointmentTime;
       }
 
+      daysOfAppointments.push(new Date(dateFrom).getTime());
       dateFrom.setDate(dateFrom.getDate() + 1);
     }
+    // setDaysOfAppointments([...daysOfAppointments, new Date(dateFrom).getTime()]);
 
-    console.log(appointmets);
+    const mapaDeObjetos: Map<number, AppointmentDTO[]> = appointmetsGenerated.reduce(
+      (mapa, objeto) => {
+        const key = mapa.get(objeto.date.getTime());
+
+        if (key) {
+          key.push(objeto);
+        } else {
+          mapa.set(objeto.date.getTime(), [objeto]);
+        }
+
+        return mapa;
+      },
+      new Map<number, AppointmentDTO[]>(),
+    );
+
+    setAppointmentsMap(new Map(mapaDeObjetos));
+  };
+
+  const changeUpdate = (day: number, appoinments: AppointmentDTO[]) => {
+    appointmentsMap.set(day, appoinments);
+    setAppointmentsMap(new Map(appointmentsMap));
+  };
+
+  const createAppointments = () => {
+    const newAppointments: AppointmentDTO[] = [];
+
+    appointmentsMap.forEach((appointments) => newAppointments.push(...appointments));
+
+    console.log("Se va a enviar", newAppointments);
   };
 
   return (
@@ -102,6 +139,18 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
         <p>Dias: {daysDiff(date?.to, date?.from)}</p>
       </div>
       <Button onClick={handleClick}>Generar Turnos</Button>
+      <Button onClick={createAppointments}>Finalizar</Button>
+
+      {daysOfAppointments.map((day, index) => (
+        <div key={day}>
+          <Prueba
+            key={index}
+            appointments={appointmentsMap.get(day)}
+            date={day}
+            updateState={changeUpdate}
+          />
+        </div>
+      ))}
     </div>
   );
 };
