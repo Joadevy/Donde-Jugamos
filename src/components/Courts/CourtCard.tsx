@@ -15,6 +15,7 @@ import {
 import {Button} from "../ui/button";
 import Information from "../Sportcenters/Information";
 import CourtInformation from "../Reservation/ReserveInformation";
+import {Separator} from "../ui/separator";
 
 interface Iprops {
   court: CourtFullInfo;
@@ -23,12 +24,14 @@ interface Iprops {
 
 export function CourtCard({court, className}: Iprops) {
   return (
-    <Card className={className + " w-[300px]"}>
-      <CardHeader className="flex-auto">
+    <Card className={className + " w-[300px] h-[300px] relative"}>
+      <CardHeader className="flex-auto space-y-0">
         <CardTitle>Cancha {court.name}</CardTitle>
         <CardDescription className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:5]">
           {court.description}
         </CardDescription>
+
+        <Separator />
       </CardHeader>
 
       <CardContent className="space-y-2 flex-auto">
@@ -44,7 +47,7 @@ export function CourtCard({court, className}: Iprops) {
           <CircleDollarSign color="green" size={20} />
         </CourtInformation>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="absolute bottom-0 w-full">
         <Link
           className="w-full"
           href={`/establecimientos/${court.sportCenterId}/canchas/${court.id}`}

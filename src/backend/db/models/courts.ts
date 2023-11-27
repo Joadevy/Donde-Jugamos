@@ -20,3 +20,16 @@ export const getSportCenterCourts = async (sportCenterId: number): Promise<Court
 
   return courts;
 };
+
+export const getCourtById = async (courtId: number): Promise<CourtFullInfo | null> => {
+  const court = await db.court.findUnique({
+    where: {
+      id: courtId,
+    },
+    include: {
+      sport: true,
+    },
+  });
+
+  return court;
+};
