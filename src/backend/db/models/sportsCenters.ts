@@ -53,6 +53,7 @@ export const getSportCentersWithCourtsByFilters = async (
               startTime: "asc",
             },
             where: {
+              active: true,
               date: {
                 equals: date,
               },

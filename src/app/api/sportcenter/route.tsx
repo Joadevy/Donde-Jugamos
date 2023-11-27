@@ -75,6 +75,8 @@ export async function POST(request: NextRequest) {
         acceptPartialPayment: body.acceptPartialPayment,
         partialPaymentPercentage: body.partialPaymentPercentage,
         paymentTimeLimit: body.paymentTimeLimit,
+        CBU: body.cbu,
+        Alias: body.alias,
       },
     });
   } catch (error) {
@@ -128,6 +130,8 @@ export async function PUT(request: NextRequest) {
         acceptPartialPayment: body.acceptPartialPayment,
         partialPaymentPercentage: body.partialPaymentPercentage,
         paymentTimeLimit: body.paymentTimeLimit,
+        CBU: body.cbu,
+        Alias: body.alias,
       },
     });
   } catch (error) {

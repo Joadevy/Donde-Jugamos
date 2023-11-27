@@ -67,8 +67,8 @@ function SportCenterFormClient({sportCenter}: Iprops) {
       phone: sportCenter?.phone ?? "",
       email: sportCenter?.email ?? "",
       description: sportCenter?.description ?? "",
-      cbu: sportCenter?.user.CBU ?? "",
-      alias: sportCenter?.user.Alias ?? "",
+      cbu: sportCenter?.CBU ?? "",
+      alias: sportCenter?.Alias ?? "",
       cancelTimeLimit: isUpdate
         ? minutesToTimeDayJs(sportCenter.cancelTimeLimit)
         : dayjs("2022-04-17T12:00"),
