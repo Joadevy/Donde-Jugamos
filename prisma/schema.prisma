@@ -44,7 +44,7 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    role          String?   @default("customer") // customer | propietary | admin 
+    role          String   @default("customer") // customer | propietary | admin 
     accounts      Account[]
     sessions      Session[]
     registerDate  DateTime  @default(now())
@@ -70,8 +70,10 @@ model SportCenter { //Establishment
   phone String
   email String
   description String?
+  CBU String? @unique
+  Alias String? @unique
   active Boolean @default(false)
-  state String? @default("pending") // pending | approved | rejected | canceled
+  state String @default("pending") // pending | approved | rejected | canceled
   cancelTimeLimit Int @default(180) // 3 horas
   paymentTimeLimit Int @default(180) // 3 horas
   courts Court[]
