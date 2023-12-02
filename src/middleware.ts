@@ -9,9 +9,13 @@ export default withAuth(async (req) => {
     return NextResponse.redirect(new URL("/", req.url));
   } else if (req.nextUrl.pathname.startsWith("/establecimientos") && token?.role !== "propietary") {
     return NextResponse.redirect(new URL("/", req.url));
+  } else if (req.nextUrl.pathname.startsWith("/api/propietary") && token?.role !== "propietary") {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
 });
 
-export const config = {matcher: ["/admin/:path*", "/establecimientos/:path*"]};
+export const config = {
+  matcher: ["/admin/:path*", "/establecimientos/:path*", "/api/propietary/:path*"],
+};
