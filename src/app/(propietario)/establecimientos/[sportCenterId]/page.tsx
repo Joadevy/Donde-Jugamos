@@ -63,6 +63,9 @@ async function EstablecimientosPage({params}: {params: {sportCenterId: string}})
 
       <aside className="border flex flex-col gap-2 py-2 px-4 order-1 lg:order-2">
         <Button>
+          <Link href={`/establecimientos/${params.sportCenterId}/edicion`}>Editar informacion</Link>
+        </Button>
+        <Button>
           <Link href={`/establecimientos/${params.sportCenterId}/canchas`}>Canchas</Link>
         </Button>
       </aside>
