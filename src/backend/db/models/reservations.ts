@@ -4,11 +4,20 @@ import {timeInStringFromMinutes, turnStateToSpanish} from "@/lib/utils/utils";
 import handleSendEmail from "@/backend/email/nodemailer";
 import {compileNewReservationTemplate} from "@/backend/email/templates/NewReservation";
 import {compilePropietaryChangeStatusTemplate} from "@/backend/email/templates/PropietaryChangeStateReservation";
+import {compileUpdateStatusReservationTemplate} from "@/backend/email/templates/UpdateStatusReservation";
 
 import {db} from "../db";
 
 import {getUserByEmail} from "./users";
 import {getAppointmentFullInformation} from "./appointments";
+
+export const RESERVATION_PENDING = "pending";
+
+export const RESERVATION_APPROVED = "approved";
+
+export const RESERVATION_REJECTED = "rejected";
+
+export const RESERVATION_CANCELED = "canceled";
 
 export const createReservation = async ({
   observation,
@@ -227,6 +236,32 @@ export type ReservationFullInfo = Prisma.ReservationGetPayload<{
   };
 }>;
 
+export const getReservationFullInfo = async (id: number): Promise<ReservationFullInfo | null> => {
+  const reservation = await db.reservation.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      appointment: {
+        include: {
+          court: {
+            include: {
+              sportCenter: {
+                include: {
+                  city: true,
+                },
+              },
+              sport: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return reservation;
+};
+
 export const getUpcomingUserReservations = async (userId: string) => {
   const appointments = await db.reservation.findMany({
     where: {
@@ -338,16 +373,42 @@ export const getUserReservationsByEmailAndState = async (
   return reservations;
 };
 
-export const getSportCenterReservations = async (sportCenterId: number) => {
+export type ReservationFullInfoWithUser = Prisma.ReservationGetPayload<{
+  include: {
+    appointment: {
+      include: {
+        court: {
+          include: {
+            sportCenter: {
+              include: {
+                city: true;
+              };
+            };
+            sport: true;
+          };
+        };
+      };
+    };
+    user: true;
+  };
+}>;
+
+export const getSportCenterReservations = async (
+  sportCenterId: number,
+): Promise<ReservationFullInfoWithUser[]> => {
   const reservations = await db.reservation.findMany({
     where: {
       appointment: {
+        date: {
+          gte: new Date(),
+        },
         court: {
           sportCenterId,
         },
       },
     },
     include: {
+      user: true,
       appointment: {
         include: {
           court: {
@@ -378,4 +439,60 @@ export const getSportCenterReservations = async (sportCenterId: number) => {
   });
 
   return reservations;
+};
+
+export const updateReservationState = async (reservationId: string, newState: string) => {
+  if (
+    newState != RESERVATION_APPROVED &&
+    newState != RESERVATION_REJECTED &&
+    newState != RESERVATION_PENDING &&
+    newState != RESERVATION_CANCELED
+  )
+    return null;
+
+  const updatedReservation = await db.reservation.update({
+    where: {
+      id: Number(reservationId),
+    },
+    data: {
+      state: newState.toLocaleLowerCase(),
+    },
+  });
+
+  const getReservationInfo = getReservationFullInfo(Number(reservationId));
+  const getUserInfo = getUserByEmail("");
+
+  const [reservationInfo, user] = await Promise.all([getReservationInfo, getUserInfo]);
+
+  if (!reservationInfo || !user)
+    throw new Error("Error el encontrar la reserva asociada o el usuario activo");
+
+  await handleSendEmail(
+    user.email!,
+    newState === RESERVATION_APPROVED
+      ? "Solicitud de reserva aprobada"
+      : "Solicitud de reserva rechazada",
+    compileUpdateStatusReservationTemplate(
+      newState === RESERVATION_APPROVED ? "aprobada" : "rechazada",
+      "Ante cualquier duda, comuniquese con el establecimiento.",
+      reservationInfo.appointment.court.sportCenter.name,
+      reservationInfo.appointment.court.sportCenter.address,
+      new Date(reservationInfo.appointment.date).toLocaleString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      reservationInfo.appointment.court.sportCenter.city.name,
+      timeInStringFromMinutes(String(reservationInfo.appointment.startTime)),
+      timeInStringFromMinutes(String(reservationInfo.appointment.endTime)),
+      String(reservationInfo.appointment.court.name),
+      reservationInfo.appointment.court.price.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+    ),
+  );
+
+  return updatedReservation;
 };

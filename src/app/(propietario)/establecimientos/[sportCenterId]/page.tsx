@@ -5,8 +5,7 @@ import {Button, buttonVariants} from "@/components/ui/button";
 import {getSportCenterByIdWithReservations} from "@/backend/db/models/sportsCenters";
 import {CountReservationsByState} from "@/lib/utils/utils";
 import {getSportCenterReservations} from "@/backend/db/models/reservations";
-import SportCenterClient from "@/components/SportCenterForm/SportCenterFormClient";
-import {Separator} from "@/components/ui/separator";
+import ReservationCard from "@/components/Reservation/Propietary/ReservationCard";
 
 async function EstablecimientosPage({params}: {params: {sportCenterId: string}}) {
   const idToNumber = Number(params.sportCenterId);
@@ -29,13 +28,20 @@ async function EstablecimientosPage({params}: {params: {sportCenterId: string}})
   }
 
   const reservations = await getSportCenterReservations(idToNumber);
+  const pendingReservations = reservations.filter((reservation) => reservation.state === "pending");
   const amountReservationsByState = CountReservationsByState(reservations);
 
   return (
     <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
       <div className="flex-auto flex flex-col lg:flex-row gap-4 items-center justify-center border">
         <section className="relative py-4">
-          <SportCenterClient sportCenter={sportCenter} />
+          {pendingReservations.length === 0 && (
+            <h2 className="text-slate-500 italic">Aun no hay reservas pendientes!</h2>
+          )}
+
+          {pendingReservations.map((reservation) => (
+            <ReservationCard key={reservation.id} reservation={reservation} />
+          ))}
         </section>
 
         <section className="py-4">
@@ -47,7 +53,7 @@ async function EstablecimientosPage({params}: {params: {sportCenterId: string}})
             </div>
 
             <div className={buttonVariants({variant: "outline"})}>
-              {amountReservationsByState.accepted} Reservas aceptadas
+              {amountReservationsByState.approved} Reservas aprobadas
             </div>
 
             <div className={buttonVariants({variant: "outline"})}>
