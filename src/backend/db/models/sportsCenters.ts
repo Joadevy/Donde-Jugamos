@@ -46,6 +46,9 @@ export const getSportCentersWithCourtsByFilters = async (
           sport: {
             name: sport,
           },
+          appointments: {
+            some: {},
+          },
         },
         include: {
           appointments: {
