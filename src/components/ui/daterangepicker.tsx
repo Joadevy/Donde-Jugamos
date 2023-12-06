@@ -39,7 +39,7 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
         <PopoverTrigger asChild>
           <Button
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal",
               !date && "text-muted-foreground",
             )}
             id="date"

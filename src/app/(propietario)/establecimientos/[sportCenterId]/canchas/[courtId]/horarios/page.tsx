@@ -21,26 +21,32 @@ export const DAYS_OF_WEEK: Record<string, DayInfo> = {
 async function HorariosPage({params}: {params: {sportCenterId: string; courtId: string}}) {
   const curt = await findWithDays(params.sportCenterId, params.courtId);
   let curtSchedule: CourtSchedule[] = [];
+  let openDays: string[] = [];
 
   if (curt?.days.length) {
     curtSchedule = curt.days.map((day) => {
       return {
         name: day.name,
-        openTime: day.firstHalfStartTime,
-        closeTime: day.secondHalfEndTime,
+        openTime: day.openTime,
+        closeTime: day.closeTime,
       };
     });
-
-    const openDays = curtSchedule.map((day) => day.name);
-
-    Object.keys(DAYS_OF_WEEK).forEach((day) => {
-      if (!openDays.includes(day)) {
-        curtSchedule.push({name: day, openTime: null, closeTime: null});
-      }
-    });
   }
+  openDays = curtSchedule.map((day) => day.name);
 
-  return <ScheduleForm schedule={curtSchedule} />;
+  Object.keys(DAYS_OF_WEEK).forEach((day) => {
+    if (!openDays.includes(day)) {
+      curtSchedule.push({name: day, openTime: null, closeTime: null});
+    }
+  });
+
+  return (
+    <ScheduleForm
+      courtId={Number(params.courtId)}
+      courts={[Number(params.courtId)]}
+      schedule={curtSchedule}
+    />
+  );
 }
 
 export default HorariosPage;

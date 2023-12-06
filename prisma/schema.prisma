@@ -113,6 +113,8 @@ model Appointment { //Turno
   courtId Int
   court Court @relation(fields: [courtId], references: [id])
   reservations Reservation[]
+
+  @@unique([date,startTime,endTime,courtId])
 }
 
 model Reservation {
@@ -138,10 +140,8 @@ model Sport {
 model Day {
   id Int @id @default(autoincrement())
   name String
-  firstHalfStartTime Int //Hora inicio primera media jornada
-  firstHalfEndTime Int? //Hora fin primera media jornada
-  secondHalfStartTime Int? //Hora inicio segunda media jornada
-  secondHalfEndTime Int //Hora fin segunda media jornada
+  openTime Int?
+  closeTime Int?
   courtId Int
   court Court @relation(fields: [courtId], references: [id])
 

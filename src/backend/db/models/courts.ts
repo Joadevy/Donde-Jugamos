@@ -1,4 +1,4 @@
-import type {Prisma} from "@prisma/client";
+import type {Court, Prisma} from "@prisma/client";
 
 import {db} from "../db";
 
@@ -42,6 +42,37 @@ export const findWithDaysSport = async (
     include: {
       days: true,
       sport: true,
+      appointments: {
+        where: {
+          date: await db.appointment.aggregate({
+            _max: {
+              date: true,
+            },
+            where: {
+              courtId: Number(courtId),
+            },
+            take: 1,
+          }),
+        },
+      },
+    },
+  });
+};
+
+export const findCourtsWithSameDuration = async (
+  sportCenterId: string | number,
+  courtId: string | number,
+  duration: number,
+): Promise<Court[] | null> => {
+  return await db.court.findMany({
+    where: {
+      sportCenterId: Number(sportCenterId),
+      sport: {
+        duration,
+      },
+      NOT: {
+        id: Number(courtId),
+      },
     },
   });
 };

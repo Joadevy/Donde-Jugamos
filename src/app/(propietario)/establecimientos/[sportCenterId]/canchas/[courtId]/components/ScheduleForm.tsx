@@ -7,6 +7,7 @@ import type {CourtSchedule} from "@/lib/types/importables/types";
 
 import dayjs from "dayjs";
 import React, {useState} from "react";
+import {useRouter} from "next/navigation";
 
 import {timeToMinutesDayJs} from "@/lib/utils/utils";
 import TimePickerUI from "@/components/TimePicker/time-picker";
@@ -19,25 +20,31 @@ import ScheduleTable from "./ScheduleTable";
 
 interface HorarioFormProps {
   schedule: CourtSchedule[];
+  courtId: number;
+  courts: number[];
 }
 
-const ScheduleForm: FC<HorarioFormProps> = ({schedule}) => {
+const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule}) => {
   const [openTime, setOpenTime] = useState(dayjs("2022-04-17T08:00"));
   const [closeTime, setCloseTime] = useState(dayjs("2022-04-17T22:30"));
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [days, setDays] = useState<CourtSchedule[]>([...schedule]);
+  const router = useRouter();
 
   const handleClic = () => {
-    selectedDays.forEach((daySelected) => {
-      const day = days.find((d) => d.name === daySelected);
-
-      if (day) {
-        day.openTime = timeToMinutesDayJs(openTime);
-        day.closeTime = timeToMinutesDayJs(closeTime);
+    const newDays: CourtSchedule[] = days.map((day) => {
+      if (selectedDays.includes(day.name) && (!day.openTime || !day.closeTime)) {
+        return {
+          ...day,
+          openTime: timeToMinutesDayJs(openTime),
+          closeTime: timeToMinutesDayJs(closeTime),
+        };
       }
+
+      return day;
     });
 
-    setDays([...days]);
+    setDays([...newDays]);
   };
 
   const handleEdit = (daySelected: string) => {
@@ -54,13 +61,14 @@ const ScheduleForm: FC<HorarioFormProps> = ({schedule}) => {
   };
 
   const updateCourtTimes = async () => {
-    const daysConfigured = days.filter((day) => !!day.openTime);
-    const courts = [1];
     const response = await fetch("/api/court", {
       method: "POST",
-      body: JSON.stringify({days: daysConfigured, courts}),
+      body: JSON.stringify({days, courts}),
     });
+
     const data = await response.json();
+
+    router.push(`../${courtId}`);
   };
 
   return (
