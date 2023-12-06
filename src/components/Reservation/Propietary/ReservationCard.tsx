@@ -83,7 +83,8 @@ function ReservationCard({reservation}: ReservationCardProps): JSX.Element {
             <p>Observacion</p>
             <span
               className={
-                "font-semibold" + (reservation.observation ? "w-2/3 h-[70px] overflow-y-auto" : "")
+                "font-semibold " +
+                (reservation.observation ? "w-2/3 px-2 h-[70px] overflow-auto" : "")
               }
             >
               {reservation.observation ?? "-"}
