@@ -29,7 +29,7 @@ export type SportCentersWithCourtsAndAppointments = Prisma.SportCenterGetPayload
 export const getSportCentersWithCourtsByFilters = async (
   postCode: string,
   sport: string,
-  date: Date,
+  date: string,
   time: number,
 ): Promise<SportCentersWithCourtsAndAppointments[]> => {
   const sportCenters = await db.sportCenter.findMany({
@@ -38,33 +38,28 @@ export const getSportCentersWithCourtsByFilters = async (
         postCode: postCode,
       },
       active: true, // de los que estan activos
-      courts: {
-        some: {
-          sport: {
-            name: sport,
-          },
-          appointments: {
-            some: {
-              date: {
-                equals: date,
-              },
-              startTime: {
-                gte: time,
-              },
-            },
-          },
-        },
-      },
     },
     include: {
       city: true,
       courts: {
+        where: {
+          sport: {
+            name: sport,
+          },
+        },
         include: {
           appointments: {
             orderBy: {
               startTime: "asc",
             },
             where: {
+              active: true,
+              date: {
+                equals: date,
+              },
+              startTime: {
+                gte: time,
+              },
               reservations: {
                 none: {
                   state: {
@@ -85,6 +80,29 @@ export const getSportCentersWithCourtsByFilters = async (
   return sportCenters.filter((sportCenter) =>
     sportCenter.courts.some((court) => court.appointments.length > 0),
   );
+};
+
+export const getSportCenterByIdWithReservations = async (
+  id: number,
+): Promise<SportCentersWithCourtsAndAppointments | null> => {
+  return await db.sportCenter.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: true,
+      city: true,
+      courts: {
+        include: {
+          appointments: {
+            include: {
+              reservations: true,
+            },
+          },
+        },
+      },
+    },
+  });
 };
 
 export const getUserPendingSportCenters = async (

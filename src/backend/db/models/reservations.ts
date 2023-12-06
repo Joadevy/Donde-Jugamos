@@ -337,3 +337,45 @@ export const getUserReservationsByEmailAndState = async (
 
   return reservations;
 };
+
+export const getSportCenterReservations = async (sportCenterId: number) => {
+  const reservations = await db.reservation.findMany({
+    where: {
+      appointment: {
+        court: {
+          sportCenterId,
+        },
+      },
+    },
+    include: {
+      appointment: {
+        include: {
+          court: {
+            include: {
+              sportCenter: {
+                include: {
+                  city: true,
+                },
+              },
+              sport: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [
+      {
+        appointment: {
+          date: "asc",
+        },
+      },
+      {
+        appointment: {
+          startTime: "asc",
+        },
+      },
+    ],
+  });
+
+  return reservations;
+};

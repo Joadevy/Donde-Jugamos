@@ -30,8 +30,9 @@ export type SportCenterInformation = Pick<
   | "cancelTimeLimit"
   | "acceptPartialPayment"
   | "partialPaymentPercentage"
+  | "CBU"
+  | "Alias"
 > &
-  Pick<User, "CBU" | "Alias"> &
   CityWithName;
 
 interface Iprops {

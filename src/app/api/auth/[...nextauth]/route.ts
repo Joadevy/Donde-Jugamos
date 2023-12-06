@@ -26,6 +26,17 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
+    redirect({url, baseUrl}) {
+      // Allows relative callback URLs
+      const u = new URL(url);
+      const redirectUrl = u.searchParams.get("callbackUrl")!;
+
+      if (redirectUrl) return redirectUrl;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+
+      return baseUrl;
+    },
     // eslint-disable-next-line @typescript-eslint/require-await
     async jwt({token, user}) {
       return {...token, ...user};
@@ -37,8 +48,9 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
+
   pages: {
-    //signIn: "/signin",
+    signIn: "/signin",
     //signOut: "/auth/signout",
     //error: "/auth/error",
     //verifyRequest: "/auth/verify-request",
