@@ -21,7 +21,7 @@ import {
 import {Button} from "../../ui/button";
 import {Textarea} from "../../ui/textarea";
 
-const handleOnClick = async (reservationId: number, state: string) => {
+const handleOnClick = async (reservationId: number, state: string, onSuccess: () => void) => {
   const res: {
     status: number;
     message: string;
@@ -35,6 +35,7 @@ const handleOnClick = async (reservationId: number, state: string) => {
 
   if (res.status === 200) {
     successToast(res.message);
+    onSuccess();
   } else {
     errorToast(res.message);
   }
@@ -46,6 +47,8 @@ interface ReservationDenyAlertProps {
 
 // eslint-disable-next-line react/function-component-definition
 export const AlertRejectReservation: FC<ReservationDenyAlertProps> = ({reservationId}) => {
+  const router = useRouter();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -61,7 +64,14 @@ export const AlertRejectReservation: FC<ReservationDenyAlertProps> = ({reservati
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction role="button" onClick={() => handleOnClick(reservationId, "rejected")}>
+          <AlertDialogAction
+            role="button"
+            onClick={() =>
+              handleOnClick(reservationId, "rejected", () => {
+                router.refresh();
+              })
+            }
+          >
             Confirmar
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -76,6 +86,8 @@ interface ReservationConfirmAlertProps {
 
 // eslint-disable-next-line react/function-component-definition
 export const AlertConfirmReservation: FC<ReservationConfirmAlertProps> = ({reservationId}) => {
+  const router = useRouter();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -91,7 +103,14 @@ export const AlertConfirmReservation: FC<ReservationConfirmAlertProps> = ({reser
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction role="button" onClick={() => handleOnClick(reservationId, "approved")}>
+          <AlertDialogAction
+            role="button"
+            onClick={() =>
+              handleOnClick(reservationId, "approved", () => {
+                router.refresh();
+              })
+            }
+          >
             Confirmar
           </AlertDialogAction>
         </AlertDialogFooter>
