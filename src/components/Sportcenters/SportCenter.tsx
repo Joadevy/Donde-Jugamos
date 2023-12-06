@@ -39,8 +39,8 @@ function SportCenter({sportCenter}: Iprops) {
     paymentTimeLimit: sportCenter.paymentTimeLimit,
     cancelTimeLimit: sportCenter.cancelTimeLimit,
     acceptPartialPayment: sportCenter.acceptPartialPayment,
-    CBU: sportCenter.user.CBU,
-    Alias: sportCenter.user.Alias,
+    CBU: sportCenter.CBU,
+    Alias: sportCenter.Alias,
     partialPaymentPercentage: sportCenter.partialPaymentPercentage,
     cityName: sportCenter.city.name,
   };

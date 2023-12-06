@@ -1,19 +1,38 @@
-import type {Court, Prisma} from "@prisma/client";
+import type {Prisma} from "@prisma/client";
 
 import {db} from "../db";
 
-export type CourtWithDays = Prisma.CourtGetPayload<{
+export type CourtFullInfo = Prisma.CourtGetPayload<{
   include: {
-    days: true;
-  };
-}>;
-
-export type CourtWithDaysSport = Prisma.CourtGetPayload<{
-  include: {
-    days: true;
     sport: true;
   };
 }>;
+
+export const getSportCenterCourts = async (sportCenterId: number): Promise<CourtFullInfo[]> => {
+  const courts = await db.court.findMany({
+    where: {
+      sportCenterId,
+    },
+    include: {
+      sport: true,
+    },
+  });
+
+  return courts;
+};
+
+export const getCourtById = async (courtId: number): Promise<CourtFullInfo | null> => {
+  const court = await db.court.findUnique({
+    where: {
+      id: courtId,
+    },
+    include: {
+      sport: true,
+    },
+  });
+
+  return court;
+};
 
 export const findWithDays = async (
   sportCenterId: string | number,
