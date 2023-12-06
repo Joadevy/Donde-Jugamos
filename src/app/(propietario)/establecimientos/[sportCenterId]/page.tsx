@@ -33,16 +33,22 @@ async function EstablecimientosPage({params}: {params: {sportCenterId: string}})
 
   return (
     <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
-      <div className="flex-auto flex flex-col lg:flex-row gap-4 items-center justify-center border">
+      <div className="flex-auto flex flex-col lg:flex-row gap-4 items-center justify-center lg:border">
         <section className="relative py-4">
-          <h1 className="font-bold text-xl lg:text-2xl">Gestion de solicitudes de reserva</h1>
+          <h1 className="font-bold text-xl lg:text-2xl text-primary">
+            Gestioná tus solicitudes de reserva
+          </h1>
           {pendingReservations.length === 0 && (
             <h2 className="text-slate-500 italic">Aun no hay reservas pendientes!</h2>
           )}
 
-          {pendingReservations.map((reservation) => (
-            <ReservationCard key={reservation.id} reservation={reservation} />
-          ))}
+          <ul className="flex flex-col gap-4 lg:flex-row">
+            {pendingReservations.map((reservation) => (
+              <li key={reservation.id}>
+                <ReservationCard reservation={reservation} />
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="py-4">
