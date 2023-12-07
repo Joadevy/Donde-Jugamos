@@ -42,7 +42,7 @@ async function PropietaryPage() {
               key={sportCenter.id}
               className="w-[300px] h-[380px]"
               description={sportCenter.description!}
-              state={sportCenter.state!}
+              state={sportCenter.state}
               title={sportCenter.name}
             />
           ),

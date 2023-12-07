@@ -7,7 +7,6 @@
 import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
 import {useSession, signIn} from "next-auth/react";
 
 import {Form} from "@/components/ui/form";
@@ -15,8 +14,6 @@ import {Button} from "@/components/ui/button";
 import FormTextAreaField from "@/components/form/FormTextAreaField";
 
 import FormSelectField from "@/components/form/FormSelectField";
-import FormTimePickerField from "@/components/form/FormTimePickerField";
-import {cn, minutesToTimeDayJs, timeToMinutesDayJs} from "@/lib/utils/utils";
 
 import FormInputField from "../../components/form/FormInputField";
 import {useRouter} from "next/navigation";
@@ -37,10 +34,6 @@ function CourtForm({court, searchParams, sports}: Iprops) {
   const {data: session} = useSession();
   const router = useRouter();
   const isUpdate = !!court;
-
-  const sportNames = useMemo(() => {
-    return sports.map((sport) => sport.name);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sportsOptions = useMemo(() => {
     return sports.map((sport) => ({title: sport.name, value: String(sport.id)}));

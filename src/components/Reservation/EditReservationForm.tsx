@@ -24,6 +24,8 @@ import {Popover, PopoverContent, PopoverTrigger} from "../ui/popover";
 import {Input} from "../ui/input";
 import HoverInfo from "../Information/HoverInfo";
 
+import PaymentConfirmationThumbnail from "./Propietary/PaymentConfirmation";
+
 interface SearchFormProps {
   reservationInfo: ReservationFullInfo;
 }
@@ -202,27 +204,7 @@ const EditReservationForm: React.FC<SearchFormProps> = ({reservationInfo}) => {
                     Adjunta una captura de pantalla o imagen del comprobante
                   </FormMessage>
                   {imagePreview ? (
-                    <div className="flex flex-col">
-                      <button
-                        className="w-14 h-14 lg:h-24 lg:w-24 border rounded-sm border-slate-200 mt-2 overflow-hidden
-                           hover:opacity-75 transition-opacity"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openFullscreen();
-                        }}
-                      >
-                        <img
-                          ref={imgRef}
-                          alt="Comprobante de pago asociado a la reserva"
-                          className="w-full h-full"
-                          role="button"
-                          src={imagePreview}
-                        />
-                      </button>
-                      <p className="text-sm lg:text-xs italic text-slate-400">
-                        Comprobante cargado
-                      </p>
-                    </div>
+                    <PaymentConfirmationThumbnail description paymentConfirmation={imagePreview} />
                   ) : null}
                 </FormItem>
               )}
