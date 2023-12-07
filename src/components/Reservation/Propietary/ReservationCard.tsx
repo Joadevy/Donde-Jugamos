@@ -5,6 +5,7 @@ import {timeInStringFromMinutes, turnStateToSpanish} from "@/lib/utils/utils";
 import {Separator} from "@/components/ui/separator";
 
 import {AlertConfirmReservation, AlertRejectReservation} from "./AlertChangeState";
+import PaymentConfirmationThumbnail from "./PaymentConfirmation";
 
 interface ReservationCardProps {
   reservation: ReservationFullInfoWithUser;
@@ -12,7 +13,7 @@ interface ReservationCardProps {
 
 function ReservationCard({reservation}: ReservationCardProps): JSX.Element {
   return (
-    <Card className="w-[350px] lg:w-[400px] h-[350px] relative">
+    <Card className="w-[350px] lg:w-[400px] h-[400px] relative">
       <CardHeader>
         <CardTitle>
           {new Date(reservation.appointment.date).toLocaleString("es-AR", {
@@ -90,6 +91,19 @@ function ReservationCard({reservation}: ReservationCardProps): JSX.Element {
               {reservation.observation ?? "-"}
             </span>
           </div>
+
+          <Separator />
+
+          {reservation.paymentConfirmation ? (
+            <div className="flex justify-between">
+              <p>Comprobante de pago</p>
+              <span className="font-semibold">
+                <PaymentConfirmationThumbnail
+                  paymentConfirmation={reservation.paymentConfirmation}
+                />
+              </span>
+            </div>
+          ) : null}
         </CardContent>
 
         <CardFooter className="flex gap-2 items-center absolute bottom-0 left-0">
