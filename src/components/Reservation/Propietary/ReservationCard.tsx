@@ -106,10 +106,12 @@ function ReservationCard({reservation}: ReservationCardProps): JSX.Element {
           ) : null}
         </CardContent>
 
-        <CardFooter className="flex gap-2 items-center absolute bottom-0 left-0">
-          <AlertConfirmReservation reservationId={reservation.id} />
-          <AlertRejectReservation reservationId={reservation.id} />
-        </CardFooter>
+        {reservation.state === "pending" && (
+          <CardFooter className="flex gap-2 items-center absolute bottom-0 left-0">
+            <AlertConfirmReservation reservationId={reservation.id} />
+            <AlertRejectReservation reservationId={reservation.id} />
+          </CardFooter>
+        )}
       </CardHeader>
     </Card>
   );
