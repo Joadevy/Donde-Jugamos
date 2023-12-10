@@ -19,6 +19,7 @@ export async function PUT(request: NextRequest, {params}: {params: {id: string}}
       },
       data: {
         state: data.state,
+        active: true,
       },
     })
     .catch((error) => {
