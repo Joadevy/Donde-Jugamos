@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 "use client";
 
-import type {FC, SyntheticEvent} from "react";
+import type {ChangeEvent, FC} from "react";
+import type {SportCenter} from "@prisma/client";
 
 import {useState} from "react";
 import {useRouter} from "next/navigation";
@@ -30,9 +31,9 @@ interface SportCenterDenyAlertProps {
 // eslint-disable-next-line react/function-component-definition
 export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenterId}) => {
   const [reason, setReason] = useState("");
+  const router = useRouter();
 
-  const handleValueChange = (event: SyntheticEvent) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const handleValueChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setReason(event.target.value);
   };
 
@@ -65,7 +66,11 @@ export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenter
           </AlertDialogCancel>
           <AlertDialogAction
             role="button"
-            onClick={() => handleOnClick(sportCenterId, SPORT_CENTER_REJECTED, reason)}
+            onClick={() =>
+              handleOnClick(sportCenterId, SPORT_CENTER_REJECTED, reason, () => {
+                router.refresh();
+              })
+            }
           >
             Rechazar
           </AlertDialogAction>
@@ -85,6 +90,8 @@ export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
   sportCenterId,
   sportCenterName,
 }) => {
+  const router = useRouter();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -101,7 +108,11 @@ export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             role="button"
-            onClick={() => handleOnClick(sportCenterId, SPORT_CENTER_APPROVED, "")}
+            onClick={() =>
+              handleOnClick(sportCenterId, SPORT_CENTER_APPROVED, "", () => {
+                router.refresh();
+              })
+            }
           >
             Aprobar
           </AlertDialogAction>
@@ -111,18 +122,27 @@ export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
   );
 };
 
-const handleOnClick = async (sportCenterId: number, state: string, reason: string) => {
-  const res = await fetch(`/api/sportcenter/${sportCenterId}`, {
-    method: "PUT",
-    body: JSON.stringify({state, reason}),
-    headers: {"Content-Type": "application/json"},
-  }).catch(() => errorToast("No se pudo realizar la operacion. Intentelo nuevamente"));
+const handleOnClick = async (
+  sportCenterId: number,
+  state: string,
+  reason: string,
+  onSuccess: () => void,
+) => {
+  const res: {data: SportCenter; status: number; message: string} = await fetch(
+    `/api/sportcenter/${sportCenterId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({state, reason}),
+      headers: {"Content-Type": "application/json"},
+    },
+  )
+    .then((data) => data.json())
+    .catch(() => errorToast("No se pudo realizar la operacion. Intentelo nuevamente"));
 
-  const data: {data: any; status: number; message: string} = await res.json();
-
-  if (data.status === 200) {
-    successToast(data.message);
+  if (res.status === 200) {
+    onSuccess();
+    successToast(res.message);
   } else {
-    errorToast(data.message);
+    errorToast(res.message);
   }
 };
