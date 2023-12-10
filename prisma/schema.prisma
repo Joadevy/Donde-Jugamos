@@ -77,7 +77,7 @@ model SportCenter { //Establishment
   cancelTimeLimit Int @default(180) // 3 horas
   paymentTimeLimit Int @default(180) // 3 horas
   courts Court[]
-  userId String @unique
+  userId String
   user User @relation(fields: [userId], references: [id])
   cityId Int
   city City @relation(fields: [cityId], references: [id])
