@@ -45,3 +45,37 @@ export async function PUT(request: NextRequest, {params}: {params: {id: string}}
 
   return NextResponse.json(response);
 }
+
+export async function PATCH(request: NextRequest, {params}: {params: {id: string}}) {
+  const sportCenterId = Number(params.id);
+  const data: {active: boolean} = await request.json();
+  let response: ApiResponse;
+
+  const sportCenter = await db.sportCenter
+    .update({
+      where: {
+        id: sportCenterId,
+      },
+      data: {
+        active: data.active,
+      },
+    })
+    .catch((error) => {
+      response = generateApiResponse(
+        {...error},
+        500,
+        "Error al activar/desactivar al establecimiento",
+      );
+    });
+
+  //TODO: Envio de Mail informando al usuario el estado del Establecimiento
+  //TODO: Revocar la propiedad del establecimiento?
+
+  response = generateApiResponse(
+    sportCenter,
+    200,
+    "Se va a enviar un correo electrónico al propietario informando la resolución",
+  );
+
+  return NextResponse.json(response);
+}

@@ -115,6 +115,29 @@ export type SportCentersWithUserAndCity = Prisma.SportCenterGetPayload<{
   };
 }>;
 
+export const getSportCentersWithUserAndCity = async (
+  name?: string,
+  postCode?: string,
+): Promise<SportCentersWithUserAndCity[]> => {
+  return await db.sportCenter.findMany({
+    where: {
+      state: "approved",
+      name: {
+        contains: name,
+      },
+      city: {
+        postCode: {
+          equals: postCode,
+        },
+      },
+    },
+    include: {
+      user: true,
+      city: true,
+    },
+  });
+};
+
 export const getSportCenterByIdWithUserAndCity = async (
   id: number,
 ): Promise<SportCentersWithUserAndCity | null> => {

@@ -21,7 +21,10 @@ interface Session {
 
 const CUSTOMER_LINKS = [{href: "/reservas", text: "Mis Reservas"}];
 const PROPIETARY_LINKS = [{href: "/establecimientos", text: "Mi establecimiento"}];
-const ADMIN_LINKS = [{href: "/admin/solicitudes", text: "Solicitudes de Alta"}];
+const ADMIN_LINKS = [
+  {href: "/admin/solicitudes", text: "Solicitudes de Alta"},
+  {href: "/admin/establecimientos", text: "Gestion de establecimientos"},
+];
 
 function LoginAndNavigationOptions({user}: Session) {
   const userRole = user?.role ?? "customer";

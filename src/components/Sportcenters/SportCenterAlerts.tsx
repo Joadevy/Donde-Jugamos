@@ -26,10 +26,11 @@ import {Textarea} from "../ui/textarea";
 
 interface SportCenterDenyAlertProps {
   sportCenterId: number;
+  title?: string;
 }
 
 // eslint-disable-next-line react/function-component-definition
-export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenterId}) => {
+export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenterId, title}) => {
   const [reason, setReason] = useState("");
   const router = useRouter();
 
@@ -40,7 +41,7 @@ export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenter
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Rechazar</Button>
+        <Button variant="destructive">{title ?? `Rechazar`}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -67,12 +68,12 @@ export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenter
           <AlertDialogAction
             role="button"
             onClick={() =>
-              handleOnClick(sportCenterId, SPORT_CENTER_REJECTED, reason, () => {
+              handleChangeState(sportCenterId, SPORT_CENTER_REJECTED, reason, () => {
                 router.refresh();
               })
             }
           >
-            Rechazar
+            {title ?? `Rechazar`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -80,22 +81,113 @@ export const SportCenterDenyAlert: FC<SportCenterDenyAlertProps> = ({sportCenter
   );
 };
 
+interface SportCenterDisableAlertProps {
+  sportCenterId: number;
+  sportCenterName: string;
+  title: string;
+}
+
+export function SportCenterDisableAlert({
+  sportCenterId,
+  sportCenterName,
+  title,
+}: SportCenterDisableAlertProps) {
+  const router = useRouter();
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive">{title}</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            ¿Esta seguro que quiere deshabilitar el establecimiento{" "}
+            <strong>{sportCenterName}</strong>?
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            role="button"
+            onClick={() =>
+              handleChangeActive(sportCenterId, false, () => {
+                router.refresh();
+              })
+            }
+          >
+            {title}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+interface SportCenterEnableAlertProps {
+  sportCenterId: number;
+  sportCenterName: string;
+  title: string;
+}
+
+export function SportCenterEnableAlert({
+  sportCenterId,
+  sportCenterName,
+  title,
+}: SportCenterDisableAlertProps) {
+  const router = useRouter();
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="default">{title}</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            ¿Esta seguro que quiere habilitar el establecimiento{" "}
+            <strong>{sportCenterName}</strong>?
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            role="button"
+            onClick={() =>
+              handleChangeActive(sportCenterId, true, () => {
+                router.refresh();
+              })
+            }
+          >
+            {title}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 interface SportCenterConfirmAlertProps {
   sportCenterId: number;
   sportCenterName: string;
+  title?: string;
+  description?: string;
 }
 
 // eslint-disable-next-line react/function-component-definition
 export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
   sportCenterId,
   sportCenterName,
+  title,
 }) => {
   const router = useRouter();
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button>Aprobar</Button>
+        <Button>{title ?? `Aprobar`}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -109,12 +201,12 @@ export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
           <AlertDialogAction
             role="button"
             onClick={() =>
-              handleOnClick(sportCenterId, SPORT_CENTER_APPROVED, "", () => {
+              handleChangeState(sportCenterId, SPORT_CENTER_APPROVED, "", () => {
                 router.refresh();
               })
             }
           >
-            Aprobar
+            {title ?? `Aprobar`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -122,7 +214,7 @@ export const SportCenterConfirmAlert: FC<SportCenterConfirmAlertProps> = ({
   );
 };
 
-const handleOnClick = async (
+const handleChangeState = async (
   sportCenterId: number,
   state: string,
   reason: string,
@@ -133,6 +225,30 @@ const handleOnClick = async (
     {
       method: "PUT",
       body: JSON.stringify({state, reason}),
+      headers: {"Content-Type": "application/json"},
+    },
+  )
+    .then((data) => data.json())
+    .catch(() => errorToast("No se pudo realizar la operacion. Intentelo nuevamente"));
+
+  if (res.status === 200) {
+    onSuccess();
+    successToast(res.message);
+  } else {
+    errorToast(res.message);
+  }
+};
+
+const handleChangeActive = async (
+  sportCenterId: number,
+  active: boolean,
+  onSuccess: () => void,
+) => {
+  const res: {data: SportCenter; status: number; message: string} = await fetch(
+    `/api/sportcenter/${sportCenterId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({active}),
       headers: {"Content-Type": "application/json"},
     },
   )
