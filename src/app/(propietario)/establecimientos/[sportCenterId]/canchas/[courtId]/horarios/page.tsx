@@ -13,8 +13,8 @@ export const DAYS_OF_WEEK: Record<string, DayInfo> = {
   ["tuesday"]: {name: "Martes"},
   ["wednesday"]: {name: "Miércoles"},
   ["thursday"]: {name: "Jueves"},
-  ["friday"]: {name: "Viérnes"},
-  ["saturday"]: {name: "Sabado"},
+  ["friday"]: {name: "Viernes"},
+  ["saturday"]: {name: "Sábado"},
   ["sunday"]: {name: "Domingo"},
 };
 
