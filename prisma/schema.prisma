@@ -132,7 +132,7 @@ model Reservation {
 
 model Sport {
   id Int @id @default(autoincrement()) 
-  name String
+  name String  @unique
   duration Int @default(60) //Minutes 
   courts Court[]
 }
