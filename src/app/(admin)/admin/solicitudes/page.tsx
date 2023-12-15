@@ -1,9 +1,9 @@
 import React from "react";
-import {Mail, MapPin, Phone} from "lucide-react";
+import {Mail, MapPin, Phone, User} from "lucide-react";
 import Link from "next/link";
 
 import {CardContent, CardFooter} from "@/components/ui/card";
-import {SPORT_CENTER_PENDING, getSportCentersByState} from "@/backend/db/models/sportsCenters";
+import {SPORT_CENTER_PENDING, getFullSportCentersByState} from "@/backend/db/models/sportsCenters";
 import Information from "@/components/Sportcenters/Information";
 import {
   SportCenterConfirmAlert,
@@ -13,7 +13,7 @@ import {SportCenterWrapper} from "@/components/Sportcenters/SportCenterWrapper";
 import {buttonVariants} from "@/components/ui/button";
 
 const SolicitudesPage = async () => {
-  const sportCenters = (await getSportCentersByState(SPORT_CENTER_PENDING)) || [];
+  const sportCenters = (await getFullSportCentersByState(SPORT_CENTER_PENDING)) || [];
 
   return (
     <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
@@ -38,7 +38,10 @@ const SolicitudesPage = async () => {
                     <CardContent className="space-y-2">
                       <Information>
                         <MapPin color="green" size={20} />
-                        <p>{sportCenter.address}</p>
+                        <p>
+                          {sportCenter.address}, {sportCenter.city.name} (
+                          {sportCenter.city.postCode})
+                        </p>
                       </Information>
 
                       <Information>
@@ -49,6 +52,11 @@ const SolicitudesPage = async () => {
                       <Information>
                         <Mail color="green" size={20} />
                         <p>{sportCenter.email}</p>
+                      </Information>
+
+                      <Information>
+                        <User color="green" size={20} />
+                        <p>{sportCenter.user.name}</p>
                       </Information>
                     </CardContent>
                     <CardFooter className="mt-auto flex gap-2 w-fit">

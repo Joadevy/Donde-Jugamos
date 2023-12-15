@@ -191,3 +191,19 @@ export const getSportCentersByState = async (state: string): Promise<SportCenter
     })
     .catch(() => null);
 };
+
+export const getFullSportCentersByState = async (
+  state: string,
+): Promise<SportCentersWithUserAndCity[] | null> => {
+  return await db.sportCenter
+    .findMany({
+      where: {
+        state,
+      },
+      include: {
+        user: true,
+        city: true,
+      },
+    })
+    .catch(() => null);
+};
