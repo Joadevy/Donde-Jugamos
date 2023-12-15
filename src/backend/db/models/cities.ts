@@ -11,6 +11,8 @@ export const getCities = async (): Promise<Pick<City, "name" | "postCode">[]> =>
   });
 };
 
+export const getFullCities = async (): Promise<City[]> => await db.city.findMany();
+
 export const getCityByPostcode = async (postCode: string): Promise<City | null> => {
   return await db.city.findUnique({
     where: {

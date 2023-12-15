@@ -12,9 +12,13 @@ function DashboardPage() {
           </h1>
 
           <div className="lg:mt-8">
-            <section>
+            <section className="flex gap-2">
               <Link className={buttonVariants({variant: "default"})} href="/admin/deportes">
                 Gestionar deportes
+              </Link>
+
+              <Link className={buttonVariants({variant: "default"})} href="/admin/ciudades">
+                Gestionar ciudades
               </Link>
             </section>
           </div>

@@ -25,6 +25,7 @@ const ADMIN_LINKS = [
   {href: "/admin/solicitudes", text: "Solicitudes de Alta"},
   {href: "/admin/establecimientos", text: "Gestion de establecimientos"},
   {href: "/admin/deportes", text: "Gestion de deportes"},
+  {href: "/admin/ciudades", text: "Gestion de ciudades"},
 ];
 
 function LoginAndNavigationOptions({user}: Session) {
