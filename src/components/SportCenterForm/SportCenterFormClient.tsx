@@ -23,7 +23,10 @@ import {useState} from "react";
 import {useRouter} from "next/navigation";
 import type {ApiResponse} from "@/lib/types/importables/types";
 import {errorToast, successToast} from "@/lib/utils/toasts";
-import type {SportCentersWithCourtsAndAppointments} from "@/backend/db/models/sportsCenters";
+import type {
+  SportCentersWithCourtsAndAppointments,
+  SportCentersWithUserAndCity,
+} from "@/backend/db/models/sportsCenters";
 import {Separator} from "../ui/separator";
 
 const formSchema = z.object({
@@ -48,7 +51,7 @@ const acceptPartialPaymentOptions = [
 ];
 
 interface Iprops {
-  sportCenter?: SportCentersWithCourtsAndAppointments; // No deberia ser todo este tipo creeria
+  sportCenter?: SportCentersWithUserAndCity; // No deberia ser todo este tipo creeria
 }
 
 function SportCenterFormClient({sportCenter}: Iprops) {

@@ -9,7 +9,7 @@ function Page() {
       <div className="relative w-10/12 lg:w-1/2 flex flex-col gap-4">
         <div className="border p-3 shadow-lg border-gray-400 rounded-md">
           <header className="mb-2 text-center">
-            <h1 className="text-2xl font-bold">Donde jugamos?</h1>
+            <h1 className="text-2xl font-bold text-primary">Donde jugamos?</h1>
             <p>Inicia sesion para reservar turnos en tus canchas favoritas!</p>
           </header>
 

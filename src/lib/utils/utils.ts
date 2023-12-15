@@ -98,7 +98,7 @@ export const CountReservationsByState = (reservations: Reservation[]) => {
 
     return acc;
   }
-  , {"accepted":0,"rejected":0,"pending":0,"canceled":0});
+  , {"approved":0,"rejected":0,"pending":0,"canceled":0});
 }
 
 

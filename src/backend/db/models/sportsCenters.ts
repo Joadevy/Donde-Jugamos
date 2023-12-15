@@ -46,6 +46,9 @@ export const getSportCentersWithCourtsByFilters = async (
           sport: {
             name: sport,
           },
+          appointments: {
+            some: {},
+          },
         },
         include: {
           appointments: {
@@ -101,6 +104,27 @@ export const getSportCenterByIdWithReservations = async (
           },
         },
       },
+    },
+  });
+};
+
+export type SportCentersWithUserAndCity = Prisma.SportCenterGetPayload<{
+  include: {
+    city: true;
+    user: true;
+  };
+}>;
+
+export const getSportCenterByIdWithUserAndCity = async (
+  id: number,
+): Promise<SportCentersWithUserAndCity | null> => {
+  return await db.sportCenter.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: true,
+      city: true,
     },
   });
 };
