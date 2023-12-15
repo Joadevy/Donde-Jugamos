@@ -63,7 +63,9 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
           <Calendar
             initialFocus
             defaultMonth={date.from}
-            disabled={(calendarDate) => (disabledDatesFrom ? calendarDate < currentDate : true)}
+            disabled={(calendarDate) =>
+              disabledDatesFrom ? calendarDate <= disabledDatesFrom : true
+            }
             locale={es}
             max={maxDayLimit}
             min={minDayLimit}

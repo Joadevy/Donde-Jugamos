@@ -2,7 +2,7 @@ import type {CourtSchedule} from "@/lib/types/importables/types";
 
 import React from "react";
 
-import {findCourtsWithSameDuration, findWithDaysSport} from "@/backend/db/models/courts";
+import {findWithDaysSport, lastAppointmentDate} from "@/backend/db/models/courts";
 
 import GenerateAppointmentsClient from "./components/GenerateAppointmentsClient";
 
@@ -12,17 +12,11 @@ const GenerateAppointmentsPage = async ({
   params: {sportCenterId: string; courtId: string};
 }) => {
   const court = await findWithDaysSport(params.sportCenterId, params.courtId);
+  const maxDate = await lastAppointmentDate(params.courtId);
 
-  console.log(court);
   if (!court) {
-    return <div>No se encontro la cancha seleccionada</div>;
+    return <div>La cancha seleccionada no existe</div>;
   }
-
-  const similarlyCourts = await findCourtsWithSameDuration(
-    params.sportCenterId,
-    params.courtId,
-    court.sport.duration,
-  );
 
   let curtSchedule: CourtSchedule[] = [];
 
@@ -40,7 +34,7 @@ const GenerateAppointmentsPage = async ({
     <GenerateAppointmentsClient
       appointmentTime={court.sport.duration}
       courtId={Number(params.courtId)}
-      courts={similarlyCourts || []}
+      maxDate={maxDate}
       schedule={curtSchedule}
     />
   );

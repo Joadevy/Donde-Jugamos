@@ -1,21 +1,26 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type {Court, Prisma} from "@prisma/client";
+
+import {changeDateTime} from "@/lib/utils/utils";
 
 import {db} from "../db";
 
 export type CourtFullInfo = Prisma.CourtGetPayload<{
   include: {
     sport: {
-     select: {
-      name: true,
-     } 
-    },
-    days: true,
+      select: {
+        id: true;
+        name: true;
+        duration: true;
+      };
+    };
+    days: true;
     sportCenter: {
       select: {
-        name: true,
-      }
-    },
-    appointments: true,
+        name: true;
+      };
+    };
+    appointments: true;
   };
 }>;
 
@@ -57,12 +62,41 @@ export const getCourtById = async (courtId: number): Promise<CourtWithSport | nu
   return court;
 };
 
+export const getFullCourtById = async (courtId: number): Promise<CourtFullInfo | null> => {
+  const court = await db.court.findUnique({
+    where: {
+      id: courtId,
+    },
+    include: {
+      sport: {
+        select: {
+          id: true,
+          name: true,
+          duration: true,
+        },
+      },
+      days: true,
+      sportCenter: {
+        select: {
+          name: true,
+        },
+      },
+      appointments: true,
+    },
+  });
+
+  return court;
+};
+
 export const findWithDays = async (
   sportCenterId: string | number,
   courtId: string | number,
 ): Promise<CourtFullInfo | null> => {
+  const currentDate = new Date();
   const limitDate = new Date();
-  limitDate.setDate( limitDate.getDate() + 10);
+
+  currentDate.setHours(0, 0, 0, 0);
+  limitDate.setDate(limitDate.getDate() + 10);
 
   return await db.court.findUnique({
     where: {
@@ -71,25 +105,56 @@ export const findWithDays = async (
     },
     include: {
       sport: {
-       select: {
-        name: true,
-       } 
+        select: {
+          id: true,
+          name: true,
+          duration: true,
+        },
       },
       days: true,
       sportCenter: {
         select: {
           name: true,
-        }
+        },
       },
       appointments: {
         where: {
           date: {
-            lte: limitDate
-          }
-        }
-      }
-    }
+            gte: currentDate,
+            lte: limitDate,
+          },
+        },
+      },
+    },
   });
+};
+
+export const lastAppointmentDate = async (courtId: string | number): Promise<Date | null> => {
+  const currentDate = changeDateTime(new Date());
+
+  try {
+    const result = await db.appointment.aggregate({
+      _max: {
+        date: true,
+      },
+      where: {
+        courtId: Number(courtId),
+        date: {
+          gte: currentDate,
+        },
+      },
+    });
+
+    if (result) {
+      const maxDate = new Date(result._max.date!);
+
+      return maxDate; // Devuelve la fecha obtenida como un objeto Date
+    } else {
+      return null; // Devuelve null si no se encuentra la fecha máxima
+    }
+  } catch (error) {
+    throw error; // Relanza el error para manejarlo fuera de esta función si es necesario
+  }
 };
 
 export const findWithDaysSport = async (
@@ -107,7 +172,7 @@ export const findWithDaysSport = async (
       sportCenter: true,
       appointments: {
         take: 0,
-      }
+      },
     },
   });
 };

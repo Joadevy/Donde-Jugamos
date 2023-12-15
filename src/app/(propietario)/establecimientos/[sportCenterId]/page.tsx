@@ -6,7 +6,6 @@ import {getSportCenterByIdWithReservations} from "@/backend/db/models/sportsCent
 import {CountReservationsByState} from "@/lib/utils/utils";
 import {getSportCenterReservations} from "@/backend/db/models/reservations";
 import SportCenterClient from "@/components/SportCenterForm/SportCenterFormClient";
-import {Separator} from "@/components/ui/separator";
 
 async function EstablecimientosPage({params}: {params: {sportCenterId: string}}) {
   const idToNumber = Number(params.sportCenterId);

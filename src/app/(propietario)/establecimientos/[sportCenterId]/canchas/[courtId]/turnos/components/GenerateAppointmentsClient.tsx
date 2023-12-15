@@ -1,265 +1,192 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable react/function-component-definition */
 "use client";
 import type {FC} from "react";
-import type {DateRange} from "react-day-picker";
-import type {CourtSchedule} from "@/lib/types/importables/types";
-import type {Court} from "@prisma/client";
+import type {ApiResponse, CourtSchedule} from "@/lib/types/importables/types";
+import type {Appointment, Court} from "@prisma/client";
 
-import React, {Suspense, useState} from "react";
-import {addDays, format} from "date-fns";
-import {Box, Step, StepButton, StepLabel, Stepper, Typography} from "@mui/material";
+import React, {useState} from "react";
+import {addDays} from "date-fns";
+import {useRouter} from "next/navigation";
 
-import {DatePickerWithRange} from "@/components/ui/daterangepicker";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
+import {diferenciaEnDias, getPartOfDate} from "@/lib/utils/utils";
+import {DatePicker} from "@/components/ui/datepicker";
+import {errorToast, successToast} from "@/lib/utils/toasts";
 
-import Prueba from "./AppointmentsDayList";
 import AppointmentsDayList from "./AppointmentsDayList";
 
 interface GenerateAppointmentsClientProps {
   courtId: number;
   schedule: CourtSchedule[];
   appointmentTime: number;
-  courts: Court[];
+  similarCourts?: Court[] | null;
+  maxDate?: Date | null;
 }
 
-export interface AppointmentDTO {
-  date: Date;
-  startTime: number;
-  endTime: number;
-  active: boolean;
-  courtId: number;
-}
-
-const DAY_LIMIT_MIN = 1 as const;
 const DAY_LIMIT_MAX = 30 as const;
 
 const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
   courtId,
   schedule,
   appointmentTime,
-  courts,
+  maxDate,
 }) => {
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), DAY_LIMIT_MIN),
-  });
-
-  const [appointmentsMap, setAppointmentsMap] = useState<Map<number, AppointmentDTO[]>>(
-    new Map<number, AppointmentDTO[]>(),
+  const sinceDate = addDays(maxDate || new Date(), 1);
+  const untilDate = addDays(
+    sinceDate,
+    DAY_LIMIT_MAX - (maxDate ? diferenciaEnDias(new Date(), maxDate) : 0) - 1,
   );
-  const [daysOfAppointments, setDaysOfAppointments] = useState<number[]>([]);
 
-  const steps: string[] = ["Seleccionar filtros", "Generación de Turnos", "Confirmación"];
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [completed, setCompleted] = React.useState<Record<number, boolean>>({});
+  const [fromDate, setFromDate] = useState<Date | undefined>(sinceDate);
+  const [toDate, setToDate] = useState<Date | undefined>();
 
-  const handleClick = () => {
-    const appointmetsGenerated: AppointmentDTO[] = [];
+  const [appointments, setAppointments] = useState<Record<number, Partial<Appointment>[]>>({});
+  const [dates, setDates] = useState<number[]>([]);
+  const router = useRouter();
 
-    if (!date?.from) return false;
-    if (!date.to) return false;
+  const handleAppointmentChangeState = (
+    day: number,
+    appointmentsChanged: Partial<Appointment>[],
+  ) => {
+    appointments[day] = appointmentsChanged;
+    setAppointments({...appointments});
+  };
 
-    const dateFrom = new Date(date.from);
-    const dateTo = new Date(date.to);
+  const handleGenerate = () => {
+    const dateFrom = fromDate ? new Date(fromDate) : new Date();
+    const dateTo = toDate || new Date(dateFrom);
 
     dateFrom.setHours(0, 0, 0, 0);
     dateTo.setHours(0, 0, 0, 0);
 
-    while (dateFrom <= dateTo) {
-      const dayStr = format(dateFrom, "eeee").trim().toLowerCase();
-      const daySchedule = schedule.find((day) => day.name === dayStr);
-
-      if (daySchedule) {
-        const dayCloseTime = daySchedule.closeTime!;
-        let timeTracker = daySchedule.openTime!;
-
-        while (dayCloseTime - timeTracker >= appointmentTime) {
-          const appointment: AppointmentDTO = {
-            date: new Date(dateFrom),
-            startTime: timeTracker,
-            endTime: timeTracker + appointmentTime,
-            active: true,
-            courtId: courtId,
-          };
-
-          appointmetsGenerated.push(appointment);
-
-          timeTracker += appointmentTime;
-        }
-
-        daysOfAppointments.push(new Date(dateFrom).getTime());
-        setDaysOfAppointments([...daysOfAppointments]);
-      }
-      dateFrom.setDate(dateFrom.getDate() + 1);
-    }
-
-    const mapaDeObjetos: Map<number, AppointmentDTO[]> = appointmetsGenerated.reduce(
-      (mapa, objeto) => {
-        const key = mapa.get(objeto.date.getTime());
-
-        if (key) {
-          key.push(objeto);
-        } else {
-          mapa.set(objeto.date.getTime(), [objeto]);
-        }
-
-        return mapa;
-      },
-      new Map<number, AppointmentDTO[]>(),
+    const newAppointment = generateAppointments(
+      dateFrom,
+      dateTo,
+      schedule,
+      appointmentTime,
+      courtId,
     );
+    const appointmentDates = Object.keys(newAppointment).map((value) => Number(value));
 
-    setAppointmentsMap(new Map(mapaDeObjetos));
+    setAppointments(newAppointment);
+    setDates(appointmentDates);
   };
 
-  const updateAppointmentState = (day: number, appoinments: AppointmentDTO[]) => {
-    appointmentsMap.set(day, appoinments);
-    setAppointmentsMap(new Map(appointmentsMap));
-    console.log(appointmentsMap);
-  };
-
-  const createAppointments = async () => {
-    const newAppointments: AppointmentDTO[] = [];
+  const saveAppointments = () => {
     const url = `/api/appointment/${courtId}`;
+    const data = Object.entries(appointments).flatMap((value) => value[1]);
 
-    appointmentsMap.forEach((appointments) => newAppointments.push(...appointments));
-    const body = JSON.stringify(newAppointments);
-
-    const result = await fetch(url, {
-      method: "POST",
-      body,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).catch((err) => null);
-
-    console.log(result);
-  };
-
-  const handleNext = () => {
-    const newActiveStep = activeStep + 1;
-
-    setActiveStep(newActiveStep);
-    setCompleted({[newActiveStep - 1]: true});
-
-    if (newActiveStep === 1) {
-      handleClick();
-    }
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    setCompleted({...completed, [activeStep]: false});
-
-    if (activeStep === 1) {
-      setDaysOfAppointments([]);
-      setAppointmentsMap(new Map());
-    }
+    fetch(url, {body: JSON.stringify(data), method: "POST"})
+      .then((res) => res.json())
+      .then((res: ApiResponse) => {
+        if (res.status === 200) {
+          successToast("Los turnos se generaron con exito!");
+          router.push(`../${courtId}`);
+        } else throw Error(res.message);
+      })
+      .catch(() => {
+        errorToast("No se pudo procesar tu solicitud, intente nuevamente");
+      });
   };
 
   return (
     <div className="mt-8">
-      <div />
-      <Box className="pb-24">
-        <Stepper nonLinear activeStep={activeStep} className="w-[950px] mx-auto">
-          {steps.map((label, index) => (
-            <Step key={label} completed={completed[index]}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        <div className="mt-8">
-          {activeStep === 0 ? (
-            <div className="w-[600px] mx-auto">
-              <Label>Rango de fechas para generación de turnos</Label>
-              <DatePickerWithRange
-                date={date!}
-                disabledDatesFrom={new Date()}
-                maxDayLimit={DAY_LIMIT_MAX}
-                setDate={setDate}
-              />
-              <p className="text-sm">Maximo 30 dias</p>
-              <Button className="w-full mt-4" onClick={handleNext}>
-                Siguiente
-              </Button>
-            </div>
-          ) : activeStep === 1 ? (
-            <Suspense fallback={<Loading />}>
-              <div className="relative flex flex-col gap-4 items-center">
-                <div className="fixed bottom-0 w-full border-t bg-white p-2">
-                  <p className="text-sm">
-                    Haga click en el turno para habilitar o deshabilitar un turno
-                  </p>
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-green-400/40 rounded-full" /> Habilitado
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-neutral-400/40 rounded-full" /> Deshabilitado
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  {daysOfAppointments.map((day) => (
-                    <AppointmentsDayList
-                      key={day}
-                      editable
-                      appointments={appointmentsMap.get(day)!}
-                      date={day}
-                      updateState={updateAppointmentState}
-                    />
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="secondary" onClick={handleBack}>
-                    back
-                  </Button>
-                  <Button onClick={handleNext}>Siguiente</Button>
-                </div>
-              </div>
-            </Suspense>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <div className="w-[950px] mx-auto">
-                <Label className="text-lg">
-                  ¿Desea copiar la configuración realizada a otras canchas?
-                </Label>
-                <div className="italic text-rose-400">
-                  Lista de canchas en forma de checkbox que cumplan:
-                  <ul>
-                    <li>* Misma duración de cancha</li>
-                    <li>* Otro?</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <h2 className="text-2xl font-bold">Resumen</h2>
-                {daysOfAppointments.map((day) => (
-                  <AppointmentsDayList
-                    key={day}
-                    appointments={appointmentsMap.get(day)!}
-                    date={day}
-                  />
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mx-auto">
-                <Button variant="secondary" onClick={handleBack}>
-                  back
-                </Button>
-                <Button onClick={createAppointments}>Finalizar</Button>
-              </div>
-            </div>
-          )}
+      <div className="container mx-auto">
+        <p className="text-base font-medium">
+          Seleccione el rango de fechas en el que quiera generar los turnos
+        </p>
+        <ul className="text-sm">
+          Aclaraciones:
+          <li>* Máximo 30 días desde la fecha del último turno generado.</li>
+          <li>
+            * Si desea generar el turno para un día unicamente, dejar la{" "}
+            <strong>Fecha Hasta</strong> en blanco.
+          </li>
+        </ul>
+        <div className="my-4 flex gap-4">
+          <div className="flex flex-col gap-2">
+            <Label className="text-base">Fecha Desde (*)</Label>
+            <DatePicker date={fromDate} setDate={setFromDate} sinceDate={sinceDate} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label className="text-base">Fecha Hasta</Label>
+            <DatePicker
+              date={toDate}
+              setDate={setToDate}
+              sinceDate={sinceDate}
+              untilDate={untilDate}
+            />
+          </div>
         </div>
-      </Box>
+        <Button className="mt-4" onClick={handleGenerate}>
+          Generar
+        </Button>
+        <Button disabled={dates.length == 0} onClick={saveAppointments}>
+          Finalizar
+        </Button>
+      </div>
+
+      <section>
+        {dates.length
+          ? dates.map((value) => (
+              <AppointmentsDayList
+                key={value}
+                editable
+                appointments={appointments[value]}
+                date={value}
+                updateState={handleAppointmentChangeState}
+              />
+            ))
+          : null}
+      </section>
     </div>
   );
 };
 
 export default GenerateAppointmentsClient;
 
-function Loading() {
-  return <h2>🌀 Loading...</h2>;
+function generateAppointments(
+  dateFrom: Date,
+  dateTo: Date,
+  schedule: CourtSchedule[],
+  duration: number,
+  courtId: number,
+): Record<number, Partial<Appointment>[]> {
+  const appointmetsGenerated: Record<number, Partial<Appointment>[]> = {};
+
+  while (dateFrom <= dateTo) {
+    const dateKey = dateFrom.getTime();
+    const dayStr = getPartOfDate(dateFrom, "dayName");
+    const daySchedule = schedule.find((day) => day.name === dayStr);
+
+    if (daySchedule) {
+      const dayCloseTime = daySchedule.closeTime!;
+      let timeTracker = daySchedule.openTime!;
+
+      while (dayCloseTime - timeTracker >= duration) {
+        const appointment: Omit<Appointment, "id"> = {
+          date: new Date(dateFrom),
+          startTime: timeTracker,
+          endTime: timeTracker + duration,
+          active: true,
+          courtId: courtId,
+        };
+
+        if (appointmetsGenerated[dateKey]) {
+          appointmetsGenerated[dateKey].push(appointment);
+        } else {
+          appointmetsGenerated[dateKey] = [appointment];
+        }
+
+        timeTracker += duration;
+      }
+    }
+    dateFrom.setDate(dateFrom.getDate() + 1);
+  }
+
+  return appointmetsGenerated;
 }

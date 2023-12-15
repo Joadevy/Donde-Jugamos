@@ -1,7 +1,5 @@
 import type {Appointment, Prisma} from "@prisma/client";
 
-import {generateApiResponse} from "@/lib/utils/utils";
-
 import {db} from "../db";
 
 interface ReponseType {
@@ -51,7 +49,7 @@ export const getAppointmentFullInformation = async (
 
 export const saveAppointments = async (
   appointments: Omit<Appointment, "id">[],
-): Promise<ReponseType> => {
+): Promise<boolean> => {
   const appointmentsQuery = [];
 
   for (const appointment of appointments) {
@@ -64,30 +62,47 @@ export const saveAppointments = async (
 
   try {
     if (!appointmentsQuery.length) {
-      throw new Error("No se pudieron generar los turnos.");
+      throw new Error();
     }
 
-    const resultado = await db.$transaction(appointmentsQuery).catch((error) => {
-      return {
-        data: error,
-        status: 500,
-        message: "Error al generar los turnos",
-      };
+    await db.$transaction(appointmentsQuery).catch((error) => {
+      throw error;
     });
 
-    console.log(resultado);
-
-    return {
-      data: resultado,
-      status: 200,
-      message: "Los turnos se generaron correctamente",
-    };
+    return true;
   } catch (error) {
-    return {
-      data: error,
-      status: 500,
-      message: "Error al generar los turnos",
-    };
+    return false;
+  }
+};
+
+export const updateAppointments = async (appointments: Appointment[]): Promise<boolean> => {
+  const appointmentsQuery = [];
+
+  for (const appointment of appointments) {
+    appointmentsQuery.push(
+      db.appointment.update({
+        where: {
+          id: appointment.id,
+        },
+        data: {
+          active: appointment.active,
+        },
+      }),
+    );
+  }
+
+  try {
+    if (!appointmentsQuery.length) {
+      throw new Error();
+    }
+
+    await db.$transaction(appointmentsQuery).catch((error) => {
+      throw error;
+    });
+
+    return true;
+  } catch (error) {
+    return false;
   }
 };
 
@@ -151,4 +166,19 @@ export const deleteAppointments = async (
       message: "Error al generar los turnos",
     };
   }
+};
+
+export const getAllAppointments = async () => {
+  const currentDate = new Date();
+
+  currentDate.setHours(0, 0, 0, 0);
+  const appointments = await db.appointment.findMany({
+    where: {
+      date: {
+        gte: currentDate,
+      },
+    },
+  });
+
+  return appointments;
 };
