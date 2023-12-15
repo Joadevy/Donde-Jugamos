@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import type {Prisma, SportCenter} from "@prisma/client";
 
+import {timeToMinutes} from "@/lib/utils/utils";
+
 import {db} from "../db";
 
 import {getUserByEmail} from "./users";
@@ -32,6 +34,18 @@ export const getSportCentersWithCourtsByFilters = async (
   date: string,
   time: number,
 ): Promise<SportCentersWithCourtsAndAppointments[]> => {
+  const isToday =
+    new Date(date).toLocaleDateString("es-AR") === new Date().toLocaleDateString("es-AR");
+
+  // Para no devolver turnos que ya se haya pasado la hora de inicio
+  const timeToCompare = isToday
+    ? timeToMinutes(
+        new Date().toLocaleTimeString("es-AR", {
+          timeZone: "America/Argentina/Buenos_Aires",
+        }),
+      )
+    : time;
+
   const sportCenters = await db.sportCenter.findMany({
     where: {
       city: {
@@ -61,7 +75,7 @@ export const getSportCentersWithCourtsByFilters = async (
                 equals: date,
               },
               startTime: {
-                gte: time,
+                gte: timeToCompare,
               },
               reservations: {
                 none: {
