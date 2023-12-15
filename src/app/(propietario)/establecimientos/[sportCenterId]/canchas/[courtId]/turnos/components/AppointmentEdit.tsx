@@ -59,18 +59,22 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
   };
 
   return (
-    <div>
-      {Object.keys(appointmentsUpdated).map((value) => (
-        <AppointmentsDayList
-          key={Number(value)}
-          editable
-          appointments={appointments[Number(value)]}
-          date={Number(value)}
-          updateAppointment={handleAppointmentChange}
-          updateState={handleAppointmentChangeState}
-        />
-      ))}
-      <Button onClick={saveChanges}>Guardar</Button>
+    <div className="w-full max-w-5xl mx-auto my-4">
+      <h2 className="font-medium text-2xl">Edición de Turnos</h2>
+      <p className="text-base">Selecciones aquellos turnos que desee habilidar o deshabilitar</p>
+      <div className="my-8">
+        {Object.keys(appointmentsUpdated).map((value) => (
+          <AppointmentsDayList
+            key={Number(value)}
+            editable
+            appointments={appointments[Number(value)]}
+            date={Number(value)}
+            updateAppointment={handleAppointmentChange}
+            updateState={handleAppointmentChangeState}
+          />
+        ))}
+      </div>
+      <Button className="block w-40 mx-auto" onClick={saveChanges}>Guardar</Button>
     </div>
   );
 };

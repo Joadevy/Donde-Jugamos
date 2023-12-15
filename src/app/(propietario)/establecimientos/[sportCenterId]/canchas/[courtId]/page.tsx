@@ -1,7 +1,7 @@
 import type {CourtSchedule} from "@/lib/types/importables/types";
 import type {Appointment} from "@prisma/client";
 
-import {Clock3Icon, CalendarClockIcon, DollarSignIcon} from "lucide-react";
+import {Clock3Icon, CalendarClockIcon, DollarSignIcon, ChevronDownIcon, ChevronUpIcon} from "lucide-react";
 import Link from "next/link";
 
 import {Button} from "@/components/ui/button";
@@ -11,20 +11,20 @@ import {formatNumber, getPartOfDate, timeInStringFromMinutes} from "@/lib/utils/
 import {DAYS_OF_WEEK} from "./horarios/page";
 import AppointmentDay from "./turnos/components/AppointmentDay";
 
-async function CurtPage({params}: {params: {sportCenterId: string; courtId: string}}) {
-  const curt = await findWithDays(params.sportCenterId, params.courtId);
+async function CourtPage({params}: {params: {sportCenterId: string; courtId: string}}) {
+  const court = await findWithDays(params.sportCenterId, params.courtId);
 
-  if (curt == null) {
+  if (court == null) {
     return <div>No se encontro la Cancha</div>;
   }
 
-  const {days, sportCenter, appointments, sport} = {...curt};
+  const {days, sportCenter, appointments, sport} = {...court};
   const appointmentsMapped = mapAppointments(appointments);
 
-  let curtSchedule: CourtSchedule[] = [];
+  let courtSchedule: CourtSchedule[] = [];
 
   if (days.length) {
-    curtSchedule = days.map((day) => {
+    courtSchedule = days.map((day) => {
       return {
         name: day.name,
         openTime: day.openTime,
@@ -34,39 +34,40 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
   }
 
   return (
-    <div className="container mx-auto w-full flex gap-4">
-      <div className="flex-auto flex flex-col gap-4">
+    <div className="container mx-auto flex gap-4">
+      <div className="w-1/2 flex-1 flex flex-col gap-4">
         <header>
           <div className="flex items-center justify-between my-1">
-            <h2 className="text-3xl font-semibold">
-              {sportCenter.name} - {curt.name}
+            <h2 className="text-3xl font-semibold text-green-600">
+              {sportCenter.name} - {court.name}
             </h2>
           </div>
           <div className="flex items-center gap-2">
             <p className="text-xl text-neutral-400">{sport.name}</p>
             <span>-</span>
             <p className="flex items-center text-xl text-neutral-400">
-              <DollarSignIcon /> {formatNumber(curt.price)}
+              <DollarSignIcon /> {formatNumber(court.price)}
             </p>
           </div>
-          <p className="my-4 text-base">{curt.description}</p>
+          <p className="my-4 text-base">{court.description}</p>
         </header>
-        <section className="w-full">
+
+        <section>
           <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
             <Clock3Icon /> Horarios
           </h3>
-          <div className="flex items-center gap-2 mt-2">
-            {curtSchedule.length > 0 ? (
-              curtSchedule.map((day, index) => (
-                <div key={index} className="flex-auto flex flex-col items-center">
+          <div className="flex flex-col md:flex-row md:justify-between items-center gap-2 mt-2">
+            {courtSchedule.length > 0 ? (
+              courtSchedule.map((day, index) => (
+                <div key={index} className="w-fit flex flex-col items-center">
                   <div>{DAYS_OF_WEEK[`${day.name}`].name}</div>
                   {day.openTime ? (
-                    <div>
+                    <div className="text-green-600">
                       {timeInStringFromMinutes(day.openTime.toString())} -{" "}
                       {timeInStringFromMinutes(day.closeTime!.toString())}
                     </div>
                   ) : (
-                    <div>Cerrado</div>
+                    <div className="text-rose-600">Cerrado</div>
                   )}
                 </div>
               ))
@@ -76,19 +77,19 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
           </div>
         </section>
 
-        <section className="w-full">
+        <section>
           {appointmentsMapped.length ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col items-center gap-2">
               <h3 className="w-full my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
                 <CalendarClockIcon /> Turnos
               </h3>
               {appointmentsMapped.map((app, index) => (
                 <div key={index}>
                   <h4 className="text-lg">
-                    {getPartOfDate(app.date, "dayFull", true, true)} de{" "}
+                    {getPartOfDate(app.date, "dayFull", true, true)} de {" "}
                     {getPartOfDate(app.date, "monthName", true, true)}
                   </h4>
-                  <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-2">
                     {app.schedule.map((appointment, i) => (
                       <AppointmentDay key={i} appointment={appointment} />
                     ))}
@@ -101,7 +102,7 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
             </div>
           ) : (
             <>
-              <h3 className="w-full my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
+              <h3 className="my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
                 <CalendarClockIcon /> Turnos
               </h3>
               <div> No hay turnos registrados en la cancha.</div>
@@ -110,7 +111,7 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
         </section>
       </div>
 
-      <aside className="border flex flex-col gap-2 py-2 px-4">
+      <aside className="hidden sm:flex flex-initial flex-col gap-2 py-2 px-4">
         <Button>
           <Link href={`${params.courtId}/horarios`}>Gestion de Horarios</Link>
         </Button>
@@ -128,7 +129,7 @@ async function CurtPage({params}: {params: {sportCenterId: string; courtId: stri
   );
 }
 
-export default CurtPage;
+export default CourtPage;
 
 interface AppointmentView {
   date: Date;

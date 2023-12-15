@@ -12,7 +12,7 @@ const AppointmentDay: FC<AppointmentDayProps> = ({appointment}) => {
   return (
     <div
       key={appointment.startTime + appointment.endTime}
-      className={`w-28 p-2 border flex justify-between rounded-md select-none 
+      className={`w-auto p-1 border flex rounded-md select-none 
             ${appointment.active ? "bg-green-400/40" : "bg-neutral-400/40"} `}
     >
       <span>{timeInStringFromMinutes(appointment.startTime.toString())}</span>-

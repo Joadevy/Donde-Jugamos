@@ -146,7 +146,7 @@ export const lastAppointmentDate = async (courtId: string | number): Promise<Dat
     });
 
     if (result) {
-      const maxDate = new Date(result._max.date!);
+      const maxDate = result._max.date ?  new Date(result._max.date) : new Date();
 
       return maxDate; // Devuelve la fecha obtenida como un objeto Date
     } else {

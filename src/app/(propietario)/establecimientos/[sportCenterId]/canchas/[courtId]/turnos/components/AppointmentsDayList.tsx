@@ -60,7 +60,7 @@ const AppointmentsDayList: FC<AppointmentsDayListProps> = ({
         </div>
       </header>
 
-      <div className="flex gap-2 p-2">
+      <div className="flex flex-wrap gap-1 p-2">
         {appointments.map((appointment) => (
           <div
             key={appointment.startTime! + appointment.endTime!}

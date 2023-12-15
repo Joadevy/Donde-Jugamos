@@ -1,6 +1,6 @@
 import type {CourtSchedule} from "@/lib/types/importables/types";
 
-import {findWithDays} from "@/backend/db/models/courts";
+import {findWithDays, findWithDaysSport} from "@/backend/db/models/courts";
 
 import ScheduleForm from "../components/ScheduleForm";
 
@@ -19,7 +19,7 @@ export const DAYS_OF_WEEK: Record<string, DayInfo> = {
 };
 
 async function HorariosPage({params}: {params: {sportCenterId: string; courtId: string}}) {
-  const curt = await findWithDays(params.sportCenterId, params.courtId);
+  const curt = await findWithDaysSport(params.sportCenterId, params.courtId);
   let curtSchedule: CourtSchedule[] = [];
   let openDays: string[] = [];
 
@@ -45,6 +45,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
       courtId={Number(params.courtId)}
       courts={[Number(params.courtId)]}
       schedule={curtSchedule}
+      court={curt!}
     />
   );
 }

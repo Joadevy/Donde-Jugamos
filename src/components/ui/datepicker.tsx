@@ -16,16 +16,17 @@ interface DatePickeProps {
   sinceDate?: Date;
   untilDate?: Date;
   fromMonth?: Date;
+  className?: string;
 }
 
-export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth}: DatePickeProps) {
+export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth, className}: DatePickeProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground",
+            !date && "text-muted-foreground"
           )}
           variant="outline"
         >
@@ -33,7 +34,7 @@ export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth}: Dat
           {date ? format(date, "PPP") : <span>Seleccionar Fecha</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className={cn("w-auto p-0")}>
         <Calendar
           initialFocus
           disabled={(currentDate) => {

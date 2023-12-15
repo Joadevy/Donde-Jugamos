@@ -94,12 +94,13 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
   };
 
   return (
-    <div className="mt-8">
-      <div className="container mx-auto">
-        <p className="text-base font-medium">
+    <div className="container mx-auto mt-8">
+      
+      <div className="w-fit mx-auto">
+        <p className="text-lg font-medium">
           Seleccione el rango de fechas en el que quiera generar los turnos
         </p>
-        <ul className="text-sm">
+        <ul className="text-base text-neutral-500">
           Aclaraciones:
           <li>* Máximo 30 días desde la fecha del último turno generado.</li>
           <li>
@@ -108,11 +109,11 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
           </li>
         </ul>
         <div className="my-4 flex gap-4">
-          <div className="flex flex-col gap-2">
+          <div className="flex-auto flex flex-col gap-2">
             <Label className="text-base">Fecha Desde (*)</Label>
             <DatePicker date={fromDate} setDate={setFromDate} sinceDate={sinceDate} />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex-auto flex flex-col gap-2">
             <Label className="text-base">Fecha Hasta</Label>
             <DatePicker
               date={toDate}
@@ -122,15 +123,18 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
             />
           </div>
         </div>
-        <Button className="mt-4" onClick={handleGenerate}>
-          Generar
-        </Button>
-        <Button disabled={dates.length == 0} onClick={saveAppointments}>
-          Finalizar
-        </Button>
+
+        <div className="flex gap-4">
+          <Button className="flex-auto" onClick={handleGenerate}>
+            Generar
+          </Button>
+          <Button className="flex-auto bg-blue-500" disabled={dates.length == 0} onClick={saveAppointments}>
+            Finalizar
+          </Button>
+        </div>
       </div>
 
-      <section>
+      <section className="max-w-5xl mx-auto my-4">
         {dates.length
           ? dates.map((value) => (
               <AppointmentsDayList

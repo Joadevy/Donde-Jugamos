@@ -17,14 +17,17 @@ import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {DAYS_OF_WEEK} from "../horarios/page";
 
 import ScheduleTable from "./ScheduleTable";
+import { CourtFullInfo } from "@/backend/db/models/courts";
+import { Clock3Icon } from "lucide-react";
 
 interface HorarioFormProps {
   schedule: CourtSchedule[];
   courtId: number;
   courts: number[];
+  court?: CourtFullInfo;
 }
 
-const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule}) => {
+const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) => {
   const [openTime, setOpenTime] = useState(dayjs("2022-04-17T08:00"));
   const [closeTime, setCloseTime] = useState(dayjs("2022-04-17T22:30"));
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -72,13 +75,13 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule}) => {
   };
 
   return (
-    <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
-      <section className="flex-auto">
-        <h2 className="font-semibold text-xl">Horarios de la Cancha X</h2>
-
+    <div className="container max-w-5xl mx-auto p-8">
+        <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
+            <Clock3Icon /> Horarios - {court?.name}
+          </h3>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <p className="font-bold">Dias de la semana</p>
+            <span className="font-medium text-lg my-2">Dias de la semana</span>
             <ToggleGroup type="multiple" variant="outline" onValueChange={setSelectedDays}>
               <div>
                 {days.map((option, index) => (
@@ -96,28 +99,32 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule}) => {
             </ToggleGroup>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <p className="font-bold">Horario de Apertura</p>
-            <TimePickerUI
-              ampm={false}
-              className="w-full"
-              value={openTime}
-              onChange={(value: Dayjs) => {
-                setOpenTime(value);
-              }}
-            />
+          <div className="flex items-center gap-4">
+            <div className="flex-auto flex flex-col gap-2">
+              <span className="font-medium text-lg">Horario de Apertura</span>
+              <TimePickerUI
+                ampm={false}
+                className="w-full"
+                value={openTime}
+                onChange={(value: Dayjs) => {
+                  setOpenTime(value);
+                }}
+              />
+            </div>
+
+            <div className="flex-auto flex flex-col gap-2">
+              <span className="font-medium text-lg">Horario de Cierre</span>
+                <TimePickerUI
+                  ampm={false}
+                  className="w-full"
+                  value={closeTime}
+                  onChange={(value: Dayjs) => {
+                    setCloseTime(value);
+                  }}
+                />
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <p className="font-bold">Horario de Cierre</p>
-            <TimePickerUI
-              ampm={false}
-              className="w-full"
-              value={closeTime}
-              onChange={(value: Dayjs) => {
-                setCloseTime(value);
-              }}
-            />
-          </div>
+          
           <Button
             className="bg-blue-500 text-white hover:bg-blue-300"
             variant="secondary"
@@ -125,12 +132,14 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule}) => {
           >
             Agregar Horario
           </Button>
+
+          <div>
+          <ScheduleTable showHeader handleEdit={handleEdit} schedule={days} />
+        </div>
+          
           <Button onClick={updateCourtTimes}>Finalizar</Button>
         </div>
-      </section>
-      <div>
-        <ScheduleTable showHeader handleEdit={handleEdit} schedule={days} />
-      </div>
+      
     </div>
   );
 };
