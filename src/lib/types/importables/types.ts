@@ -6,6 +6,18 @@ export interface ApiResponse {
   message: string;
 }
 
+export interface CourtSchedule {
+  name: string;
+  openTime: number | null;
+  closeTime: number | null;
+}
+
+export interface ScheduleGroup {
+  names: string[];
+  openTime: number;
+  closeTime: number;
+}
+
 export interface SportCenter {
   id: string;
   name: string;

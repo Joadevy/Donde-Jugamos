@@ -6,6 +6,8 @@ import type { ApiResponse } from "../types/importables/types";
 import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
+import { format } from "date-fns";
+import { enUS, es } from "date-fns/locale";
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -49,7 +51,7 @@ export function getRootUrl(){
   return process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://www.dondejugamos.vercel.app";
 }
 
-export function capitalize(string:string) {
+export function capitalize(string:string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -100,3 +102,57 @@ export const CountReservationsByState = (reservations: Reservation[]) => {
 }
 
 
+export function diferenciaEnDias(fecha1: Date, fecha2: Date): number {
+  const unDiaEnMilisegundos = 1000 * 60 * 60 * 24; // 1 día en milisegundos
+
+  // Restar una fecha de la otra para obtener la diferencia en milisegundos
+  const diferenciaMs = Math.abs(fecha1 - fecha2);
+
+  // Convertir la diferencia de milisegundos a días
+  const diferenciaDias = Math.floor(diferenciaMs / unDiaEnMilisegundos);
+
+  return diferenciaDias;
+}
+
+export function changeDateTime(date: Date, hour = 0, minutes = 0, seconds = 0, milliseconds = 0): Date {
+  const dateChanged = new Date(date);
+
+  dateChanged.setHours(hour);
+  dateChanged.setMinutes(minutes);
+  dateChanged.setSeconds(seconds);
+  dateChanged.setMilliseconds(milliseconds);
+
+  return dateChanged;
+}
+
+
+const dateParts= {
+  'dayNumber': 'd',
+  'dayName': 'eeee',
+  'dayFull': 'eeee d',
+  'monthNumber': 'L',
+  'monthName': 'LLLL',
+  'year': 'y',
+  'fullNumber': 'd/L/y'
+}
+
+export function getPartOfDate(date: Date, part?: 'dayNumber' | 'dayName' | 'dayFull' | 'monthNumber' | 'monthName' | 'year' | 'fullNumber', capital?: boolean, translate = false): string {
+  const dateStr = format(date, part ? dateParts[part] : dateParts.fullNumber, translate ? {
+    locale: es,
+  } : {
+    locale: enUS,
+  }).trim().toLowerCase();
+
+  if (capital) {
+    return capitalize(dateStr);
+  }
+
+  return dateStr;
+}
+
+export function formatNumber(number: number) {
+  return number.toLocaleString('es-ES', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}

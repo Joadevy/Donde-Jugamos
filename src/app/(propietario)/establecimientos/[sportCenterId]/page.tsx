@@ -5,6 +5,7 @@ import {buttonVariants} from "@/components/ui/button";
 import {getSportCenterByIdWithReservations} from "@/backend/db/models/sportsCenters";
 import {CountReservationsByState, turnStateToSpanish} from "@/lib/utils/utils";
 import {getSportCenterReservations} from "@/backend/db/models/reservations";
+import SportCenterClient from "@/components/SportCenterForm/SportCenterFormClient";
 import ReservationCard from "@/components/Reservation/Propietary/ReservationCard";
 
 async function EstablecimientosPage({

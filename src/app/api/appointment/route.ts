@@ -74,7 +74,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(request: NextRequest) {
+export async function post(request: NextRequest) {
   const formData = await request.formData();
 
   const observation = formData.get("observation") as string;
