@@ -16,6 +16,7 @@ import {cn} from "@/lib/utils/utils";
 import {SPORT_CENTER_REJECTED} from "@/backend/db/models/sportsCenters";
 
 import {Button} from "../ui/button";
+import {Separator} from "../ui/separator";
 
 import Information from "./Information";
 
@@ -52,6 +53,7 @@ export const SportCenterWrapper: FC<SportCenterWrapperProps> = ({
         <CardDescription className="overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:5]">
           {description}
         </CardDescription>
+        <Separator />
       </CardHeader>
       {children}
     </Card>

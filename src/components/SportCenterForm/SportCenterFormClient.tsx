@@ -23,10 +23,7 @@ import {useState} from "react";
 import {useRouter} from "next/navigation";
 import type {ApiResponse} from "@/lib/types/importables/types";
 import {errorToast, successToast} from "@/lib/utils/toasts";
-import type {
-  SportCentersWithCourtsAndAppointments,
-  SportCentersWithUserAndCity,
-} from "@/backend/db/models/sportsCenters";
+import type {SportCentersWithUserAndCity} from "@/backend/db/models/sportsCenters";
 import {Separator} from "../ui/separator";
 
 const formSchema = z.object({
@@ -79,7 +76,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
         ? minutesToTimeDayJs(sportCenter.paymentTimeLimit)
         : dayjs("2022-04-17T12:00"),
       acceptPartialPayment: sportCenter?.acceptPartialPayment ?? payment,
-      partialPaymentPercentage: sportCenter?.partialPaymentPercentage ?? 0,
+      partialPaymentPercentage: sportCenter?.partialPaymentPercentage ?? 30,
     },
   });
 
@@ -209,9 +206,9 @@ function SportCenterFormClient({sportCenter}: Iprops) {
               className={cn("mb-2 ", payment ? "" : "hidden")}
               description="Aplicado sobre el valor total del turno"
               formControl={form.control}
-              label="Valor mínimo de la seña (en porcentaje %)"
+              label="Valor de la seña (en porcentaje)"
               name="partialPaymentPercentage"
-              placeholder="30% del valor total"
+              placeholder="30% del valor total por defecto"
               type="number"
             />
             <FormTimePickerField
