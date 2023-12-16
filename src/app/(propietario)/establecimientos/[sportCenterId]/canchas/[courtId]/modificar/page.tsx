@@ -1,6 +1,10 @@
+import Link from "next/link";
+
 import {getFullCourtById} from "@/backend/db/models/courts";
 import {getSports} from "@/backend/db/models/sports";
 import CourtForm from "@/components/CourtForm/CourtForm";
+import PageWrapper from "@/components/Layout/PageWrapper";
+import {buttonVariants} from "@/components/ui/button";
 
 export default async function CourtUpdate({
   params,
@@ -15,8 +19,36 @@ export default async function CourtUpdate({
   }
 
   return (
-    <div>
-      <CourtForm court={courPersisted} searchParams={params} sports={sports} />
-    </div>
+    <PageWrapper
+      aside={
+        <>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}`}
+          >
+            Gestionar cancha
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/horarios`}
+          >
+            Gestionar horarios
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
+          >
+            Generar turnos
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos/modificar`}
+          >
+            Editar Turnos
+          </Link>
+        </>
+      }
+      main={<CourtForm court={courPersisted} searchParams={params} sports={sports} />}
+    />
   );
 }

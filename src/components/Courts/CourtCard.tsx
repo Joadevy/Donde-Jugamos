@@ -1,6 +1,6 @@
-import type {CourtFullInfo} from "@/backend/db/models/courts";
+import type {CourtFullInfo, CourtWithSport} from "@/backend/db/models/courts";
 
-import {CircleDollarSign, Dumbbell, Mail, MapPin, PersonStanding, Phone} from "lucide-react";
+import {CircleDollarSign, Dumbbell, PersonStanding} from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -13,12 +13,11 @@ import {
 } from "@/components/ui/card";
 
 import {Button} from "../ui/button";
-import Information from "../Sportcenters/Information";
 import CourtInformation from "../Reservation/ReserveInformation";
 import {Separator} from "../ui/separator";
 
 interface Iprops {
-  court: CourtFullInfo;
+  court: CourtFullInfo | CourtWithSport;
   className?: string;
 }
 

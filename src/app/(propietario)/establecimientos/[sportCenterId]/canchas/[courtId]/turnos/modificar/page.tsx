@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type {Appointment} from "@prisma/client";
 
+import Link from "next/link";
+
 import {getAllAppointments} from "@/backend/db/models/appointments";
+import PageWrapper from "@/components/Layout/PageWrapper";
+import {buttonVariants} from "@/components/ui/button";
 
 import AppointmentEdit from "../components/AppointmentEdit";
 
@@ -25,9 +29,40 @@ const ModificarTurnoPage = async ({params}: {params: {sportCenterId: string; cou
   });
 
   return (
-    <div>
-      <AppointmentEdit appointments={appointments} courtId={Number(params.courtId)} />
-    </div>
+    <PageWrapper
+      aside={
+        <>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}`}
+          >
+            Gestionar cancha
+          </Link>
+
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/horarios`}
+          >
+            Gestionar Horarios
+          </Link>
+
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
+          >
+            Generar Turnos
+          </Link>
+
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/modificar`}
+          >
+            Editar Datos
+          </Link>
+        </>
+      }
+      main={<AppointmentEdit appointments={appointments} courtId={Number(params.courtId)} />}
+    />
   );
 };
 

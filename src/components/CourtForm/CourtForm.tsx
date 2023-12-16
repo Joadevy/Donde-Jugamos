@@ -100,8 +100,8 @@ function CourtForm({court, searchParams, sports}: Iprops) {
   }
 
   return (
-    <article className="flex flex-col items-center">
-      <header className="p-2 w-3/4">
+    <article className="flex flex-col items-center w-full">
+      <header className="p-2 w-full">
         <h1 className="font-bold text-primary text-xl">
           {isUpdate ? court.name : "Registra tu cancha"}
         </h1>
@@ -115,7 +115,7 @@ function CourtForm({court, searchParams, sports}: Iprops) {
 
       <Form {...form}>
         <form
-          className="w-full lg:w-[800px] container mx-auto lg:grid lg:grid-cols-2 gap-2 lg:gap-4"
+          className="w-full container mx-auto lg:grid lg:grid-cols-2 gap-2 lg:gap-4"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <section>

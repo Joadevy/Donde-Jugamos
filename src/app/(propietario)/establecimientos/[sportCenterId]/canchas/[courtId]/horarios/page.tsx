@@ -1,6 +1,10 @@
 import type {CourtSchedule} from "@/lib/types/importables/types";
 
+import Link from "next/link";
+
 import {findWithDays, findWithDaysSport} from "@/backend/db/models/courts";
+import PageWrapper from "@/components/Layout/PageWrapper";
+import {buttonVariants} from "@/components/ui/button";
 
 import ScheduleForm from "../components/ScheduleForm";
 
@@ -41,11 +45,43 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   });
 
   return (
-    <ScheduleForm
-      courtId={Number(params.courtId)}
-      courts={[Number(params.courtId)]}
-      schedule={curtSchedule}
-      court={curt!}
+    <PageWrapper
+      aside={
+        <>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}`}
+          >
+            Gestionar cancha
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
+          >
+            Generar Turnos
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos/modificar`}
+          >
+            Editar Turnos
+          </Link>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/modificar`}
+          >
+            Editar Datos
+          </Link>
+        </>
+      }
+      main={
+        <ScheduleForm
+          court={curt!}
+          courtId={Number(params.courtId)}
+          courts={[Number(params.courtId)]}
+          schedule={curtSchedule}
+        />
+      }
     />
   );
 }
