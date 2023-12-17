@@ -105,7 +105,7 @@ function SportCenter({sportCenter}: Iprops) {
               <Separator />
             </CardHeader>
 
-            <CardContent className="space-x-2">
+            <CardContent className="flex gap-4 lg:gap-y-1 lg:gap-x-2 items-center flex-wrap">
               {sportCenter.courts.map((court) =>
                 court.appointments.map((appointment) => (
                   <ReservationClip
