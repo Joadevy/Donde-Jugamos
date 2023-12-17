@@ -15,7 +15,7 @@ interface AppointmentsDayListProps {
   date: number;
   appointments: Partial<Appointment>[];
   editable?: boolean;
-  updateState?: (day: number, appointments: Partial<Appointment>[]) => void;
+  updateState?: (day: number, appointments: Partial<Appointment>[], update?: boolean) => void;
   updateAppointment?: (appointment: Partial<Appointment>) => void;
 }
 
@@ -52,11 +52,34 @@ const AppointmentsDayList: FC<AppointmentsDayListProps> = ({
     }
   };
 
+  const enableAll = () => {
+    appointments.forEach((app) => (app.active = true));
+
+    if (updateState) {
+      updateState(date, [...appointments], true);
+    }
+  };
+
+  const disableAll = () => {
+    appointments.forEach((app) => (app.active = false));
+    if (updateState) {
+      updateState(date, [...appointments], true);
+    }
+  };
+
   return (
     <div className="rounded-md">
       <header className="p-2 flex items-center gap-4">
         <div className="text-xl font-medium">
           {dayStr} de {monthStr}
+        </div>
+        <div className="flex gap-1 ml-auto">
+          <button className="p-2 text-xs text-white bg-blue-400 rounded-md" onClick={enableAll}>
+            Habilitar Todos
+          </button>
+          <button className="p-2 text-xs text-white bg-neutral-500 rounded-md" onClick={disableAll}>
+            Deshabilitar Todos
+          </button>
         </div>
       </header>
 

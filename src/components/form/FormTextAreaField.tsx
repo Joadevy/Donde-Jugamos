@@ -1,3 +1,5 @@
+import type {Control} from "react-hook-form";
+
 import {cn} from "@/lib/utils/utils";
 
 import {
@@ -11,7 +13,7 @@ import {
 import {Textarea} from "../ui/textarea";
 
 interface PropsType {
-  formControl: any;
+  formControl: Control | undefined;
   name: string;
   label?: string;
   placeholder?: string;

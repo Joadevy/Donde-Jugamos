@@ -3,15 +3,15 @@ import type {Appointment} from "@prisma/client";
 
 import Link from "next/link";
 
-import {getAllAppointments} from "@/backend/db/models/appointments";
 import PageWrapper from "@/components/Layout/PageWrapper";
 import {buttonVariants} from "@/components/ui/button";
+import {getAllCourtAppointments} from "@/backend/db/models/appointments";
 
 import AppointmentEdit from "../components/AppointmentEdit";
 
 /* eslint-disable react/function-component-definition */
 const ModificarTurnoPage = async ({params}: {params: {sportCenterId: string; courtId: string}}) => {
-  const appointmentsPersisted = await getAllAppointments();
+  const appointmentsPersisted = await getAllCourtAppointments(Number(params.courtId));
   const appointments: Record<number, Appointment[]> = {};
 
   if (!appointmentsPersisted.length) {

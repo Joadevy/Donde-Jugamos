@@ -23,6 +23,16 @@ export type AppointmentWithCourtAndSportcenter = Prisma.AppointmentGetPayload<{
   };
 }>;
 
+export type AppointmentReservation = Prisma.AppointmentGetPayload<{
+  include: {
+    reservations: {
+      select: {
+        state: true;
+      };
+    };
+  };
+}>;
+
 export const getAppointmentFullInformation = async (
   id: number,
 ): Promise<AppointmentWithCourtAndSportcenter | null> => {
@@ -168,7 +178,7 @@ export const deleteAppointments = async (
   }
 };
 
-export const getAllAppointments = async () => {
+export const getAllCourtAppointments = async (courtId: number) => {
   const currentDate = new Date();
 
   currentDate.setHours(0, 0, 0, 0);
@@ -177,6 +187,7 @@ export const getAllAppointments = async () => {
       date: {
         gte: currentDate,
       },
+      courtId: courtId,
     },
   });
 

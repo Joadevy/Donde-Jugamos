@@ -20,8 +20,6 @@ export async function POST(request: NextRequest) {
     "Se actualizaron los horarios de la cancha correctamente",
   );
 
-  console.log("Se esta por guardar", days);
-
   for (const court of courts) {
     for (const day of days) {
       daysToCreate.push(

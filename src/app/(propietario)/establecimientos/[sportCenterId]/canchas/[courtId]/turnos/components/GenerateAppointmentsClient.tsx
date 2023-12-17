@@ -85,6 +85,7 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
       .then((res: ApiResponse) => {
         if (res.status === 200) {
           successToast("Los turnos se generaron con exito!");
+          router.refresh();
           router.push(`../${courtId}`);
         } else throw Error(res.message);
       })
@@ -95,7 +96,6 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
 
   return (
     <div className="container mx-auto mt-8">
-      
       <div className="w-fit mx-auto">
         <p className="text-lg font-medium">
           Seleccione el rango de fechas en el que quiera generar los turnos
@@ -128,7 +128,11 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
           <Button className="flex-auto" onClick={handleGenerate}>
             Generar
           </Button>
-          <Button className="flex-auto bg-blue-500" disabled={dates.length == 0} onClick={saveAppointments}>
+          <Button
+            className="flex-auto bg-blue-500"
+            disabled={dates.length == 0}
+            onClick={saveAppointments}
+          >
             Finalizar
           </Button>
         </div>
