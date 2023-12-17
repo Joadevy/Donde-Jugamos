@@ -37,9 +37,16 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
   const handleAppointmentChangeState = (
     day: number,
     appointmentsChanged: Partial<Appointment>[],
+    update = false,
   ) => {
     appointments[day] = appointmentsChanged;
     setAppointmentsUpdated({...appointments});
+
+    if (update) {
+      appointmentsChanged.forEach((app) => {
+        handleAppointmentChange(app);
+      });
+    }
   };
 
   const saveChanges = () => {
@@ -50,6 +57,7 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
       .then((res: ApiResponse) => {
         if (res.status === 200) {
           successToast("Los turnos se modificaron con exito!");
+          router.refresh();
           router.push(`../../${courtId}`);
         } else throw Error(res.message);
       })
@@ -74,7 +82,9 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
           />
         ))}
       </div>
-      <Button className="block w-40 mx-auto" onClick={saveChanges}>Guardar</Button>
+      <Button className="block w-40 mx-auto" onClick={saveChanges}>
+        Guardar
+      </Button>
     </div>
   );
 };
