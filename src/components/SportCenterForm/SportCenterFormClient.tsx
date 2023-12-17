@@ -153,7 +153,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
             <FormTextAreaField
               className="mb-2"
               formControl={form.control}
-              label="Description del Establecimiento"
+              label="Descripcion del Establecimiento"
               name="description"
             />
           </section>
