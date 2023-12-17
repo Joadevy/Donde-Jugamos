@@ -1,7 +1,7 @@
 import type {CourtSchedule} from "@/lib/types/importables/types";
-import type {Appointment} from "@prisma/client";
+import type {AppointmentReservation} from "@/backend/db/models/appointments";
 
-import {Clock3Icon, CalendarClockIcon, DollarSignIcon, ChevronDownIcon, ChevronUpIcon} from "lucide-react";
+import {Clock3Icon, CalendarClockIcon, DollarSignIcon} from "lucide-react";
 import Link from "next/link";
 
 import {Button} from "@/components/ui/button";
@@ -19,8 +19,8 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
   }
 
   const {days, sportCenter, appointments, sport} = {...court};
+  const hasSchedule = days.length > 0;
   const appointmentsMapped = mapAppointments(appointments);
-
   let courtSchedule: CourtSchedule[] = [];
 
   if (days.length) {
@@ -34,7 +34,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
   }
 
   return (
-    <div className="container mx-auto flex gap-4">
+    <div className="container mx-auto flex gap-4 pb-8">
       <div className="w-1/2 flex-1 flex flex-col gap-4">
         <header>
           <div className="flex items-center justify-between my-1">
@@ -56,7 +56,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
           <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
             <Clock3Icon /> Horarios
           </h3>
-          <div className="flex flex-col md:flex-row md:justify-between items-center gap-2 mt-2">
+          <div className="flex flex-col md:flex-row md:justify-between items-center gap-2 mt-2 px-4">
             {courtSchedule.length > 0 ? (
               courtSchedule.map((day, index) => (
                 <div key={index} className="w-fit flex flex-col items-center">
@@ -79,25 +79,40 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
 
         <section>
           {appointmentsMapped.length ? (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center sm:items-start gap-2">
               <h3 className="w-full my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
-                <CalendarClockIcon /> Turnos
+                <CalendarClockIcon /> Turnos - Próximos 3 días
               </h3>
               {appointmentsMapped.map((app, index) => (
-                <div key={index}>
+                <div key={index} className="px-4">
                   <h4 className="text-lg">
-                    {getPartOfDate(app.date, "dayFull", true, true)} de {" "}
+                    {getPartOfDate(app.date, "dayFull", true, true)} de{" "}
                     {getPartOfDate(app.date, "monthName", true, true)}
                   </h4>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {app.schedule.map((appointment, i) => (
                       <AppointmentDay key={i} appointment={appointment} />
                     ))}
                   </div>
                 </div>
               ))}
-              <div className="flex items-center gap-2 mt-2">
-                <div className="w-4 h-4 bg-green-400/40 rounded-full" /> Disponible
+              <div className="w-full flex flex-wrap items-center gap-2 mt-2 p-2 bg-neutral-100 shadow">
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-4 h-4 bg-green-400/40 rounded-full border-2 border-green-400" />
+                  Disponible
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-4 h-4 bg-blue-400/40 rounded-full border-2 border-blue-400" />{" "}
+                  Aprobada
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-4 h-4 bg-yellow-400/40 rounded-full border-2 border-yellow-400" />{" "}
+                  Pendiente
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-4 h-4 bg-neutral-400/40 rounded-full border-2 border-neutral-400" />{" "}
+                  Inactivo
+                </div>
               </div>
             </div>
           ) : (
@@ -105,25 +120,37 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
               <h3 className="my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
                 <CalendarClockIcon /> Turnos
               </h3>
-              <div> No hay turnos registrados en la cancha.</div>
+              {hasSchedule ? (
+                <div> No hay turnos registrados en la cancha.</div>
+              ) : (
+                <div>Debe definir los horarios de la cancha para poder gestionar los turnos</div>
+              )}
             </>
           )}
         </section>
       </div>
 
-      <aside className="hidden sm:flex flex-initial flex-col gap-2 py-2 px-4">
+      <aside className="flex flex-initial flex-col gap-2 py-2 px-4">
         <Button>
-          <Link href={`${params.courtId}/horarios`}>Gestion de Horarios</Link>
+          <Link className="w-full h-full" href={`${params.courtId}/modificar`}>
+            Editar Cancha
+          </Link>
         </Button>
         <Button>
-          <Link href={`${params.courtId}/turnos`}>Generar Turnos</Link>
+          <Link href={`${params.courtId}/horarios`} replace={false}>
+            Gestion de Horarios
+          </Link>
         </Button>
-        <Button>
-          <Link href={`${params.courtId}/turnos/modificar`}>Editar Turnos</Link>
-        </Button>
-        <Button>
-          <Link href={`${params.courtId}/modificar`}>Editar Datos</Link>
-        </Button>
+        {hasSchedule ? (
+          <>
+            <Button>
+              <Link href={`${params.courtId}/turnos`}>Generar Turnos</Link>
+            </Button>
+            <Button>
+              <Link href={`${params.courtId}/turnos/modificar`}>Editar Turnos</Link>
+            </Button>
+          </>
+        ) : null}
       </aside>
     </div>
   );
@@ -131,16 +158,19 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
 
 export default CourtPage;
 
-interface AppointmentView {
-  date: Date;
-  schedule: {
-    startTime: number;
-    endTime: number;
-    active: boolean;
-  }[];
+export interface AppointmentViewSchedule {
+  startTime: number;
+  endTime: number;
+  active: boolean;
+  reservationState: string | null;
 }
 
-function mapAppointments(appointments: Appointment[]): AppointmentView[] {
+export interface AppointmentView {
+  date: Date;
+  schedule: AppointmentViewSchedule[];
+}
+
+function mapAppointments(appointments: AppointmentReservation[]): AppointmentView[] {
   const appointmentsMapped: AppointmentView[] = [];
 
   appointments.forEach((appointment) => {
@@ -150,6 +180,7 @@ function mapAppointments(appointments: Appointment[]): AppointmentView[] {
       startTime: appointment.startTime,
       endTime: appointment.endTime,
       active: appointment.active,
+      reservationState: appointment.reservations.length ? appointment.reservations[0].state : null,
     };
 
     if (current) {

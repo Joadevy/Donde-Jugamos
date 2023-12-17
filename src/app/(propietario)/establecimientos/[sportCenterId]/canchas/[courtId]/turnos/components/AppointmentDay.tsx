@@ -1,24 +1,27 @@
-/* eslint-disable react/function-component-definition */
-import type {Appointment} from "@prisma/client";
-import type {FC} from "react";
+import type {AppointmentViewSchedule} from "../../page";
 
-import {timeInStringFromMinutes} from "@/lib/utils/utils";
+import {cn, timeInStringFromMinutes} from "@/lib/utils/utils";
 
 interface AppointmentDayProps {
-  appointment: Omit<Appointment, "id" | "date" | "courtId">;
+  appointment: AppointmentViewSchedule;
 }
 
-const AppointmentDay: FC<AppointmentDayProps> = ({appointment}) => {
+export default function AppointmentDay({appointment}: AppointmentDayProps) {
+  const color = !appointment.active
+    ? "bg-neutral-400/40"
+    : appointment.reservationState === "approved"
+    ? "bg-blue-400/40"
+    : appointment.reservationState === "pending"
+    ? "bg-yellow-400/40"
+    : "bg-green-400/40";
+
   return (
     <div
       key={appointment.startTime + appointment.endTime}
-      className={`w-auto p-1 border flex rounded-md select-none 
-            ${appointment.active ? "bg-green-400/40" : "bg-neutral-400/40"} `}
+      className={cn(`w-auto p-1 border flex rounded-md select-none`, color)}
     >
       <span>{timeInStringFromMinutes(appointment.startTime.toString())}</span>-
       <span>{timeInStringFromMinutes(appointment.endTime.toString())}</span>
     </div>
   );
-};
-
-export default AppointmentDay;
+}

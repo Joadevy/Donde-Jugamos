@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type {Appointment} from "@prisma/client";
 
-import {getAllAppointments} from "@/backend/db/models/appointments";
+import {getAllCourtAppointments} from "@/backend/db/models/appointments";
 
 import AppointmentEdit from "../components/AppointmentEdit";
 
 /* eslint-disable react/function-component-definition */
 const ModificarTurnoPage = async ({params}: {params: {sportCenterId: string; courtId: string}}) => {
-  const appointmentsPersisted = await getAllAppointments();
+  const appointmentsPersisted = await getAllCourtAppointments(Number(params.courtId));
   const appointments: Record<number, Appointment[]> = {};
 
   if (!appointmentsPersisted.length) {
