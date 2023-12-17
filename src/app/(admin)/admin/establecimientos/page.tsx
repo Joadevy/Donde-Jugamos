@@ -21,6 +21,7 @@ import {Separator} from "@/components/ui/separator";
 import {FilterInput} from "@/components/Sportcenters/FilterInput";
 import {FilterSelect} from "@/components/Sportcenters/FilterSelect";
 import {getCities} from "@/backend/db/models/cities";
+import PageWrapper from "@/components/Layout/PageWrapper";
 
 const EstablecimientosPage = async ({
   searchParams,
@@ -38,8 +39,19 @@ const EstablecimientosPage = async ({
   );
 
   return (
-    <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
-      <div className="flex-auto flex flex-col lg:flex-row gap-4 justify-center lg:border">
+    <PageWrapper
+      aside={
+        <>
+          <Link className={buttonVariants({variant: "default"})} href="/admin/solicitudes">
+            Solicitudes
+          </Link>
+
+          <Link className={buttonVariants({variant: "default"})} href="/admin">
+            Gestion app
+          </Link>
+        </>
+      }
+      main={
         <section className="relative py-4 lg:w-3/4">
           <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
             Gestionar establecimientos aprobados
@@ -115,18 +127,8 @@ const EstablecimientosPage = async ({
             </div>
           )}
         </section>
-      </div>
-
-      <aside className="border flex flex-col gap-2 py-2 px-4 order-1 lg:order-2">
-        <Link className={buttonVariants({variant: "default"})} href="/admin/solicitudes">
-          Solicitudes
-        </Link>
-
-        <Link className={buttonVariants({variant: "default"})} href="/admin">
-          Gestion app
-        </Link>
-      </aside>
-    </div>
+      }
+    />
   );
 };
 
