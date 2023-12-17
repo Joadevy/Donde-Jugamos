@@ -26,6 +26,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   const curt = await findWithDaysSport(params.sportCenterId, params.courtId);
   let curtSchedule: CourtSchedule[] = [];
   let openDays: string[] = [];
+  const hasSchedule = curt?.days ? curt.days.length > 0 : false;
 
   if (curt?.days.length) {
     curtSchedule = curt.days.map((day) => {
@@ -54,24 +55,31 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
           >
             Gestionar cancha
           </Link>
-          <Link
-            className={buttonVariants({variant: "default"})}
-            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
-          >
-            Generar Turnos
-          </Link>
-          <Link
-            className={buttonVariants({variant: "default"})}
-            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos/modificar`}
-          >
-            Editar Turnos
-          </Link>
+
           <Link
             className={buttonVariants({variant: "default"})}
             href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/modificar`}
           >
             Editar Datos
           </Link>
+
+          {hasSchedule ? (
+            <>
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos`}
+              >
+                Generar Turnos
+              </Link>
+
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos/modificar`}
+              >
+                Editar Turnos
+              </Link>
+            </>
+          ) : null}
         </>
       }
       main={

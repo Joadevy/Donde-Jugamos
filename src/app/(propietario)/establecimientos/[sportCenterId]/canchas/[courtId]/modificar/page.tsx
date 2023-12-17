@@ -13,6 +13,7 @@ export default async function CourtUpdate({
 }) {
   const sports = await getSports();
   const courPersisted = await getFullCourtById(Number(params.courtId));
+  const hasSchedule = courPersisted?.days ? courPersisted.days.length > 0 : false;
 
   if (!courPersisted) {
     return <div>No se encontraron los datos de la cancha.</div>;
@@ -34,18 +35,24 @@ export default async function CourtUpdate({
           >
             Gestionar horarios
           </Link>
-          <Link
-            className={buttonVariants({variant: "default"})}
-            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
-          >
-            Generar turnos
-          </Link>
-          <Link
-            className={buttonVariants({variant: "default"})}
-            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos/modificar`}
-          >
-            Editar Turnos
-          </Link>
+
+          {hasSchedule ? (
+            <>
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos`}
+              >
+                Generar Turnos
+              </Link>
+
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos/modificar`}
+              >
+                Editar Turnos
+              </Link>
+            </>
+          ) : null}
         </>
       }
       main={<CourtForm court={courPersisted} searchParams={params} sports={sports} />}

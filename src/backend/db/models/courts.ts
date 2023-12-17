@@ -24,6 +24,33 @@ export type CourtFullInfo = Prisma.CourtGetPayload<{
   };
 }>;
 
+export type CourtComplete = Prisma.CourtGetPayload<{
+  include: {
+    sport: {
+      select: {
+        id: true;
+        name: true;
+        duration: true;
+      };
+    };
+    days: true;
+    sportCenter: {
+      select: {
+        name: true;
+      };
+    };
+    appointments: {
+      include: {
+        reservations: {
+          select: {
+            state: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
 export type CourtWithDays = Prisma.CourtGetPayload<{
   include: {
     days: true;
@@ -91,12 +118,18 @@ export const getFullCourtById = async (courtId: number): Promise<CourtFullInfo |
 export const findWithDays = async (
   sportCenterId: string | number,
   courtId: string | number,
-): Promise<CourtFullInfo | null> => {
+): Promise<CourtComplete | null> => {
   const currentDate = new Date();
+  const tomorrowDate = new Date();
   const limitDate = new Date();
+  const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
+
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  limitDate.setDate(limitDate.getDate() + 3);
 
   currentDate.setHours(0, 0, 0, 0);
-  limitDate.setDate(limitDate.getDate() + 10);
+  tomorrowDate.setHours(0, 0, 0, 0);
+  limitDate.setHours(23, 59, 59, 999);
 
   return await db.court.findUnique({
     where: {
@@ -118,11 +151,44 @@ export const findWithDays = async (
         },
       },
       appointments: {
-        where: {
-          date: {
-            gte: currentDate,
-            lte: limitDate,
+        include: {
+          reservations: {
+            select: {
+              state: true,
+            },
+            where: {
+              OR: [
+                {
+                  state: "pending",
+                },
+                {
+                  state: "approved",
+                },
+              ],
+            },
+            orderBy: {
+              date: "desc",
+            },
+            take: 1,
           },
+        },
+        where: {
+          OR: [
+            {
+              date: {
+                equals: currentDate,
+              },
+              startTime: {
+                gte: currentTime,
+              },
+            },
+            {
+              date: {
+                gte: tomorrowDate,
+                lte: limitDate,
+              },
+            },
+          ],
         },
       },
     },
