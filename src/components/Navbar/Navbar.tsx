@@ -11,9 +11,12 @@ async function Navbar() {
   const session = await getServerSession(authOptions);
 
   return (
-    <nav className="h-36 lg:h-16 border p-2 shadow-sm">
-      <ul className="flex items-center justify-between flex-wrap gap-3 lg:gap-0">
-        <Link className="hover:opacity-75" href="/">
+    <nav className="h-28 lg:h-16 border p-2 shadow-sm">
+      <ul className="flex items-center justify-between flex-wrap lg:gap-0 relative">
+        <Link
+          className="hover:opacity-75 absolute top-1 left-2 lg:relative lg:top-0 lg:left-0"
+          href="/"
+        >
           <svg height="2em" viewBox="0 0 24 24" width="2em" xmlns="http://www.w3.org/2000/svg">
             <path
               clipRule="evenodd"
@@ -27,7 +30,8 @@ async function Navbar() {
             />
           </svg>
         </Link>
-        <div className="mx-4 flex items-center gap-2 flex-wrap">
+
+        <div className="flex flex-col lg:flex-row lg:mx-4 items-center gap-2 flex-wrap justify-center w-full lg:w-fit">
           <Link className={buttonVariants({variant: "default"})} href="/sumate">
             Suma tu Cancha
           </Link>
