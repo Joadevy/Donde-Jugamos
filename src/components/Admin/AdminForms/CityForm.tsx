@@ -18,6 +18,7 @@ import type {ApiResponse} from "@/lib/types/importables/types";
 import {errorToast, successToast} from "@/lib/utils/toasts";
 import {Separator} from "../../ui/separator";
 import type {City} from "@prisma/client";
+import FormSelectField from "@/components/form/FormSelectField";
 
 interface Iprops {
   city?: City;
@@ -33,6 +34,7 @@ function CityForm({city}: Iprops) {
     postCode: z.string().min(2, {
       message: "Debe tener minimo 2 numeros de longitud",
     }),
+    active: z.enum(["true", "false"]),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,6 +44,7 @@ function CityForm({city}: Iprops) {
     values: {
       name: city?.name ?? "",
       postCode: city?.postCode ? city.postCode : "",
+      active: city?.active ? (String(city.active) as "true") : "false",
     },
   });
 
@@ -107,6 +110,18 @@ function CityForm({city}: Iprops) {
               label="Codigo postal"
               name="postCode"
               placeholder="Escribe el codigo postal dè la ciudad..."
+            />
+
+            <FormSelectField
+              className="mb-2"
+              formControl={form.control}
+              label="Estado"
+              name="active"
+              options={[
+                {title: "Inactivo", value: "false"},
+                {title: "Activo", value: "true"},
+              ]}
+              placeholder="Estado del deporte"
             />
           </section>
 
