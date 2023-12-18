@@ -9,6 +9,7 @@ import {generateApiResponse} from "@/lib/utils/utils";
 import {updateUserRoleById} from "@/backend/db/models/users";
 import {compileGenericTemplate} from "@/backend/email/templates/GenericTemplate";
 import handleSendEmail from "@/backend/email/nodemailer";
+import {activateCity} from "@/backend/db/models/cities";
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -60,8 +61,9 @@ export async function PUT(request: NextRequest, {params}: {params: {id: string}}
   if (sportCenter) {
     await updateUserRoleById(sportCenter.userId, "propietary");
 
+    const turnCityActive = activateCity(sportCenter.id);
     //Envio de Mail informando al usuario el estado del Establecimiento
-    await handleSendEmail(
+    const sendEmailPropietary = handleSendEmail(
       sportCenter.email,
       `Solicitud de alta ${data.state === "approved" ? "aprobada" : "rechazada"}`,
       compileGenericTemplate(
@@ -82,6 +84,8 @@ export async function PUT(request: NextRequest, {params}: {params: {id: string}}
         "dondejugamos.vercel.app",
       ),
     );
+
+    await Promise.all([turnCityActive, sendEmailPropietary]);
   }
 
   response = generateApiResponse(

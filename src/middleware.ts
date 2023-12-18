@@ -5,17 +5,16 @@ import {NextResponse} from "next/server";
 export default withAuth(async (req) => {
   const token = await getToken({req});
 
-  if (req.nextUrl.pathname.startsWith("/admin") && token?.role !== "admin") {
+  if (!token) return NextResponse.redirect(new URL("/", req.url));
+  else if (req.nextUrl.pathname.startsWith("/admin") && token.role !== "admin") {
     return NextResponse.redirect(new URL("/", req.url));
-  } else if (req.nextUrl.pathname.startsWith("/establecimientos") && token?.role !== "propietary") {
+  } else if (req.nextUrl.pathname.startsWith("/establecimientos") && token.role !== "propietary") {
     return NextResponse.redirect(new URL("/", req.url));
-  } else if (req.nextUrl.pathname.startsWith("/api/propietary") && token?.role !== "propietary") {
-    return NextResponse.redirect(new URL("/", req.url));
+  } else if (req.nextUrl.pathname.startsWith("/api/propietary") && token.role !== "propietary") {
+    NextResponse.redirect(new URL("/", req.url));
   }
-
-  return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/establecimientos/:path*", "/api/propietary/:path*"],
+  matcher: ["/admin/:path*", "/establecimientos/:path*", "/api/propietary/:path*", "/sumate"],
 };

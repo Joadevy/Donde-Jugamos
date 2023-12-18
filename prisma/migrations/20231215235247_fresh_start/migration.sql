@@ -31,7 +31,7 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" DATETIME,
     "image" TEXT,
-    "role" TEXT DEFAULT 'customer',
+    "role" TEXT NOT NULL DEFAULT 'customer',
     "registerDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "CBU" TEXT,
     "Alias" TEXT
@@ -52,8 +52,10 @@ CREATE TABLE "SportCenter" (
     "phone" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "description" TEXT,
+    "CBU" TEXT,
+    "Alias" TEXT,
     "active" BOOLEAN NOT NULL DEFAULT false,
-    "state" TEXT DEFAULT 'pending',
+    "state" TEXT NOT NULL DEFAULT 'pending',
     "cancelTimeLimit" INTEGER NOT NULL DEFAULT 180,
     "paymentTimeLimit" INTEGER NOT NULL DEFAULT 180,
     "userId" TEXT NOT NULL,
@@ -99,7 +101,7 @@ CREATE TABLE "Appointment" (
 CREATE TABLE "Reservation" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "state" TEXT DEFAULT 'pending',
+    "state" TEXT NOT NULL DEFAULT 'pending',
     "observation" TEXT,
     "partialPayment" REAL,
     "paymentConfirmation" TEXT,
@@ -120,18 +122,10 @@ CREATE TABLE "Sport" (
 CREATE TABLE "Day" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "firstHalfStartTime" INTEGER NOT NULL,
-    "firstHalfEndTime" INTEGER NOT NULL,
-    "secondHalfStartTime" INTEGER NOT NULL,
-    "secondHalfEndTime" INTEGER NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "_CourtToDay" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
-    CONSTRAINT "_CourtToDay_A_fkey" FOREIGN KEY ("A") REFERENCES "Court" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_CourtToDay_B_fkey" FOREIGN KEY ("B") REFERENCES "Day" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "openTime" INTEGER,
+    "closeTime" INTEGER,
+    "courtId" INTEGER NOT NULL,
+    CONSTRAINT "Day_courtId_fkey" FOREIGN KEY ("courtId") REFERENCES "Court" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -156,13 +150,19 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SportCenter_userId_key" ON "SportCenter"("userId");
+CREATE UNIQUE INDEX "SportCenter_CBU_key" ON "SportCenter"("CBU");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SportCenter_Alias_key" ON "SportCenter"("Alias");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "City_postCode_key" ON "City"("postCode");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_CourtToDay_AB_unique" ON "_CourtToDay"("A", "B");
+CREATE UNIQUE INDEX "Appointment_date_startTime_endTime_courtId_key" ON "Appointment"("date", "startTime", "endTime", "courtId");
 
 -- CreateIndex
-CREATE INDEX "_CourtToDay_B_index" ON "_CourtToDay"("B");
+CREATE UNIQUE INDEX "Sport_name_key" ON "Sport"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Day_name_courtId_key" ON "Day"("name", "courtId");

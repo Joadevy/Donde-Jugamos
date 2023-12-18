@@ -1,6 +1,10 @@
 import type {CourtSchedule} from "@/lib/types/importables/types";
 
+import Link from "next/link";
+
 import {findWithDays, findWithDaysSport} from "@/backend/db/models/courts";
+import PageWrapper from "@/components/Layout/PageWrapper";
+import {buttonVariants} from "@/components/ui/button";
 
 import ScheduleForm from "../components/ScheduleForm";
 
@@ -22,6 +26,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   const curt = await findWithDaysSport(params.sportCenterId, params.courtId);
   let curtSchedule: CourtSchedule[] = [];
   let openDays: string[] = [];
+  const hasSchedule = curt?.days ? curt.days.length > 0 : false;
 
   if (curt?.days.length) {
     curtSchedule = curt.days.map((day) => {
@@ -41,11 +46,50 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   });
 
   return (
-    <ScheduleForm
-      courtId={Number(params.courtId)}
-      courts={[Number(params.courtId)]}
-      schedule={curtSchedule}
-      court={curt!}
+    <PageWrapper
+      aside={
+        <>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}`}
+          >
+            Gestionar cancha
+          </Link>
+
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/modificar`}
+          >
+            Editar Datos
+          </Link>
+
+          {hasSchedule ? (
+            <>
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos`}
+              >
+                Generar Turnos
+              </Link>
+
+              <Link
+                className={buttonVariants({variant: "default"})}
+                href={`${params.courtId}/turnos/modificar`}
+              >
+                Editar Turnos
+              </Link>
+            </>
+          ) : null}
+        </>
+      }
+      main={
+        <ScheduleForm
+          court={curt!}
+          courtId={Number(params.courtId)}
+          courts={[Number(params.courtId)]}
+          schedule={curtSchedule}
+        />
+      }
     />
   );
 }

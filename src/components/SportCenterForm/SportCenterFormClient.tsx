@@ -135,7 +135,9 @@ function SportCenterFormClient({sportCenter}: Iprops) {
 
       <Form {...form}>
         <form
-          className="w-full lg:w-[800px] container mx-auto lg:grid lg:grid-cols-2 gap-2 lg:gap-4"
+          className={`w-full ${
+            isUpdate ? "lg:w-full" : "lg:w-[825px]"
+          } container mx-auto lg:grid lg:grid-cols-2 gap-2 lg:gap-4`}
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <section>
@@ -151,7 +153,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
             <FormTextAreaField
               className="mb-2"
               formControl={form.control}
-              label="Description del Establecimiento"
+              label="Descripcion del Establecimiento"
               name="description"
             />
           </section>
@@ -240,7 +242,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
             />
           </section>
 
-          <Button className="mt-5 col-span-2 text-center" type="submit">
+          <Button className="mt-5 col-span-2 text-center mb-2" type="submit">
             {sportCenter ? "Actualizar mi establecimiento" : "Crear mi establecimiento"}
           </Button>
         </form>

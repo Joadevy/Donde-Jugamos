@@ -4,6 +4,7 @@ import Link from "next/link";
 import {Button, buttonVariants} from "@/components/ui/button";
 import {getSportCenterByIdWithUserAndCity} from "@/backend/db/models/sportsCenters";
 import SportCenterClient from "@/components/SportCenterForm/SportCenterFormClient";
+import PageWrapper from "@/components/Layout/PageWrapper";
 
 async function EdicionEstablecimientoPage({params}: {params: {sportCenterId: string}}) {
   const idToNumber = Number(params.sportCenterId);
@@ -26,23 +27,26 @@ async function EdicionEstablecimientoPage({params}: {params: {sportCenterId: str
   }
 
   return (
-    <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
-      <div className="flex-auto flex flex-col lg:flex-row gap-4 items-center justify-center border">
-        <section className="relative py-4">
-          <SportCenterClient sportCenter={sportCenter} />
-        </section>
-      </div>
+    <PageWrapper
+      aside={
+        <>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}`}
+          >
+            Establecimiento
+          </Link>
 
-      <aside className="border flex flex-col gap-2 py-2 px-4 order-1 lg:order-2">
-        <Button>
-          <Link href={`/establecimientos/${params.sportCenterId}`}>Establecimiento</Link>
-        </Button>
-
-        <Button>
-          <Link href={`/establecimientos/${params.sportCenterId}/canchas`}>Canchas</Link>
-        </Button>
-      </aside>
-    </div>
+          <Link
+            className={buttonVariants({variant: "default"})}
+            href={`/establecimientos/${params.sportCenterId}/canchas`}
+          >
+            Canchas
+          </Link>
+        </>
+      }
+      main={<SportCenterClient sportCenter={sportCenter} />}
+    />
   );
 }
 

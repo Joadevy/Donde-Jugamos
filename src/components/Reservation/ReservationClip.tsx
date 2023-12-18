@@ -53,12 +53,12 @@ function CourtHoverCard({timeInString, court}: IhoverCard) {
       <HoverCardTrigger> {timeInString} hs</HoverCardTrigger>
       <HoverCardContent>
         <div className="space-y-1">
-          <div className="flex h-5 justify-between space-x-10 text-sm">
-            <p className="flex gap-1 border">
-              Cancha <span>{court.name}</span>
+          <div className="flex space-x-0 gap-1 h-10 justify-between text-sm">
+            <p className="flex flex-wrap self-start text-left gap-1 w-3/4 h-10 overflow-hidden">
+              Cancha {court.name}
             </p>
             <Separator orientation="vertical" />
-            <p>
+            <p className="self-center">
               {Number(court.price).toLocaleString("es-AR", {
                 style: "currency",
                 currency: "ARS",

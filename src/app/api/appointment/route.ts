@@ -55,7 +55,12 @@ export async function GET(request: NextRequest) {
   let status = 200;
 
   try {
-    sportCenters = await getSportCentersWithCourtsByFilters(postCode, sport, date, time);
+    sportCenters = await getSportCentersWithCourtsByFilters(
+      postCode,
+      sport,
+      date.toDateString(),
+      time,
+    );
 
     if (sportCenters.length === 0) {
       message = "No hay establecimientos con canchas disponibles en el horario seleccionado..";

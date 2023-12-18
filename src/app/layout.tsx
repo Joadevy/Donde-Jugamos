@@ -1,10 +1,9 @@
 import type {Metadata} from "next";
+import "./globals.css";
 
 import {Inter} from "next/font/google";
 
 import {Toaster} from "@/components/ui/toaster";
-import "./globals.css";
-
 import {NextAuthProvider} from "@/components/Providers/NextAuthProvider";
 import Navbar from "@/components/Navbar/Navbar";
 
@@ -21,7 +20,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body className={inter.className}>
         <NextAuthProvider>
           <Navbar />
-          <main className="">{children}</main>
+          <main>{children}</main>
           <Toaster />
         </NextAuthProvider>
       </body>

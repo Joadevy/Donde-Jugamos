@@ -28,12 +28,12 @@ export const authOptions: AuthOptions = {
   callbacks: {
     redirect({url, baseUrl}) {
       // Allows relative callback URLs
-      const u = new URL(url);
+      const u = new URL(url.startsWith("http") ? url : baseUrl);
       const redirectUrl = u.searchParams.get("callbackUrl")!;
 
       if (redirectUrl) return redirectUrl;
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
+      else if (new URL(url.startsWith("http") ? url : baseUrl).origin === baseUrl) return url;
 
       return baseUrl;
     },

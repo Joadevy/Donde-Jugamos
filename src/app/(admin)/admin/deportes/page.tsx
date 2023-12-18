@@ -4,6 +4,7 @@ import {buttonVariants} from "@/components/ui/button";
 import SportForm from "@/components/Admin/AdminForms/SportForm";
 import {getSports} from "@/backend/db/models/sports";
 import {FilterSelect} from "@/components/Sportcenters/FilterSelect";
+import PageWrapper from "@/components/Layout/PageWrapper";
 
 const SportsPage = async ({searchParams}: {searchParams: {sport: string}}) => {
   const {sport} = searchParams;
@@ -19,8 +20,23 @@ const SportsPage = async ({searchParams}: {searchParams: {sport: string}}) => {
     : sports[0];
 
   return (
-    <div className="my-5 container mx-auto h-fit w-full flex flex-col lg:flex-row gap-4 relative">
-      <div className="flex-auto flex flex-col lg:flex-row gap-4 justify-center lg:border">
+    <PageWrapper
+      aside={
+        <>
+          <Link className={buttonVariants({variant: "default"})} href="/admin/solicitudes">
+            Solicitudes
+          </Link>
+
+          <Link className={buttonVariants({variant: "default"})} href="/admin/establecimientos">
+            Establecimientos
+          </Link>
+
+          <Link className={buttonVariants({variant: "default"})} href="/admin">
+            Gestion app
+          </Link>
+        </>
+      }
+      main={
         <section className="relative py-4">
           <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
             Gestion de deportes
@@ -48,22 +64,8 @@ const SportsPage = async ({searchParams}: {searchParams: {sport: string}}) => {
             </section>
           </div>
         </section>
-      </div>
-
-      <aside className="border flex flex-col gap-2 py-2 px-4 order-1 lg:order-2">
-        <Link className={buttonVariants({variant: "default"})} href="/admin/solicitudes">
-          Solicitudes
-        </Link>
-
-        <Link className={buttonVariants({variant: "default"})} href="/admin/establecimientos">
-          Establecimientos
-        </Link>
-
-        <Link className={buttonVariants({variant: "default"})} href="/admin">
-          Gestion app
-        </Link>
-      </aside>
-    </div>
+      }
+    />
   );
 };
 

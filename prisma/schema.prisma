@@ -89,6 +89,7 @@ model City {
   id Int @id @default(autoincrement())
   name String
   postCode String @unique
+  active Boolean  @default(false)
   sportCenters SportCenter[]
 }
 

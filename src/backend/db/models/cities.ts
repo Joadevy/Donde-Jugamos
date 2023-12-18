@@ -4,6 +4,9 @@ import {db} from "../db";
 
 export const getCities = async (): Promise<Pick<City, "name" | "postCode">[]> => {
   return await db.city.findMany({
+    where: {
+      active: true,
+    },
     select: {
       name: true,
       postCode: true,
@@ -27,6 +30,19 @@ export const createCity = async (name: string, postCode: string): Promise<City |
       data: {
         name,
         postCode,
+      },
+    })
+    .catch(() => null);
+};
+
+export const activateCity = async (id: number): Promise<City | null> => {
+  return await db.city
+    .update({
+      where: {
+        id,
+      },
+      data: {
+        active: true,
       },
     })
     .catch(() => null);
