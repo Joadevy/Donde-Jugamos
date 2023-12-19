@@ -109,7 +109,7 @@ function SportForm({sport}: Iprops) {
             />
           </section>
 
-          <Button className="mt-5 col-span-2 text-center w-fit mb-2" type="submit">
+          <Button className="mt-5 col-span-2 text-center w-fit mb-4" type="submit">
             {sport ? "Actualizar deporte" : "Dar de alta deporte"}
           </Button>
         </form>

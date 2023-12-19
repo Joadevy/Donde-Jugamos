@@ -125,7 +125,7 @@ function CityForm({city}: Iprops) {
             />
           </section>
 
-          <Button className="mt-5 col-span-2 text-center w-fit mb-2" type="submit">
+          <Button className="mt-5 col-span-2 text-center w-fit mb-4" type="submit">
             {city ? "Actualizar ciudad" : "Dar de alta ciudad"}
           </Button>
         </form>

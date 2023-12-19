@@ -320,7 +320,7 @@ export const getUpcomingUserReservationsByEmail = async (email: string) => {
 
 export const getUserReservationsByEmailAndState = async (
   email: string,
-  state: Reservation["state"],
+  state?: Reservation["state"],
 ) => {
   const user = await getUserByEmail(email);
 
@@ -336,7 +336,7 @@ export const getUserReservationsByEmailAndState = async (
       },
       appointment: {
         date: {
-          gte: new Date(),
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
         },
       },
     },

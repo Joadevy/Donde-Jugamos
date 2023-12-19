@@ -30,7 +30,7 @@ const SolicitudesPage = async () => {
         </>
       }
       main={
-        <section className="relative py-4 lg:w-3/4">
+        <section className="relative py-4">
           <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
             Gestionar solicitudes de alta
           </h1>
@@ -38,7 +38,7 @@ const SolicitudesPage = async () => {
           {sportCenters.length === 0 ? (
             <p className="text-slate-400 italic lg:mt-5">No hay solicitudes de alta</p>
           ) : (
-            <div className="lg:mt-5 flex items-start justify-start flex-wrap gap-2 py-4">
+            <div className="lg:mt-5 flex items-center justify-center lg:items-start lg:justify-start flex-wrap gap-4 py-4">
               {sportCenters.map((sportCenter) => (
                 <SportCenterWrapper
                   key={sportCenter.id}
