@@ -121,7 +121,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
 
   return (
     <article className={!isUpdate ? "flex flex-col items-center" : ""}>
-      <header className={"p-2 " + (!isUpdate ? "w-3/4" : "")}>
+      <header className={"p-2 " + (!isUpdate ? "w-full lg:w-3/4" : "")}>
         <h1 className="font-bold text-primary text-xl">
           {isUpdate ? sportCenter.name : "Registra tu establecimiento"}
         </h1>
@@ -130,7 +130,7 @@ function SportCenterFormClient({sportCenter}: Iprops) {
             ? sportCenter.description
             : "A la brevedad te contactaremos para que comencemos a trabajar juntos!"}
         </p>
-        <Separator />
+        <Separator className="mt-2" />
       </header>
 
       <Form {...form}>
