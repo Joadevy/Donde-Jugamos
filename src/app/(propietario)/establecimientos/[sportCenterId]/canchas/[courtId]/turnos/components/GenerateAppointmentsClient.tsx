@@ -108,7 +108,7 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
             <strong>Fecha Hasta</strong> en blanco.
           </li>
         </ul>
-        <div className="my-4 flex gap-4">
+        <div className="my-4 flex flex-wrap gap-4">
           <div className="flex-auto flex flex-col gap-2">
             <Label className="text-base">Fecha Desde (*)</Label>
             <DatePicker date={fromDate} setDate={setFromDate} sinceDate={sinceDate} />
@@ -124,32 +124,39 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-4">
-          <Button className="flex-auto" onClick={handleGenerate}>
-            Generar
-          </Button>
-          <Button
-            className="flex-auto bg-blue-500"
-            disabled={dates.length == 0}
-            onClick={saveAppointments}
-          >
-            Finalizar
+        <div className="w-full lg:w-1/2 m-auto">
+          <Button className="w-full" onClick={handleGenerate}>
+            Previsualizar
           </Button>
         </div>
       </div>
 
-      <section className="max-w-5xl mx-auto my-4">
-        {dates.length
-          ? dates.map((value) => (
-              <AppointmentsDayList
-                key={value}
-                editable
-                appointments={appointments[value]}
-                date={value}
-                updateState={handleAppointmentChangeState}
-              />
-            ))
-          : null}
+      <section className="max-w-5xl mx-auto my-10">
+        <div className="flex flex-col gap-4">
+          {dates.length
+            ? dates.map((value) => (
+                <AppointmentsDayList
+                  key={value}
+                  editable
+                  appointments={appointments[value]}
+                  date={value}
+                  updateState={handleAppointmentChangeState}
+                />
+              ))
+            : null}
+        </div>
+
+        {Object.keys(appointments).length > 0 && (
+          <div className="w-full lg:w-1/2 m-auto mt-4">
+            <Button
+              className="flex-auto bg-blue-500 w-full"
+              disabled={dates.length == 0}
+              onClick={saveAppointments}
+            >
+              Generar turnos
+            </Button>
+          </div>
+        )}
       </section>
     </div>
   );

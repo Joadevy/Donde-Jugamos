@@ -12,7 +12,7 @@ interface Iprops {
 function SignInClip({children}: Iprops) {
   return (
     <Badge
-      className="hover:cursor-pointer"
+      className="hover:cursor-pointer flex items-center justify-center text-center"
       role="button"
       variant="default"
       onClick={() => signIn()}

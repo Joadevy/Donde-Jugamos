@@ -62,7 +62,7 @@ async function EstablecimientosPage({
       }
       main={
         <>
-          <section className="relative py-4 lg:w-3/4">
+          <section className="relative py-4 lg:w-3/4 lg:mr-5">
             <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
               Gestioná tus solicitudes de reserva {turnStateToSpanish(state, "plural")}
             </h1>
@@ -72,7 +72,7 @@ async function EstablecimientosPage({
               </h2>
             )}
 
-            <ul className="flex flex-col gap-4 lg:flex-row mt-6">
+            <ul className="flex flex-col items-center justify-center lg:items-start lg:justify-start gap-4 lg:flex-row mt-6">
               {pendingReservations.map((reservation) => (
                 <li key={reservation.id}>
                   <ReservationCard reservation={reservation} />

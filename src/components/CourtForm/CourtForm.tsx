@@ -100,7 +100,7 @@ function CourtForm({court, searchParams, sports}: Iprops) {
   }
 
   return (
-    <article className="flex flex-col items-center w-full">
+    <article className="flex flex-col items-center justify-center w-full">
       <header className="p-2 w-full">
         <h1 className="font-bold text-primary text-xl">
           {isUpdate ? court.name : "Registra tu cancha"}
