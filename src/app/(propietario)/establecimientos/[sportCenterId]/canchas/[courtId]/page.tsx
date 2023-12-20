@@ -17,7 +17,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
   const court = await findWithDays(params.sportCenterId, params.courtId);
 
   if (court == null) {
-    return <div>No se encontro la Cancha</div>;
+    return <div className="text-center text-slate-400 italic">No se encontro la Cancha</div>;
   }
 
   const {days, sportCenter, appointments, sport} = {...court};
@@ -74,7 +74,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
         </>
       }
       main={
-        <div className="w-1/2 flex-1 flex flex-col gap-4 mb-5">
+        <div className="lg:w-1/2 flex-1 flex flex-col gap-4 mb-5">
           <header>
             <div className="flex items-center justify-between my-1">
               <h2 className="text-3xl font-semibold text-green-600">
@@ -95,7 +95,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
             <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
               <Clock3Icon /> Horarios
             </h3>
-            <div className="flex flex-col md:flex-row md:justify-between items-center gap-2 mt-2 px-4">
+            <div className="flex flex-wrap flex-col md:flex-row md:justify-between items-center gap-2 mt-2 px-4">
               {courtSchedule.length > 0 ? (
                 courtSchedule.map((day, index) => (
                   <div key={index} className="w-fit flex flex-col items-center">
@@ -128,7 +128,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
                       {getPartOfDate(app.date, "dayFull", true, true)} de{" "}
                       {getPartOfDate(app.date, "monthName", true, true)}
                     </h4>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 items-center justify-start">
                       {app.schedule.map((appointment, i) => (
                         <AppointmentDay key={i} appointment={appointment} />
                       ))}

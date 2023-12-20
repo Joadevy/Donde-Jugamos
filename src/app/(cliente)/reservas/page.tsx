@@ -16,7 +16,7 @@ async function CustomerPage({searchParams}: {searchParams: {estado: string}}) {
 
   const reservations = await getUserReservationsByEmailAndState(
     session.user.email ?? "",
-    statesReservation.includes(searchParams.estado) ? searchParams.estado : null,
+    statesReservation.includes(searchParams.estado) ? searchParams.estado : undefined,
   );
 
   return (

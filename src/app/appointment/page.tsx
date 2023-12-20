@@ -42,7 +42,7 @@ const page = async ({searchParams}: {searchParams: SearchParams}) => {
   }
 
   return (
-    <main className="flex items-center flex-col mt-4 gap-6">
+    <main className="flex items-center flex-col my-4 gap-6">
       <SearchFormServer {...searchParams} />
 
       <ul className="flex items-center justify-center flex-col lg:flex-row lg:flex-wrap gap-6">

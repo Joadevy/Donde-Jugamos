@@ -42,9 +42,9 @@ const CitiesPage = async ({searchParams}: {searchParams: {postCode: string}}) =>
             Gestion de ciudades
           </h1>
 
-          <div className="lg:mt-8 flex gap-6 flex-wrap">
+          <div className="lg:mt-8 flex gap-8 flex-wrap items-center justify-center lg:items-start lg:justify-start">
             <section>
-              <div className="w-[400px] border">
+              <div className="w-[300px] lg:w-[400px] border">
                 <CityForm />
               </div>
             </section>
@@ -53,12 +53,12 @@ const CitiesPage = async ({searchParams}: {searchParams: {postCode: string}}) =>
               {cityToEdit ? (
                 <FilterSelect
                   options={citiesOptions}
-                  placeholder="Seleccionar ciudad"
+                  placeholder="Editar ciudad"
                   queryParam="postCode"
                 />
               ) : null}
 
-              <div className="w-[400px] border">
+              <div className="w-[300px] lg:w-[400px] border">
                 <CityForm city={cityToEdit} />
               </div>
             </section>

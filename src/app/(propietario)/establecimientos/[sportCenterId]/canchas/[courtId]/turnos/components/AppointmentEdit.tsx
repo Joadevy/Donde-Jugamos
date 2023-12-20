@@ -70,7 +70,7 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
     <div className="w-full max-w-5xl mx-auto my-4">
       <h2 className="font-medium text-2xl">Edición de Turnos</h2>
       <p className="text-base">Selecciones aquellos turnos que desee habilidar o deshabilitar</p>
-      <div className="my-8">
+      <div className="mt-8 mb-4">
         {Object.keys(appointmentsUpdated).map((value) => (
           <AppointmentsDayList
             key={Number(value)}
@@ -83,7 +83,7 @@ const AppointmentEdit: FC<AppointmentEditProps> = ({appointments, courtId}) => {
         ))}
       </div>
       <Button className="block w-40 mx-auto" onClick={saveChanges}>
-        Guardar
+        Guardar cambios
       </Button>
     </div>
   );

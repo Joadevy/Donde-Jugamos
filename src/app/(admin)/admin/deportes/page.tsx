@@ -42,9 +42,9 @@ const SportsPage = async ({searchParams}: {searchParams: {sport: string}}) => {
             Gestion de deportes
           </h1>
 
-          <div className="lg:mt-8 flex gap-6 flex-wrap">
+          <div className="lg:mt-8 flex gap-8 flex-wrap items-center justify-center lg:items-start lg:justify-start">
             <section>
-              <div className="w-[400px] border">
+              <div className="w-[300px] lg:w-[400px] border">
                 <SportForm />
               </div>
             </section>
@@ -53,12 +53,12 @@ const SportsPage = async ({searchParams}: {searchParams: {sport: string}}) => {
               {sportToEdit ? (
                 <FilterSelect
                   options={sportsOptions}
-                  placeholder="Seleccionar deporte"
+                  placeholder="Editar deporte"
                   queryParam="sport"
                 />
               ) : null}
 
-              <div className="w-[400px] border">
+              <div className="w-[300px] lg:w-[400px] border">
                 <SportForm sport={sportToEdit} />
               </div>
             </section>

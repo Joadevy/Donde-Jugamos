@@ -47,7 +47,7 @@ function ReservationDetails({reservation}: Iprops) {
         <TabsTrigger value="sportcenter">Establecimiento</TabsTrigger>
       </TabsList>
       <TabsContent value="reservation">
-        <Card className="w-[300px] lg:w-[400px] h-[420px] lg:h-[400px] relative">
+        <Card className="w-[350px] lg:w-[400px] h-[450px] lg:h-[400px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
 
@@ -120,7 +120,7 @@ function ReservationDetails({reservation}: Iprops) {
             ) : null}
 
             <ReserveInformation
-              details={capitalize(turnStateToSpanish(reservation.state ?? ""))}
+              details={capitalize(turnStateToSpanish(reservation.state))}
               name="Estado"
             >
               <AlertCircle color="green" size={20} />
@@ -130,12 +130,12 @@ function ReservationDetails({reservation}: Iprops) {
           <Separator />
 
           <CardFooter className="p-2 flex justify-between items-center gap-2 mt-4">
-            {["approved", "pending"].includes(reservation.state ?? "") &&
+            {["approved", "pending"].includes(reservation.state) &&
             reservation.appointment.court.sportCenter.acceptPartialPayment ? (
               <EditReservation reservation={reservation} />
             ) : null}
 
-            {!["approved", "pending"].includes(reservation.state ?? "") ? (
+            {!["approved", "pending"].includes(reservation.state) ? (
               <>
                 <p>
                   La reserva ha sido{" "}
@@ -159,21 +159,21 @@ function ReservationDetails({reservation}: Iprops) {
               ) ? (
               <CancelReservation reservation={reservation} />
             ) : (
-              <>
-                <p>La reserva no puede cancelarse</p>
+              <div className="flex gap-1 items-center">
+                <p>No es posible cancelar</p>
                 <HoverInfo
                   color="red"
                   description="Has superado el tiempo limite para cancelar la reserva"
                   title="La reserva no puede cancelarse"
                 />
-              </>
+              </div>
             )}
           </CardFooter>
         </Card>
       </TabsContent>
 
       <TabsContent value="sportcenter">
-        <Card className="w-[300px] lg:w-[400px] h-[420px] lg:h-[400px] relative">
+        <Card className="w-[350px] lg:w-[400px] h-[450px] lg:h-[400px] relative">
           <CardHeader>
             <CardTitle>{reservation.appointment.court.sportCenter.name}</CardTitle>
             <CardDescription>
