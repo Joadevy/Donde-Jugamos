@@ -68,14 +68,14 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
             <>
               <Link
                 className={buttonVariants({variant: "default"})}
-                href={`${params.courtId}/turnos`}
+                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`
               >
                 Generar Turnos
               </Link>
 
               <Link
                 className={buttonVariants({variant: "default"})}
-                href={`${params.courtId}/turnos/modificar`}
+                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos/modificar`}
               >
                 Editar Turnos
               </Link>

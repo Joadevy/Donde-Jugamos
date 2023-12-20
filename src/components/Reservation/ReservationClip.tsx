@@ -83,7 +83,11 @@ async function ReservationClip({appointment, court, sportCenterInfo}: Iprops) {
   return session?.user ? (
     <AlertDialog>
       <AlertDialogTrigger>
-        <Badge className="hover:cursor-pointer" role="button" variant="default">
+        <Badge
+          className="hover:cursor-pointer flex items-center justify-center text-center"
+          role="button"
+          variant="default"
+        >
           <CourtHoverCard court={court} timeInString={timeInString} />
         </Badge>
       </AlertDialogTrigger>

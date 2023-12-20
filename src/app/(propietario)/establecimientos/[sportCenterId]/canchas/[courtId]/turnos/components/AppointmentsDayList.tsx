@@ -69,26 +69,38 @@ const AppointmentsDayList: FC<AppointmentsDayListProps> = ({
 
   return (
     <div className="rounded-md">
-      <header className="p-2 flex items-center gap-4">
-        <div className="text-xl font-medium">
+      <header className="p-2 flex flex-col md:flex-row justify-center items-center lg:gap-4">
+        <div className="text-lg lg:text-xl font-medium">
           {dayStr} de {monthStr}
         </div>
-        <div className="flex gap-1 ml-auto">
-          <button className="p-2 text-xs text-white bg-blue-400 rounded-md" onClick={enableAll}>
+        <div className="flex gap-1 lg:ml-auto">
+          <button
+            className="p-2 text-xs text-white bg-blue-400 rounded-md hover:opacity-80 transition-opacity"
+            type="button"
+            onClick={enableAll}
+          >
             Habilitar Todos
           </button>
-          <button className="p-2 text-xs text-white bg-neutral-500 rounded-md" onClick={disableAll}>
+          <button
+            className="p-2 text-xs text-white bg-neutral-500 rounded-md hover:opacity-80 transition-opacity"
+            type="button"
+            onClick={disableAll}
+          >
             Deshabilitar Todos
           </button>
         </div>
       </header>
 
-      <div className="flex flex-wrap gap-1 p-2">
+      <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1 p-2">
         {appointments.map((appointment) => (
           <div
             key={appointment.startTime! + appointment.endTime!}
-            className={`w-28 p-2 border flex justify-between rounded-md select-none 
-            ${editable ? "hover:scale-110 hover:bg-green-400 hover:cursor-pointer" : ""}
+            className={`w-28 p-2 border flex text-center justify-between rounded-md select-none 
+            ${
+              editable
+                ? "hover:scale-105 transition-transform hover:bg-green-400 hover:cursor-pointer"
+                : ""
+            }
             ${appointment.active ? "bg-green-400/40" : "bg-neutral-400/40"} `}
             onClick={() => {
               editable && handleState(appointment);

@@ -106,7 +106,7 @@ export function diferenciaEnDias(fecha1: Date, fecha2: Date): number {
   const unDiaEnMilisegundos = 1000 * 60 * 60 * 24; // 1 día en milisegundos
 
   // Restar una fecha de la otra para obtener la diferencia en milisegundos
-  const diferenciaMs = Math.abs(fecha1 - fecha2);
+  const diferenciaMs = Math.abs(fecha1.getTime() - fecha2.getTime());
 
   // Convertir la diferencia de milisegundos a días
   const diferenciaDias = Math.floor(diferenciaMs / unDiaEnMilisegundos);
@@ -156,3 +156,5 @@ export function formatNumber(number: number) {
     maximumFractionDigits: 2
   });
 }
+
+export const showStringMaxLength = (str:string, maxLength:number) => str.length > maxLength ? `${str.slice(0, maxLength)}...` : str;

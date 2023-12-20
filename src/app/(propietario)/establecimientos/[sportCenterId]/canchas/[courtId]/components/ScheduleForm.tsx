@@ -109,7 +109,7 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
 
           <span className="font-medium text-lg my-2">Dias de la semana</span>
           <ToggleGroup type="multiple" variant="outline" onValueChange={setSelectedDays}>
-            <div>
+            <div className="flex gap-2 flex-wrap">
               {days.map((option, index) => (
                 <ToggleGroupItem
                   key={index}
@@ -125,7 +125,7 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
           </ToggleGroup>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div className="flex-auto flex flex-col gap-2">
             <span className="font-medium text-lg">Horario de Apertura</span>
             <TimePickerUI
@@ -163,7 +163,7 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
           <ScheduleTable showHeader handleEdit={handleEdit} schedule={days} />
         </div>
 
-        <Button onClick={updateCourtTimes}>Finalizar</Button>
+        <Button onClick={updateCourtTimes}>Guardar cambios</Button>
       </div>
     </div>
   );

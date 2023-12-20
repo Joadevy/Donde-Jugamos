@@ -62,12 +62,15 @@ export async function PUT(request: NextRequest) {
   const body: {
     name?: string;
     postCode?: string;
+    active?: "true" | "false";
     id: number;
   } = await request.json();
   const name = body.name;
   const postCode = body.postCode;
   const id = body.id;
+  const active = body.active;
   let city = null;
+  const isActive = active ? (active === "true" ? true : false) : null;
 
   if (!postCode && !name)
     return NextResponse.json(generateApiResponse(null, 400, "Faltan parametros"));
@@ -80,6 +83,7 @@ export async function PUT(request: NextRequest) {
       data: {
         name,
         postCode,
+        active: isActive !== null ? isActive : undefined,
       },
     });
   } catch (error) {

@@ -1,4 +1,4 @@
-import type {Control} from "react-hook-form";
+import type {Control, FieldValue, FieldValues} from "react-hook-form";
 
 import {cn} from "@/lib/utils/utils";
 
@@ -13,7 +13,7 @@ import {
 import {Textarea} from "../ui/textarea";
 
 interface PropsType {
-  formControl: Control | undefined;
+  formControl: Control<FieldValue<FieldValues>>;
   name: string;
   label?: string;
   placeholder?: string;
@@ -22,7 +22,7 @@ interface PropsType {
   className?: string;
 }
 
-const FormTextAreaField: React.FC<PropsType> = ({
+function FormTextAreaField({
   formControl,
   name,
   label = "",
@@ -30,7 +30,7 @@ const FormTextAreaField: React.FC<PropsType> = ({
   description = "",
   disabled = false,
   className,
-}) => {
+}: PropsType) {
   return (
     <FormField
       control={formControl}
@@ -48,6 +48,6 @@ const FormTextAreaField: React.FC<PropsType> = ({
       )}
     />
   );
-};
+}
 
 export default FormTextAreaField;

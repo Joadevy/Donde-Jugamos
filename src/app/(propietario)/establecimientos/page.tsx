@@ -29,7 +29,7 @@ async function PropietaryPage() {
   return (
     <div className="container mx-auto py-4">
       <h2 className="text-2xl font-bold text-primary mb-2">Administrá tus establecimientos</h2>
-      <section className="flex gap-4">
+      <section className="flex flex-wrap items-center justify-center lg:items-start lg:justify-start gap-6">
         {userSportCenters.map((sportCenter) =>
           sportCenter.state === SPORT_CENTER_APPROVED ? (
             <SportCenterCard

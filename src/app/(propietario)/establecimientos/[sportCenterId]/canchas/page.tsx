@@ -22,7 +22,7 @@ async function CanchasPage({params}: {params: {sportCenterId: string}}) {
         <section>
           <h2 className="text-2xl font-bold text-primary mb-2">Administrá tus canchas</h2>
 
-          <ul className="flex gap-4 flex-wrap justify-normal">
+          <ul className="flex flex-wrap gap-4 items-center justify-center lg:items-start lg:justify-normal">
             {courts.map((court) => (
               <li key={court.id}>
                 <CourtCard court={court} />

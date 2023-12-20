@@ -34,7 +34,7 @@ function LoginAndNavigationOptions({user}: Session) {
   return (
     <li className="flex items-center gap-4">
       {user ? (
-        <div className="flex gap-1 items-center justify-center">
+        <div className="flex gap-1 items-start justify-center">
           {userRole === "customer" ? (
             <MenuNavigationLinks
               image={user.image ?? ""}
