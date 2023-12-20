@@ -39,6 +39,9 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
     <PageWrapper
       aside={
         <>
+          <Link className={buttonVariants({variant: "secondary"})} href="../canchas">
+            volver
+          </Link>
           <Link
             className={buttonVariants({variant: "default"})}
             href={`${params.courtId}/modificar`}

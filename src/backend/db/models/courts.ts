@@ -51,6 +51,24 @@ export type CourtComplete = Prisma.CourtGetPayload<{
   };
 }>;
 
+export type Prueba = Prisma.CourtGetPayload<{
+  include: {
+    sport: {
+      select: {
+        id: true;
+        name: true;
+        duration: true;
+      };
+    };
+    days: true;
+    appointments: {
+      include: {
+        reservations: true;
+      };
+    };
+  };
+}>;
+
 export type CourtWithDays = Prisma.CourtGetPayload<{
   include: {
     days: true;
@@ -226,7 +244,11 @@ export const lastAppointmentDate = async (courtId: string | number): Promise<Dat
 export const findWithDaysSport = async (
   sportCenterId: string | number,
   courtId: string | number,
-): Promise<CourtFullInfo | null> => {
+): Promise<Prueba | null> => {
+  const currentDate = new Date();
+
+  currentDate.setHours(0, 0, 0, 0);
+
   return await db.court.findUnique({
     where: {
       id: Number(courtId),
@@ -235,9 +257,33 @@ export const findWithDaysSport = async (
     include: {
       days: true,
       sport: true,
-      sportCenter: true,
       appointments: {
-        take: 0,
+        include: {
+          reservations: true,
+        },
+        where: {
+          OR: [
+            {
+              date: {
+                gte: currentDate,
+              },
+            },
+            {
+              reservations: {
+                some: {
+                  OR: [
+                    {
+                      state: "approved",
+                    },
+                    {
+                      state: "pending",
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
       },
     },
   });

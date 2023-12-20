@@ -59,6 +59,7 @@ const ScheduleTable: FC<ScheduleTableProps> = ({
               {handleEdit ? (
                 <TableCell>
                   <X
+                    className="cursor-pointer"
                     color="green"
                     size={25}
                     onClick={() => {

@@ -4,12 +4,12 @@
 import type {FC} from "react";
 import type {Dayjs} from "dayjs";
 import type {ApiResponse, CourtSchedule} from "@/lib/types/importables/types";
-import type {CourtFullInfo} from "@/backend/db/models/courts";
+import type {CourtFullInfo, Prueba} from "@/backend/db/models/courts";
 
 import dayjs from "dayjs";
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Clock3Icon} from "lucide-react";
+import {Clock3Icon, AlertCircleIcon} from "lucide-react";
 
 import {timeToMinutesDayJs} from "@/lib/utils/utils";
 import TimePickerUI from "@/components/TimePicker/time-picker";
@@ -25,7 +25,8 @@ interface HorarioFormProps {
   schedule: CourtSchedule[];
   courtId: number;
   courts: number[];
-  court?: CourtFullInfo;
+  court?: Prueba;
+  // court?: CourtFullInfo;
 }
 
 const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) => {
@@ -34,6 +35,8 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [days, setDays] = useState<CourtSchedule[]>([...schedule]);
   const router = useRouter();
+
+  const existeReservation = court?.appointments.some((a) => a.reservations.length > 0);
 
   const handleClic = () => {
     const newDays: CourtSchedule[] = days.map((day) => {
@@ -83,12 +86,27 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
   };
 
   return (
-    <div className="container max-w-5xl mx-auto p-8">
+    <div className="w-full">
       <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
         <Clock3Icon /> Horarios - {court?.name}
       </h3>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
+          {court?.appointments.length ? (
+            <div className="flex gap-4 p-2 bg-yellow-400 shadow shadow-yellow-500">
+              <AlertCircleIcon className="text-yellow-600" />
+              {existeReservation ? (
+                <div className=" text-yellow-600">
+                  Hay turnos con reservas activas o reservas pendientes. Si se realiza una
+                  modificación de los horarios actuales se cancelaran las reservas y se regeneraran
+                  los turnos.
+                </div>
+              ) : (
+                <div className=" text-yellow-600">Hay turnos activos</div>
+              )}
+            </div>
+          ) : null}
+
           <span className="font-medium text-lg my-2">Dias de la semana</span>
           <ToggleGroup type="multiple" variant="outline" onValueChange={setSelectedDays}>
             <div>

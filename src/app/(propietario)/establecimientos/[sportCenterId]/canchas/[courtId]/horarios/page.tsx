@@ -28,6 +28,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   let openDays: string[] = [];
   const hasSchedule = curt?.days ? curt.days.length > 0 : false;
 
+  console.log(curt?.appointments);
   if (curt?.days.length) {
     curtSchedule = curt.days.map((day) => {
       return {
