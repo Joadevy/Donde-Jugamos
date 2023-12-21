@@ -146,7 +146,7 @@ export const getSportCentersWithUserAndCity = async (
   postCode?: string,
   page?: number,
 ): Promise<ResponseSportCentersWithUserAndCity> => {
-  const take = 5;
+  const take = 4;
   const skip = page ? (page - 1) * take : 0;
 
   const totalResults = await db.sportCenter.count({
