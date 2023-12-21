@@ -411,7 +411,7 @@ export const getSportCenterReservations = async (
   page?: number,
   state?: Reservation["state"],
 ): Promise<ReservationsResponse> => {
-  const take = 1; // para testing, 1 despues cambiarlo a 10 por ej
+  const take = 5;
   const skip = page ? (page - 1) * take : 0;
   // Obtener el total de reservas
   const totalReservations = await db.reservation.count({
