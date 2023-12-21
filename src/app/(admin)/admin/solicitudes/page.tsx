@@ -12,9 +12,28 @@ import {
 import {SportCenterWrapper} from "@/components/Sportcenters/SportCenterWrapper";
 import {buttonVariants} from "@/components/ui/button";
 import PageWrapper from "@/components/Layout/PageWrapper";
+import {getCities} from "@/backend/db/models/cities";
+import {FilterInput} from "@/components/Sportcenters/FilterInput";
+import {FilterSelect} from "@/components/Sportcenters/FilterSelect";
 
-const SolicitudesPage = async () => {
-  const sportCenters = (await getFullSportCentersByState(SPORT_CENTER_PENDING)) || [];
+const SolicitudesPage = async ({
+  searchParams,
+}: {
+  searchParams: {name: string; postCode: string};
+}) => {
+  const {name, postCode} = searchParams;
+  const sportCenters =
+    (await getFullSportCentersByState(
+      SPORT_CENTER_PENDING,
+      name ? name : undefined,
+      postCode ? postCode : undefined,
+    )) || [];
+  const cities = await getCities();
+
+  const citiesOptions = cities.map((city) => ({
+    option: city.name,
+    value: city.postCode,
+  }));
 
   return (
     <PageWrapper
@@ -34,6 +53,16 @@ const SolicitudesPage = async () => {
           <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
             Gestionar solicitudes de alta
           </h1>
+
+          <div className="mt-2 lg:mt-8 flex flex-col lg:flex-row gap-4">
+            <FilterInput placeholder="Filtrar por nombre" queryParam="name" />
+            <FilterSelect
+              label=""
+              options={[{option: "Todas", value: "all"}, ...citiesOptions]}
+              placeholder="Filtrar por ciudad"
+              queryParam="postCode"
+            />
+          </div>
 
           {sportCenters.length === 0 ? (
             <p className="text-slate-400 italic lg:mt-5">No hay solicitudes de alta</p>

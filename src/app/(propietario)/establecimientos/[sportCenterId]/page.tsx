@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import {buttonVariants} from "@/components/ui/button";
 import {getSportCenterByIdWithReservations} from "@/backend/db/models/sportsCenters";
-import {CountReservationsByState, turnStateToSpanish} from "@/lib/utils/utils";
+import {turnStateToSpanish} from "@/lib/utils/utils";
 import {getSportCenterReservations} from "@/backend/db/models/reservations";
 import ReservationCard from "@/components/Reservation/Propietary/ReservationCard";
 import PageWrapper from "@/components/Layout/PageWrapper";
