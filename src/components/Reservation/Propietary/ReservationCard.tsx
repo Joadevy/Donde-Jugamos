@@ -13,7 +13,7 @@ interface ReservationCardProps {
 
 function ReservationCard({reservation}: ReservationCardProps): JSX.Element {
   return (
-    <Card className="w-[350px] lg:w-[400px] h-[400px] relative">
+    <Card className="w-[350px] lg:w-[375px] h-[400px] relative">
       <CardHeader>
         <CardTitle>
           {new Date(reservation.appointment.date).toLocaleString("es-AR", {
