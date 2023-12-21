@@ -2,10 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 import {CountReservationsByState} from "@/lib/utils/utils";
-import {
-  getSportCenterHistoricReservations,
-  getSportCenterReservations,
-} from "@/backend/db/models/reservations";
+import {getSportCenterHistoricReservations} from "@/backend/db/models/reservations";
 
 import {buttonVariants} from "../ui/button";
 
@@ -17,8 +14,6 @@ async function HistoricReservations({sportCenterId}: Iprops) {
   const reservations = await getSportCenterHistoricReservations(Number(sportCenterId));
 
   const amountReservationsByState = CountReservationsByState(reservations);
-
-  console.log(reservations, amountReservationsByState);
 
   return (
     <>
