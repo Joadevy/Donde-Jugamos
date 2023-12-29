@@ -16,6 +16,17 @@ import TimePickerUI from "@/components/TimePicker/time-picker";
 import {Button} from "@/components/ui/button";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {errorToast, successToast} from "@/lib/utils/toasts";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import {DAYS_OF_WEEK} from "../horarios/page";
 
@@ -25,7 +36,7 @@ interface HorarioFormProps {
   schedule: CourtSchedule[];
   courtId: number;
   courts: number[];
-  court?: Prueba;
+  court: Prueba;
   // court?: CourtFullInfo;
 }
 
@@ -36,7 +47,8 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
   const [days, setDays] = useState<CourtSchedule[]>([...schedule]);
   const router = useRouter();
 
-  const existeReservation = court?.appointments.some((a) => a.reservations.length > 0);
+  const hasSchedule = schedule.some((day) => day.openTime || day.closeTime);
+  const existReservation = court.appointments.some((a) => a.reservations.length > 0);
 
   const handleClic = () => {
     const newDays: CourtSchedule[] = days.map((day) => {
@@ -67,10 +79,11 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
     setDays([...daysChanged]);
   };
 
-  const updateCourtTimes = async () => {
+  const updateCourtSchedule = async (forzed: boolean) => {
+    const appointments = forzed ? court.appointments : null;
     const response = await fetch("/api/court", {
-      method: "POST",
-      body: JSON.stringify({days, courts}),
+      method: hasSchedule ? "PUT" : "POST",
+      body: JSON.stringify({days, courts, appointments}),
     });
 
     const data = (await response.json()) as ApiResponse;
@@ -88,14 +101,14 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
   return (
     <div className="w-full">
       <h3 className="w-full mb-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
-        <Clock3Icon /> Horarios - {court?.name}
+        <Clock3Icon /> Horarios - {court.name}
       </h3>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          {court?.appointments.length ? (
+          {court.appointments.length ? (
             <div className="flex gap-4 p-2 bg-yellow-400 shadow shadow-yellow-500">
               <AlertCircleIcon className="text-yellow-600" />
-              {existeReservation ? (
+              {existReservation ? (
                 <div className=" text-yellow-600">
                   Hay turnos con reservas activas o reservas pendientes. Si se realiza una
                   modificación de los horarios actuales se cancelaran las reservas y se regeneraran
@@ -163,7 +176,29 @@ const ScheduleForm: FC<HorarioFormProps> = ({courtId, courts, schedule, court}) 
           <ScheduleTable showHeader handleEdit={handleEdit} schedule={days} />
         </div>
 
-        <Button onClick={updateCourtTimes}>Guardar cambios</Button>
+        {existReservation ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline">Guardar Cambios</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Existen turnos con reservas asociadas</AlertDialogTitle>
+                <AlertDialogDescription>
+                  ¿Está seguro que desea cancelar las reservas existentes?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction role="button" onClick={() => updateCourtSchedule(true)}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button onClick={() => updateCourtSchedule(false)}>Guardar cambios</Button>
+        )}
       </div>
     </div>
   );

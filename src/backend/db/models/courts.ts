@@ -306,3 +306,18 @@ export const findCourtsWithSameDuration = async (
     },
   });
 };
+
+export const findSportDuration = async (courtId: number) => {
+  return await db.court.findUnique({
+    select: {
+      sport: {
+        select: {
+          duration: true,
+        },
+      },
+    },
+    where: {
+      id: courtId,
+    },
+  });
+};

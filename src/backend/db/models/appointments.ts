@@ -26,8 +26,17 @@ export type AppointmentWithCourtAndSportcenter = Prisma.AppointmentGetPayload<{
 export type AppointmentReservation = Prisma.AppointmentGetPayload<{
   include: {
     reservations: {
-      select: {
-        state: true;
+      include: {
+        user: true;
+      };
+    };
+    court: {
+      include: {
+        sportCenter: {
+          include: {
+            city: true;
+          };
+        };
       };
     };
   };
@@ -116,53 +125,37 @@ export const updateAppointments = async (appointments: Appointment[]): Promise<b
   }
 };
 
-export const deleteAppointments = async (
-  appointments: Omit<Appointment, "id">[],
-): Promise<ReponseType> => {
+export const deleteAppointmentsQuerys = (appointments: Appointment[]) => {
   const appointmentsQuery = [];
-  let appointmentsToDeleteArray: number[] = [];
 
-  for (const appointment of appointments) {
-    const appointmentsToDelete = await db.appointment.findMany({
-      where: {
-        date: appointment.date,
-        courtId: appointment.courtId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    appointmentsToDeleteArray = [
-      ...appointmentsToDeleteArray,
-      ...appointmentsToDelete.map((a) => a.id),
-    ];
-  }
-
-  if (appointmentsToDeleteArray.length) {
-    for (const appointmentId of appointmentsToDeleteArray) {
+  if (appointments.length) {
+    for (const appointment of appointments) {
       appointmentsQuery.push(
         db.appointment.delete({
           where: {
-            id: appointmentId,
+            id: appointment.id,
           },
         }),
       );
     }
   }
 
-  try {
-    if (!appointmentsQuery.length) {
-      throw new Error("No se pudieron generar los turnos.");
-    }
+  return appointmentsQuery;
+};
 
-    await db.$transaction(appointmentsQuery).catch((error) => {
-      return {
-        data: error,
-        status: 500,
-        message: "Error al generar los turnos",
-      };
-    });
+export const deleteAppointments = async (appointments: Appointment[]): Promise<ReponseType> => {
+  const appointmentsQuery = deleteAppointmentsQuerys(appointments);
+
+  try {
+    if (appointmentsQuery.length) {
+      await db.$transaction(appointmentsQuery).catch((error) => {
+        return {
+          data: error,
+          status: 500,
+          message: "Error al generar los turnos",
+        };
+      });
+    }
 
     return {
       data: null,
@@ -192,4 +185,18 @@ export const getAllCourtAppointments = async (courtId: number) => {
   });
 
   return appointments;
+};
+
+export const getLastAppointment = async (courtId: number) => {
+  const maxDate = await db.appointment.aggregate({
+    _max: {
+      date: true,
+    },
+    where: {
+      courtId,
+      active: true,
+    },
+  });
+
+  return maxDate ? maxDate._max.date : null;
 };

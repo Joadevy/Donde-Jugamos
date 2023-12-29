@@ -28,7 +28,6 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
   let openDays: string[] = [];
   const hasSchedule = curt?.days ? curt.days.length > 0 : false;
 
-  console.log(curt?.appointments);
   if (curt?.days.length) {
     curtSchedule = curt.days.map((day) => {
       return {
@@ -68,7 +67,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
             <>
               <Link
                 className={buttonVariants({variant: "default"})}
-                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`
+                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
               >
                 Generar Turnos
               </Link>

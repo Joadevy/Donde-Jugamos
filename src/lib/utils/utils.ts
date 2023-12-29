@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import type dayjsType from "dayjs";
-import type { Reservation } from "@prisma/client";
-import type { ApiResponse } from "../types/importables/types";
+import type { Appointment, Reservation } from "@prisma/client";
+import type { ApiResponse, CourtSchedule } from "../types/importables/types";
 
 import dayjs from "dayjs";
 import {type ClassValue, clsx} from "clsx";
@@ -158,3 +158,46 @@ export function formatNumber(number: number) {
 }
 
 export const showStringMaxLength = (str:string, maxLength:number) => str.length > maxLength ? `${str.slice(0, maxLength)}...` : str;
+
+
+export function generateAppointments(
+  dateFrom: Date,
+  dateTo: Date,
+  schedule: CourtSchedule[],
+  duration: number,
+  courtId: number,
+): Record<number, Partial<Appointment>[]> {
+  const appointmetsGenerated: Record<number, Partial<Appointment>[]> = {};
+
+  while (dateFrom <= dateTo) {
+    const dateKey = dateFrom.getTime();
+    const dayStr = getPartOfDate(dateFrom, "dayName");
+    const daySchedule = schedule.find((day) => day.name === dayStr);
+
+    if (daySchedule) {
+      const dayCloseTime = daySchedule.closeTime!;
+      let timeTracker = daySchedule.openTime!;
+
+      while (dayCloseTime - timeTracker >= duration) {
+        const appointment: Omit<Appointment, "id"> = {
+          date: new Date(dateFrom),
+          startTime: timeTracker,
+          endTime: timeTracker + duration,
+          active: true,
+          courtId: courtId,
+        };
+
+        if (appointmetsGenerated[dateKey]) {
+          appointmetsGenerated[dateKey].push(appointment);
+        } else {
+          appointmetsGenerated[dateKey] = [appointment];
+        }
+
+        timeTracker += duration;
+      }
+    }
+    dateFrom.setDate(dateFrom.getDate() + 1);
+  }
+
+  return appointmetsGenerated;
+}

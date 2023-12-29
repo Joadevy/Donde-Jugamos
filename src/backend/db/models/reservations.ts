@@ -496,3 +496,18 @@ export const updateReservationState = async (reservationId: string, newState: st
 
   return updatedReservation;
 };
+
+export const CancelReservationQuery = (id: number, observation?: string) => {
+  return db.reservation.update({
+    where: {
+      id,
+    },
+    data: {
+      state: "canceled",
+      observation: observation ? observation : undefined,
+    },
+    include: {
+      user: true,
+    },
+  });
+};

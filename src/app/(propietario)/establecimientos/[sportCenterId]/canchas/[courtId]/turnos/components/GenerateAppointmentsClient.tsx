@@ -13,7 +13,7 @@ import {useRouter} from "next/navigation";
 
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
-import {diferenciaEnDias, getPartOfDate} from "@/lib/utils/utils";
+import {diferenciaEnDias, generateAppointments, getPartOfDate} from "@/lib/utils/utils";
 import {DatePicker} from "@/components/ui/datepicker";
 import {errorToast, successToast} from "@/lib/utils/toasts";
 
@@ -163,45 +163,3 @@ const GenerateAppointmentsClient: FC<GenerateAppointmentsClientProps> = ({
 };
 
 export default GenerateAppointmentsClient;
-
-function generateAppointments(
-  dateFrom: Date,
-  dateTo: Date,
-  schedule: CourtSchedule[],
-  duration: number,
-  courtId: number,
-): Record<number, Partial<Appointment>[]> {
-  const appointmetsGenerated: Record<number, Partial<Appointment>[]> = {};
-
-  while (dateFrom <= dateTo) {
-    const dateKey = dateFrom.getTime();
-    const dayStr = getPartOfDate(dateFrom, "dayName");
-    const daySchedule = schedule.find((day) => day.name === dayStr);
-
-    if (daySchedule) {
-      const dayCloseTime = daySchedule.closeTime!;
-      let timeTracker = daySchedule.openTime!;
-
-      while (dayCloseTime - timeTracker >= duration) {
-        const appointment: Omit<Appointment, "id"> = {
-          date: new Date(dateFrom),
-          startTime: timeTracker,
-          endTime: timeTracker + duration,
-          active: true,
-          courtId: courtId,
-        };
-
-        if (appointmetsGenerated[dateKey]) {
-          appointmetsGenerated[dateKey].push(appointment);
-        } else {
-          appointmetsGenerated[dateKey] = [appointment];
-        }
-
-        timeTracker += duration;
-      }
-    }
-    dateFrom.setDate(dateFrom.getDate() + 1);
-  }
-
-  return appointmetsGenerated;
-}
