@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import type {NextRequest} from "next/server";
 import type {ApiResponse} from "@/lib/types/importables/types";
 
@@ -5,6 +6,30 @@ import {NextResponse} from "next/server";
 
 import {db} from "@/backend/db/db";
 import {generateApiResponse} from "@/lib/utils/utils";
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://dondejugamos.vercel.app/",
+];
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS(req: NextRequest) {
+  const origin = req.headers.get("origin") ?? "";
+
+  if (!allowedOrigins.includes(origin)) {
+    return NextResponse.error();
+  }
+
+  corsHeaders["Access-Control-Allow-Origin"] = origin;
+
+  return NextResponse.json({}, {headers: corsHeaders});
+}
 
 interface RequestType {
   days: {name: string; openTime: number; closeTime: number}[];

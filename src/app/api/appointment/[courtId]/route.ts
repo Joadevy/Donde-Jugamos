@@ -1,9 +1,34 @@
+/* eslint-disable @typescript-eslint/require-await */
 import type {NextRequest} from "next/server";
 import type {Appointment} from "@prisma/client";
 
 import {NextResponse} from "next/server";
 
 import {saveAppointments, updateAppointments} from "@/backend/db/models/appointments";
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://dondejugamos.vercel.app/",
+];
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS(req: NextRequest) {
+  const origin = req.headers.get("origin") ?? "";
+
+  if (!allowedOrigins.includes(origin)) {
+    return NextResponse.error();
+  }
+
+  corsHeaders["Access-Control-Allow-Origin"] = origin;
+
+  return NextResponse.json({}, {headers: corsHeaders});
+}
 
 export async function POST(request: NextRequest) {
   const appointments: Omit<Appointment, "id">[] = await request.json();
