@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/require-await */
 import type {NextRequest} from "next/server";
-import type {ApiResponse} from "@/lib/types/importables/types";
 
 import {NextResponse} from "next/server";
 
 import {db} from "@/backend/db/db";
 import {generateApiResponse} from "@/lib/utils/utils";
-import {updateUserRoleById} from "@/backend/db/models/users";
-import {compileGenericTemplate} from "@/backend/email/templates/GenericTemplate";
-import handleSendEmail from "@/backend/email/nodemailer";
-
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
