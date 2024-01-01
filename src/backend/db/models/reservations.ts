@@ -78,7 +78,7 @@ export const createReservation = async ({
     "Solicitud nueva reserva",
     compilePropietaryChangeStatusTemplate(
       "pendiente",
-      `Una reserva previamente ha sido creada.`,
+      `Una reserva ha sido creada.`,
       reservation.id,
       appointmentInfo.court.sportCenter.name,
       appointmentInfo.court.sportCenter.address,
@@ -219,6 +219,7 @@ export const cancelReservation = async (id: number, observation?: string): Promi
 
 export type ReservationFullInfo = Prisma.ReservationGetPayload<{
   include: {
+    user: true;
     appointment: {
       include: {
         court: {
@@ -242,6 +243,7 @@ export const getReservationFullInfo = async (id: number): Promise<ReservationFul
       id,
     },
     include: {
+      user: true,
       appointment: {
         include: {
           court: {
@@ -536,16 +538,13 @@ export const updateReservationState = async (reservationId: string, newState: st
     },
   });
 
-  const getReservationInfo = getReservationFullInfo(Number(reservationId));
-  const getUserInfo = getUserByEmail("");
+  const reservationInfo = await getReservationFullInfo(Number(reservationId));
 
-  const [reservationInfo, user] = await Promise.all([getReservationInfo, getUserInfo]);
-
-  if (!reservationInfo || !user)
+  if (!reservationInfo)
     throw new Error("Error el encontrar la reserva asociada o el usuario activo");
 
   await handleSendEmail(
-    user.email!,
+    reservationInfo.user.email!,
     newState === RESERVATION_APPROVED
       ? "Solicitud de reserva aprobada"
       : "Solicitud de reserva rechazada",
