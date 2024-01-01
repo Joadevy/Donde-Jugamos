@@ -5,11 +5,7 @@ import type {NextRequest} from "next/server";
 import {NextResponse} from "next/server";
 
 import {updateReservationState} from "@/backend/db/models/reservations";
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://dondejugamos.vercel.app/",
-];
+import {allowedOrigins} from "@/lib/utils/utils";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

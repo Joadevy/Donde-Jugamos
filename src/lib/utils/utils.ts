@@ -14,6 +14,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://dondejugamos.vercel.app/",
+  "https://www.dondejugamos.vercel.app/",
+];
+
 export function timeToMinutes(time: string): number {
   const timeArrayString = time.split(":");
 
