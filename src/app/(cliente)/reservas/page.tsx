@@ -7,7 +7,7 @@ import {turnStateToSpanish} from "@/lib/utils/utils";
 
 import SelectStateReservations from "./components/SelectStateReservations";
 
-export const statesReservation = ["pending", "approved", "rejected", "canceled"];
+const statesReservation = ["pending", "approved", "rejected", "canceled"];
 
 async function CustomerPage({searchParams}: {searchParams: {estado: string}}) {
   const session = await getServerSession();
