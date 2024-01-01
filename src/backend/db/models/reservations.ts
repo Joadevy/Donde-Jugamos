@@ -219,7 +219,6 @@ export const cancelReservation = async (id: number, observation?: string): Promi
 
 export type ReservationFullInfo = Prisma.ReservationGetPayload<{
   include: {
-    user: true;
     appointment: {
       include: {
         court: {
@@ -243,7 +242,6 @@ export const getReservationFullInfo = async (id: number): Promise<ReservationFul
       id,
     },
     include: {
-      user: true,
       appointment: {
         include: {
           court: {
@@ -395,6 +393,35 @@ export type ReservationFullInfoWithUser = Prisma.ReservationGetPayload<{
   };
 }>;
 
+export const getReservationFullInfoWithUser = async (
+  id: number,
+): Promise<ReservationFullInfoWithUser | null> => {
+  const reservation = await db.reservation.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: true,
+      appointment: {
+        include: {
+          court: {
+            include: {
+              sportCenter: {
+                include: {
+                  city: true,
+                },
+              },
+              sport: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return reservation;
+};
+
 interface ReservationsResponse {
   data: {
     reservations: ReservationFullInfoWithUser[];
@@ -538,7 +565,7 @@ export const updateReservationState = async (reservationId: string, newState: st
     },
   });
 
-  const reservationInfo = await getReservationFullInfo(Number(reservationId));
+  const reservationInfo = await getReservationFullInfoWithUser(Number(reservationId));
 
   if (!reservationInfo)
     throw new Error("Error el encontrar la reserva asociada o el usuario activo");
