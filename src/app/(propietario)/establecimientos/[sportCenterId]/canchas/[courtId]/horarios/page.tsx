@@ -2,7 +2,7 @@ import type {CourtSchedule} from "@/lib/types/importables/types";
 
 import Link from "next/link";
 
-import {findWithDays, findWithDaysSport} from "@/backend/db/models/courts";
+import {findWithDaysSport} from "@/backend/db/models/courts";
 import PageWrapper from "@/components/Layout/PageWrapper";
 import {buttonVariants} from "@/components/ui/button";
 
@@ -67,7 +67,7 @@ async function HorariosPage({params}: {params: {sportCenterId: string; courtId: 
             <>
               <Link
                 className={buttonVariants({variant: "default"})}
-                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`
+                href={`/establecimientos/${params.sportCenterId}/canchas/${params.courtId}/turnos`}
               >
                 Generar Turnos
               </Link>

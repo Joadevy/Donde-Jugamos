@@ -393,14 +393,56 @@ export type ReservationFullInfoWithUser = Prisma.ReservationGetPayload<{
   };
 }>;
 
+interface ReservationsResponse {
+  data: {
+    reservations: ReservationFullInfoWithUser[];
+  };
+  pagination: {
+    total: number;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+  };
+}
+
+// se podria reformar la query para devolver la cnatidad de resultados total, el numero de pagina y el total de paginas.
 export const getSportCenterReservations = async (
   sportCenterId: number,
-): Promise<ReservationFullInfoWithUser[]> => {
-  const reservations = await db.reservation.findMany({
+  page?: number,
+  state?: Reservation["state"],
+): Promise<ReservationsResponse> => {
+  const take = 4;
+  const skip = page ? (page - 1) * take : 0;
+  // Obtener el total de reservas
+  const totalReservations = await db.reservation.count({
     where: {
+      state: {
+        in: state ? [state] : ["pending"],
+      },
       appointment: {
         date: {
-          gte: new Date(),
+          gte: state === "pending" || !state ? new Date() : undefined,
+        },
+        court: {
+          sportCenterId,
+        },
+      },
+    },
+  });
+
+  // Calcular el total de páginas
+  const totalPages = Math.ceil(totalReservations / take);
+
+  const reservations = await db.reservation.findMany({
+    skip, // (page - 1) * take,
+    take: page && page >= 0 ? take : undefined,
+    where: {
+      state: {
+        in: state ? [state] : ["pending"],
+      },
+      appointment: {
+        date: {
+          gte: state === "pending" || !state ? new Date() : undefined,
         },
         court: {
           sportCenterId,
@@ -438,7 +480,42 @@ export const getSportCenterReservations = async (
     ],
   });
 
-  return reservations;
+  const response = {
+    data: {
+      reservations,
+    },
+    pagination: {
+      total: totalReservations,
+      pageSize: take,
+      page: page ? page : 1,
+      totalPages,
+    },
+  };
+
+  return response;
+};
+
+export const getSportCenterHistoricReservations = async (sportCenterId: number) => {
+  const allReservations = await db.reservation.findMany({
+    where: {
+      appointment: {
+        court: {
+          sportCenterId,
+        },
+      },
+    },
+
+    include: {
+      appointment: {},
+    },
+  });
+
+  return allReservations.filter(
+    (reservation) =>
+      reservation.state !== "pending" ||
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      (reservation.state == "pending" && reservation.appointment.date >= new Date()),
+  );
 };
 
 export const updateReservationState = async (reservationId: string, newState: string) => {

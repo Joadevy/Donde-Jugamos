@@ -129,11 +129,45 @@ export type SportCentersWithUserAndCity = Prisma.SportCenterGetPayload<{
   };
 }>;
 
+interface ResponseSportCentersWithUserAndCity {
+  data: {
+    sportcenters: SportCentersWithUserAndCity[];
+  };
+  pagination: {
+    total: number;
+    pageSize: number;
+    page: number;
+    totalPages: number;
+  };
+}
+
 export const getSportCentersWithUserAndCity = async (
   name?: string,
   postCode?: string,
-): Promise<SportCentersWithUserAndCity[]> => {
-  return await db.sportCenter.findMany({
+  page?: number,
+): Promise<ResponseSportCentersWithUserAndCity> => {
+  const take = 4;
+  const skip = page ? (page - 1) * take : 0;
+
+  const totalResults = await db.sportCenter.count({
+    where: {
+      state: "approved",
+      name: {
+        contains: name,
+      },
+      city: {
+        postCode: {
+          equals: postCode,
+        },
+      },
+    },
+  });
+
+  const totalPages = Math.ceil(totalResults / take);
+
+  const sportcenters = await db.sportCenter.findMany({
+    skip,
+    take: page && page >= 0 ? take : undefined,
     where: {
       state: "approved",
       name: {
@@ -150,6 +184,20 @@ export const getSportCentersWithUserAndCity = async (
       city: true,
     },
   });
+
+  const result = {
+    data: {
+      sportcenters,
+    },
+    pagination: {
+      total: totalResults,
+      pageSize: take,
+      page: page ? page : 1,
+      totalPages,
+    },
+  };
+
+  return result;
 };
 
 export const getSportCenterByIdWithUserAndCity = async (
@@ -194,11 +242,21 @@ export const getSportCentersByState = async (state: string): Promise<SportCenter
 
 export const getFullSportCentersByState = async (
   state: string,
+  name?: string,
+  postCode?: string,
 ): Promise<SportCentersWithUserAndCity[] | null> => {
   return await db.sportCenter
     .findMany({
       where: {
         state,
+        name: {
+          contains: name,
+        },
+        city: {
+          postCode: {
+            equals: postCode,
+          },
+        },
       },
       include: {
         user: true,

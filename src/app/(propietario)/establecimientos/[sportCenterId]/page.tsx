@@ -3,10 +3,12 @@ import Link from "next/link";
 
 import {buttonVariants} from "@/components/ui/button";
 import {getSportCenterByIdWithReservations} from "@/backend/db/models/sportsCenters";
-import {CountReservationsByState, turnStateToSpanish} from "@/lib/utils/utils";
+import {turnStateToSpanish} from "@/lib/utils/utils";
 import {getSportCenterReservations} from "@/backend/db/models/reservations";
 import ReservationCard from "@/components/Reservation/Propietary/ReservationCard";
 import PageWrapper from "@/components/Layout/PageWrapper";
+import PaginationButtons from "@/components/Pagination/PaginationButtons";
+import HistoricReservations from "@/components/Reservation/HistoricReservations";
 
 async function EstablecimientosPage({
   params,
@@ -15,7 +17,7 @@ async function EstablecimientosPage({
   params: {
     sportCenterId: string;
   };
-  searchParams: {state: string | undefined};
+  searchParams: {state: string | undefined; page: number | undefined};
 }) {
   const {state = "pending"} = searchParams;
   const idToNumber = Number(params.sportCenterId);
@@ -37,9 +39,18 @@ async function EstablecimientosPage({
     );
   }
 
-  const reservations = await getSportCenterReservations(idToNumber);
-  const pendingReservations = reservations.filter((reservation) => reservation.state === state);
-  const amountReservationsByState = CountReservationsByState(reservations);
+  const {
+    data: {reservations},
+    pagination,
+  } = await getSportCenterReservations(
+    idToNumber,
+    searchParams.page && Number.isInteger(Number(searchParams.page)) && searchParams.page > 0
+      ? searchParams.page
+      : 1,
+    state,
+  );
+
+  const filteredReservations = reservations.filter((reservation) => reservation.state === state);
 
   return (
     <PageWrapper
@@ -66,53 +77,32 @@ async function EstablecimientosPage({
             <h1 className="font-bold text-xl lg:text-2xl text-primary lg:absolute lg:top-2">
               Gestioná tus solicitudes de reserva {turnStateToSpanish(state, "plural")}
             </h1>
-            {pendingReservations.length === 0 && (
+            {filteredReservations.length === 0 && (
               <h2 className="text-slate-500 italic mt-6">
                 Aun no hay reservas {turnStateToSpanish(state, "plural")}
               </h2>
             )}
 
-            <ul className="flex flex-col items-center justify-center lg:items-start lg:justify-start gap-4 lg:flex-row mt-6">
-              {pendingReservations.map((reservation) => (
+            <ul className="flex flex-col items-center justify-center lg:items-start lg:justify-start gap-4 lg:flex-row flex-wrap mt-8 mb-5">
+              {filteredReservations.map((reservation) => (
                 <li key={reservation.id}>
                   <ReservationCard reservation={reservation} />
                 </li>
               ))}
             </ul>
+
+            {filteredReservations.length > 0 && (
+              <PaginationButtons
+                currentPage={pagination.page}
+                pageSize={pagination.pageSize}
+                total={pagination.total}
+                totalPages={pagination.totalPages}
+              />
+            )}
           </section>
 
           <section className="py-4">
-            <h2 className="text-center font-bold">Historico de reservas</h2>
-
-            <div className="flex flex-col gap-1">
-              <Link
-                className={buttonVariants({variant: "outline"})}
-                href={`/establecimientos/${params.sportCenterId}?state=pending`}
-              >
-                {amountReservationsByState.pending} Reservas pendientes
-              </Link>
-
-              <Link
-                className={buttonVariants({variant: "outline"})}
-                href={`/establecimientos/${params.sportCenterId}?state=approved`}
-              >
-                {amountReservationsByState.approved} Reservas aprobadas
-              </Link>
-
-              <Link
-                className={buttonVariants({variant: "outline"})}
-                href={`/establecimientos/${params.sportCenterId}?state=rejected`}
-              >
-                {amountReservationsByState.rejected} Reservas rechazadas
-              </Link>
-
-              <Link
-                className={buttonVariants({variant: "outline"})}
-                href={`/establecimientos/${params.sportCenterId}?state=canceled`}
-              >
-                {amountReservationsByState.canceled} Reservas canceladas
-              </Link>
-            </div>
+            <HistoricReservations sportCenterId={params.sportCenterId} />
           </section>
         </>
       }
