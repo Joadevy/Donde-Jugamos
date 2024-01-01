@@ -5,12 +5,7 @@ import {NextResponse} from "next/server";
 
 import {generateApiResponse} from "@/lib/utils/utils";
 import {db} from "@/backend/db/db";
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://dondejugamos.vercel.app/",
-];
+import {allowedOrigins} from "@/lib/utils/utils";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

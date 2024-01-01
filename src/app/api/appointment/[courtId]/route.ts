@@ -4,13 +4,8 @@ import type {Appointment} from "@prisma/client";
 
 import {NextResponse} from "next/server";
 
+import {allowedOrigins} from "@/lib/utils/utils";
 import {saveAppointments, updateAppointments} from "@/backend/db/models/appointments";
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://dondejugamos.vercel.app/",
-];
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

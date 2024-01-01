@@ -10,12 +10,7 @@ import {updateUserRoleById} from "@/backend/db/models/users";
 import {compileGenericTemplate} from "@/backend/email/templates/GenericTemplate";
 import handleSendEmail from "@/backend/email/nodemailer";
 import {activateCity} from "@/backend/db/models/cities";
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://dondejugamos.vercel.app/",
-];
+import {allowedOrigins} from "@/lib/utils/utils";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

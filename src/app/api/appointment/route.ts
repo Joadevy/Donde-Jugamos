@@ -9,12 +9,7 @@ import {NextResponse} from "next/server";
 
 import {getSportCentersWithCourtsByFilters} from "@/backend/db/models/sportsCenters";
 import {createReservation} from "@/backend/db/models/reservations";
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://dondejugamos.vercel.app/",
-];
+import {allowedOrigins} from "@/lib/utils/utils";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
