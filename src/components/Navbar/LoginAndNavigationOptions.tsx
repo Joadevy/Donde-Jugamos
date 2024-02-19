@@ -19,8 +19,11 @@ interface Session {
     | undefined;
 }
 
-const CUSTOMER_LINKS = [{href: "/reservas", text: "Mis Reservas"}];
-const PROPIETARY_LINKS = [{href: "/establecimientos", text: "Mi establecimiento"}];
+const CUSTOMER_LINKS = [{href: "/reservas", text: "Mis reservas"}];
+const PROPIETARY_LINKS = [
+  {href: "/establecimientos", text: "Mi establecimiento"},
+  {href: "/reservas", text: "Mis reservas"},
+];
 const ADMIN_LINKS = [
   {href: "/admin/solicitudes", text: "Solicitudes de Alta"},
   {href: "/admin/establecimientos", text: "Gestion de establecimientos"},
