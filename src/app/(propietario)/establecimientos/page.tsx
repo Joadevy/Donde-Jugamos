@@ -8,6 +8,7 @@ import {
   getUserPendingSportCenters,
 } from "@/backend/db/models/sportsCenters";
 import {SportCenterCard, SportCenterPending} from "@/components/Sportcenters/SportCenterWrapper";
+import PageWrapper from "@/components/Layout/PageWrapper";
 
 import {authOptions} from "../../api/auth/[...nextauth]/route";
 
@@ -27,28 +28,32 @@ async function PropietaryPage() {
   }
 
   return (
-    <div className="container mx-auto py-4">
-      <h2 className="text-2xl font-bold text-primary mb-2">Administrá tus establecimientos</h2>
-      <section className="flex flex-wrap items-center justify-center lg:items-start lg:justify-start gap-6">
-        {userSportCenters.map((sportCenter) =>
-          sportCenter.state === SPORT_CENTER_APPROVED ? (
-            <SportCenterCard
-              key={sportCenter.id}
-              className="w-[300px] h-[380px]"
-              sportCenter={sportCenter}
-            />
-          ) : (
-            <SportCenterPending
-              key={sportCenter.id}
-              className="w-[300px] h-[380px]"
-              description={sportCenter.description!}
-              state={sportCenter.state}
-              title={sportCenter.name}
-            />
-          ),
-        )}
-      </section>
-    </div>
+    <PageWrapper
+      main={
+        <div className="container mx-auto py-4">
+          <h2 className="text-2xl font-bold text-primary mb-2">Administrá tus establecimientos</h2>
+          <section className="flex flex-wrap items-center justify-center lg:items-start lg:justify-start gap-6">
+            {userSportCenters.map((sportCenter) =>
+              sportCenter.state === SPORT_CENTER_APPROVED ? (
+                <SportCenterCard
+                  key={sportCenter.id}
+                  className="w-[300px] h-[380px]"
+                  sportCenter={sportCenter}
+                />
+              ) : (
+                <SportCenterPending
+                  key={sportCenter.id}
+                  className="w-[300px] h-[380px]"
+                  description={sportCenter.description!}
+                  state={sportCenter.state}
+                  title={sportCenter.name}
+                />
+              ),
+            )}
+          </section>
+        </div>
+      }
+    />
   );
 }
 
