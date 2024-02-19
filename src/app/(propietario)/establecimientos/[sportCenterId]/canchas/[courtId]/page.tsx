@@ -14,7 +14,12 @@ import {DAYS_OF_WEEK} from "./horarios/page";
 import AppointmentDay from "./turnos/components/AppointmentDay";
 
 async function CourtPage({params}: {params: {sportCenterId: string; courtId: string}}) {
-  const court = await findWithDays(params.sportCenterId, params.courtId);
+  const amoutDaysLimitToGetAppointments = 7;
+  const court = await findWithDays(
+    params.sportCenterId,
+    params.courtId,
+    amoutDaysLimitToGetAppointments,
+  );
 
   if (court == null) {
     return <div className="text-center text-slate-400 italic">No se encontro la Cancha</div>;
@@ -23,6 +28,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
   const {days, sportCenter, appointments, sport} = {...court};
   const hasSchedule = days.length > 0;
   const appointmentsMapped = mapAppointments(appointments);
+
   let courtSchedule: CourtSchedule[] = [];
 
   if (days.length) {
@@ -120,7 +126,7 @@ async function CourtPage({params}: {params: {sportCenterId: string; courtId: str
             {appointmentsMapped.length ? (
               <div className="flex flex-col items-center sm:items-start gap-2">
                 <h3 className="w-full my-4 bg-primary text-white p-2 flex items-center gap-2 text-xl">
-                  <CalendarClockIcon /> Turnos - Próximos 3 días
+                  <CalendarClockIcon /> Turnos - Próximos {amoutDaysLimitToGetAppointments} días
                 </h3>
                 {appointmentsMapped.map((app, index) => (
                   <div key={index} className="px-4">

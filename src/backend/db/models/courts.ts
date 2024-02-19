@@ -118,6 +118,7 @@ export const getFullCourtById = async (courtId: number): Promise<CourtFullInfo |
 export const findWithDays = async (
   sportCenterId: string | number,
   courtId: string | number,
+  amountDaysLimit = 3,
 ): Promise<CourtComplete | null> => {
   const currentDate = new Date();
   const tomorrowDate = new Date();
@@ -125,7 +126,7 @@ export const findWithDays = async (
   const currentTime = currentDate.getHours() * 60 + currentDate.getMinutes();
 
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  limitDate.setDate(limitDate.getDate() + 3);
+  limitDate.setDate(limitDate.getDate() + amountDaysLimit);
 
   currentDate.setHours(0, 0, 0, 0);
   tomorrowDate.setHours(0, 0, 0, 0);
