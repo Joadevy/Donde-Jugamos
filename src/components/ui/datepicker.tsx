@@ -8,7 +8,7 @@ import {es} from "date-fns/locale";
 import {Button} from "@/components/ui/button";
 import {Calendar} from "@/components/ui/calendar";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {cn} from "@/lib/utils/utils";
+import {capitalize, cn} from "@/lib/utils/utils";
 
 interface DatePickeProps {
   date?: Date;
@@ -19,19 +19,27 @@ interface DatePickeProps {
   className?: string;
 }
 
-export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth, className}: DatePickeProps) {
+export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth}: DatePickeProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           className={cn(
             "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !date && "text-muted-foreground",
           )}
           variant="outline"
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Seleccionar Fecha</span>}
+          {date ? (
+            capitalize(
+              format(date, "eeee d/M/yy", {
+                locale: es,
+              }),
+            )
+          ) : (
+            <span>Seleccionar Fecha</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className={cn("w-auto p-0")}>
@@ -68,6 +76,7 @@ export function DatePicker({date, setDate, sinceDate, untilDate, fromMonth, clas
           locale={es}
           mode="single"
           selected={date}
+          toMonth={new Date(new Date().setMonth(new Date().getMonth() + 1))}
           onSelect={setDate}
         />
       </PopoverContent>
