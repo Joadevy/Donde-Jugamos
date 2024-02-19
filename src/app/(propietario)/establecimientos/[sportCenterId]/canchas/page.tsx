@@ -23,6 +23,11 @@ async function CanchasPage({params}: {params: {sportCenterId: string}}) {
           <h2 className="text-2xl font-bold text-primary mb-2">Administrá tus canchas</h2>
 
           <ul className="flex flex-wrap gap-4 items-center justify-center lg:items-start lg:justify-normal">
+            {courts.length === 0 && (
+              <p className="italic">
+                No hay canchas asociadas al establecimiento pero puedes dar de alta una!
+              </p>
+            )}
             {courts.map((court) => (
               <li key={court.id}>
                 <CourtCard court={court} />
